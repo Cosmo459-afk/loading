@@ -1,6 +1,6 @@
 # Primera preparación de Supabase
 
-Estado: esquema y pruebas preparados. No se ejecutó SQL en el proyecto remoto ni se conectó la web pública. `index.html` sigue funcionando como 0.3 con almacenamiento local. La clave publicable no da permisos de administración y no sirve para ejecutar esta migración.
+Estado: el propietario confirmó la ejecución de `setup.sql` con 20 preguntas. No volver a ejecutarlo en ese proyecto. La conexión web está preparada en 0.4; falta una prueba real de correo/cuenta antes de publicar. Ver el README raíz para las URL de Auth y el proceso de despliegue. La clave publicable no da permisos de administración ni sirve para ejecutar esta migración.
 
 ## Paso del propietario
 
@@ -26,7 +26,7 @@ Las fotos pequeñas se guardan como datos de imagen en el perfil privado por aho
 
 RLS permite a cada jugador leer solo su perfil y partidas. El navegador no puede insertar partidas, cambiar XP ni leer las soluciones. Las funciones autenticadas `arcade_save_profile`, `arcade_feature_cards`, `arcade_start_game` y `arcade_submit_game` validan las operaciones. El servidor selecciona cinco preguntas y calcula los puntos a partir de cinco respuestas; no acepta una puntuación enviada por el jugador. Reintentar un resultado no duplica XP. Un jugador no puede enviar la partida de otro.
 
-La revisión de respuestas se entrega al finalizar la partida; adaptar ese flujo será parte de la integración del frontend. Esto no elimina toda posibilidad de automatización o trampas; antes de un ranking competitivo harán falta controles adicionales. El banco local de la v0.3 ya contiene soluciones públicas, de modo que el servidor no convierte ese contenido conocido en secreto.
+La revisión de respuestas se entrega al finalizar la partida; el frontend de 0.4 ya muestra esa revisión al finalizar. Esto no elimina toda posibilidad de automatización o trampas; antes de un ranking competitivo harán falta controles adicionales. El banco local de la v0.3 ya contiene soluciones públicas, de modo que el servidor no convierte ese contenido conocido en secreto.
 
 ## Comprobación local
 
@@ -34,10 +34,10 @@ Desde `supabase/`, instalar dependencias con `npm ci` y ejecutar `npm test`. PGl
 
 ## Pendiente antes de publicar
 
-- Ejecutar `setup.sql` con permisos del propietario.
-- Conectar inicio de sesión por correo y configurar Site URL/redirects para el dominio de Cloudflare y un entorno de prueba. Revisar límites de correo de Supabase y configurar SMTP propio antes de abrir registros a muchos jugadores.
-- Adaptar el frontend a los RPC y validar partidas desde dos cuentas reales y dos dispositivos. No transferir XP local al servidor como puntuación competitiva verificada.
-- Verificar envío y recepción de correo y políticas reales con la clave publicable. `client-config.example.js` contiene solo configuración pública y todavía no es cargado por la aplicación.
+- La instalación inicial de `setup.sql` fue confirmada por el propietario; no repetirla.
+- El frontend de 0.4 ya incorpora acceso por correo. Configurar Site URL/redirects para el dominio de Cloudflare y un entorno de prueba. Revisar límites de correo de Supabase y configurar SMTP propio antes de abrir registros a muchos jugadores.
+- El frontend de 0.4 ya usa los RPC. Falta validar partidas desde dos cuentas reales y dos dispositivos. No transferir XP local al servidor como puntuación competitiva verificada.
+- Verificar envío y recepción de correo y políticas reales con la clave publicable. `src/config.js` contiene solo configuración pública y es incluido en el bundle de 0.4.
 - Aprobar el despliegue en Cloudflare. Nada de esta carpeta publica ni cambia la versión pública automáticamente.
 
-La red del entorno de desarrollo devolvió `403 Forbidden` del proxy al intentar contactar con Supabase; esto no demuestra que la URL o la clave sean inválidas. Se guardó una adición al borrador de red para `epnflypuxcfeexaqwlba.supabase.co`. El borrador debe guardarse/aplicarse en la configuración del entorno para poder repetir la comprobación real.
+La red inicialmente bloqueó el proyecto. En la comprobación posterior, `/auth/v1/settings` respondió HTTP 200 y confirmó correo habilitado; la lectura de `arcade_cards` sin sesión fue rechazada con permiso denegado, según lo previsto. No se enviaron correos ni se crearon usuarios reales durante estas pruebas.

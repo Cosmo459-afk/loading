@@ -1,0 +1,113 @@
+"""Browser + real local PostgreSQL RPC integration; Auth is a local fixture.
+Start the static server on 8080 and `node supabase/tests/api-fixture.mjs` first.
+No real email is sent; all project requests are intercepted.
+"""
+import json,base64,os,urllib.request
+from playwright.sync_api import sync_playwright
+BASE=os.environ.get('ARCADE_URL','http://127.0.0.1:8080').rstrip('/')
+HOST='https://epnflypuxcfeexaqwlba.supabase.co'
+STORE='sb-epnflypuxcfeexaqwlba-auth-token'
+def fixture(path,body=None):
+    data=None if body is None else json.dumps(body).encode()
+    with urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:8082'+path,data=data,headers={'Content-Type':'application/json'})) as r:return json.load(r)
+def intercept(route):
+    req=route.request
+    response=route.fetch(url='http://127.0.0.1:8082'+req.url[len(HOST):])
+    route.fulfill(response=response)
+fixture('/_test/reset',{})
+with sync_playwright() as p:
+    browser=p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox'])
+    errors=[]
+    def context(user=None,url=BASE):
+        ctx=browser.new_context(viewport={'width':390,'height':844})
+        ctx.route(HOST+'/**',intercept)
+        if user:
+            session=fixture('/_test/session?user='+user)
+            # Real SDK reads its usual session record. JWT validation here is simulated.
+            ctx.add_init_script('if(!localStorage.getItem('+json.dumps(STORE)+'))localStorage.setItem('+json.dumps(STORE)+','+json.dumps(json.dumps(session))+');')
+        page=ctx.new_page();page.on('pageerror',lambda e:errors.append(str(e)));page.goto(url)
+        page.wait_for_function("!document.getElementById('sessionStatus').textContent.includes('Conectando')")
+        return ctx,page
+    ctx,page=context()
+    page.get_by_text('ENTRAR / CREAR JUGADOR').click();page.wait_for_selector('#auth:not(.hidden)')
+    page.locator('#loginEmail').fill('alice@example.invalid');page.locator('#sendLoginBtn').click()
+    page.wait_for_function("document.getElementById('authMessage').textContent.includes('Revisá tu correo')")
+    requests=fixture('/_test/control',{})['otpRequests']
+    assert requests[-1]['email']=='alice@example.invalid'
+    assert 'redirect_to=' in page.evaluate('performance.getEntriesByType("resource").filter(x=>x.name.includes("/otp"))[0].name')
+    page.evaluate("go('home')");page.get_by_text('JUGAR COMO INVITADO').click();page.locator('#beginBtn').click()
+    for i in range(5):page.evaluate('answer(questions[idx].ok)');page.locator('#nextBtn').click()
+    assert page.locator('#scoreTitle').inner_text()=='700 PUNTOS'
+    assert page.evaluate('profile') is None
+    # Same-browser PKCE callback exchanges the code using the SDK verifier.
+    page.goto(BASE+'/?code=fixture-code')
+    page.wait_for_selector('#profile:not(.hidden)')
+    assert 'code=' not in page.url
+    ctx.close()
+    ctx,page=context('alice')
+    old={'name':'LocalOnly','avatar':0,'xp':8000,'games':20,'featured':[]}
+    page.evaluate('(v)=>localStorage.setItem("loading_arcade_profile",JSON.stringify(v))',old)
+    page.get_by_text('ENTRAR / CREAR JUGADOR').click();page.wait_for_selector('#profile:not(.hidden)')
+    page.locator('#nickname').fill('Alice')
+    assert page.locator('.avatar-btn').count()==8
+    for i in range(8):
+        page.locator('.avatar-btn').nth(i).click()
+        assert page.locator('.avatar-btn[aria-pressed="true"]').count()==1
+        assert page.locator('#profilePreview img').evaluate('(img)=>img.complete && img.naturalWidth>0')
+    page.locator('.avatar-btn').nth(6).click()
+    png=base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=')
+    page.locator('#photoInput').set_input_files({'name':'portrait.png','mimeType':'image/png','buffer':png})
+    page.wait_for_function('uploadedPhoto!==null')
+    page.get_by_text('CONTINUAR').click();page.wait_for_selector('#menu:not(.hidden)')
+    assert page.evaluate('profile.xp')==0
+    assert page.locator('#playerStats .avatar-photo').count()==1
+    # A server commit followed by a network error must be recoverable without duplicate XP.
+    fixture('/_test/control',{'failSubmit':True})
+    page.locator('#beginBtn').click();page.wait_for_selector('#quiz:not(.hidden)')
+    assert page.evaluate('questions.every(q=>q.ok===undefined)')
+    for i in range(5):
+        page.locator('.choice').nth(0).click()
+        assert 'Al terminar' in page.locator('#feedback').inner_text()
+        page.locator('#nextBtn').click()
+    page.wait_for_selector('#recoverGame:not([hidden])')
+    assert 'pendiente' in page.locator('#cloudNotice').inner_text()
+    page.reload();page.wait_for_selector('#recoverGame:not([hidden])')
+    page.locator('#recoverGame').click();page.wait_for_selector('#result:not(.hidden)')
+    assert page.locator('#scoreTitle').inner_text()=='400 PUNTOS'
+    assert page.locator('#resultReview .review-item').count()==5
+    assert page.evaluate('profile.xp')==400 and page.evaluate('profile.games')==1
+    assert page.evaluate('JSON.parse(localStorage.getItem("loading_arcade_profile")).xp')==8000
+    page.evaluate("mode='player';go('menu');go('collection')")
+    page.locator('#album button').first.click()
+    page.wait_for_function('profile.featured.length===1')
+    assert page.locator('#album button[aria-pressed="true"]').count()==1
+    page.evaluate('showHistory()');page.wait_for_selector('#historyList .review-item')
+    assert page.locator('#historyList .review-item').count()==1
+    assert '400 puntos' in page.locator('#historyList').inner_text()
+    for width in [320,390,768,1280]:
+        page.set_viewport_size({'width':width,'height':844})
+        for screen in ['home','auth','profile','menu','collection','rewards','result','history']:
+            page.evaluate('(id)=>go(id)',screen)
+            assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),(width,screen)
+    page.evaluate("mode='player';go('menu')");page.locator('#logoutBtn').click()
+    page.wait_for_function("document.getElementById('sessionStatus').textContent.includes('Invitado')")
+    assert page.evaluate('profile') is None
+    assert page.locator('#playerStats').inner_text()==''
+    ctx.close()
+    # A separate browser context reads the same authoritative profile from the DB.
+    ctx,page=context('alice',BASE+'/dist/')
+    page.get_by_text('ENTRAR / CREAR JUGADOR').click();page.wait_for_selector('#profile:not(.hidden)')
+    assert page.locator('#nickname').input_value()=='Alice'
+    assert page.evaluate('profile.xp')==400 and page.evaluate('profile.featured.length')==1
+    assert page.locator('#profilePreview .avatar-photo').count()==1
+    ctx.close()
+    ctx,page=context('bob')
+    page.get_by_text('ENTRAR / CREAR JUGADOR').click();page.wait_for_selector('#profile:not(.hidden)')
+    assert page.locator('#nickname').input_value()==''
+    assert page.evaluate('profile') is None
+    page.locator('#nickname').fill('Bob');page.get_by_text('CONTINUAR').click();page.wait_for_selector('#menu:not(.hidden)')
+    assert page.evaluate('profile.xp')==0
+    page.evaluate('showHistory()');page.wait_for_function("document.getElementById('historyList').textContent.includes('Todavía no')")
+    ctx.close();assert not errors,errors
+    browser.close()
+    print('PASS: real bundled SDK + local PostgreSQL RPCs; OTP request and PKCE callback (simulated Auth, no email), guest quiz, private cloud profile/photo, server questions/scoring, committed-response retry/reload without duplicate XP, featured cards/history, separate-browser persistence, logout isolation, standalone HTML, 32 responsive screens. Real Supabase email/session NOT tested.')

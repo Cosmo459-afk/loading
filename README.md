@@ -1,49 +1,86 @@
-# LOADING ARCADE 0.3
+# LOADING ARCADE 0.4 — cuentas y partidas
 
-Aplicación estática HTML/CSS/JavaScript, sin compilación ni dependencias de producción.
+Versión de desarrollo con Supabase. **No se publicó en Cloudflare.** La versión 0.3 se conserva en `loading-arcade-v03.zip`.
 
-## Novedades
+## Qué incluye
 
-- Ocho mascotas originales de aspecto facetado inspirado en PS1, dibujadas en SVG: Byte (perro), Glitch (gato), Save (foca), Pixel (pingüino), Combo (rana), Turbo (conejo), Reset (panda rojo) y Loop (pájaro). Son ilustraciones con volumen simulado, no modelos 3D animados ni personajes de terceros.
-- Selector con nombres, estado accesible y vista previa. Dos columnas en teléfonos, cuatro desde 600 px. Sin ventajas competitivas.
-- Foto opcional: JPG, PNG o WebP hasta 2 MB, recorte central a 192 × 192, compresión y opción de quitarla.
-- Conservación de perfiles 0.2, XP, partidas y cromos; selección de hasta tres destacados con contador y estado accesible.
-- Validación defensiva de datos locales y aviso si el navegador impide guardar.
+- Inicio y registro por enlace al correo, mediante Supabase Auth y PKCE. El enlace debe abrirse en el mismo navegador donde se pidió.
+- Perfil, ocho mascotas originales, foto opcional comprimida y tres cromos destacados guardados en la cuenta.
+- Partidas de cinco preguntas seleccionadas por el servidor; puntuación y XP calculados en PostgreSQL, sin aceptar puntos enviados por el cliente.
+- Explicaciones al terminar la partida, historial de las últimas 20 partidas y reintento de un guardado pendiente sin sumar XP dos veces.
+- Invitados sin registro: trivia rápida sin guardar XP. Los datos locales de 0.3 se conservan pero no se convierten en progreso competitivo.
 
-Se conservan las trivias PS1/PS2, dificultad, partida rápida, experiencia, niveles, álbum, recompensas y compartir resultados. Las preguntas y los umbrales de XP no se modificaron.
+Las fotos pequeñas se guardan en el perfil privado como imagen comprimida; no se creó un bucket público. El ranking global, Google, Supabase Storage y la importación de documentación quedan pendientes. El cálculo en servidor no elimina todas las trampas: el contenido original ya era público y todavía falta protección adicional contra automatización.
 
-## Desarrollo local
+## Configuración de Supabase: paso pendiente del propietario
 
-Desde `/workspace/loading`:
+El propietario confirmó que `supabase/setup.sql` terminó con 20 preguntas. **No volver a ejecutarlo** en ese mismo proyecto.
+
+En **Authentication → URL Configuration**:
+
+- **Site URL:** `https://loading-arcade.tienda-somosloading.workers.dev/`
+- **Redirect URLs:** añadir exactamente `https://loading-arcade.tienda-somosloading.workers.dev/` y guardar.
+- Si se prueba localmente, añadir además `http://localhost:8080/` o `http://127.0.0.1:8080/`, según la dirección utilizada. No añadir comodines amplios.
+
+Authentication por correo está habilitado según la API real. La entrega de email todavía no se probó. El servicio de correo incluido en Supabase tiene restricciones para pruebas; antes de abrir el registro a muchos jugadores, revisar los destinatarios/límites vigentes y configurar un proveedor SMTP adecuado. La interfaz muestra un mensaje genérico si se rechaza el envío.
+
+No se necesita service_role ni contraseña de base de datos en la web. `src/config.js` contiene solo la URL y la clave publicable. La seguridad depende de las políticas y funciones de la base de datos.
+
+## Archivos para publicar, tras aprobación
+
+- **`dist/index.html`:** aplicación completa en un solo HTML, con SDK incluido; no depende de CDN. Usar este archivo como `index.html` del sitio.
+- **`loading-arcade-v04.zip`:** contiene ese HTML, estas instrucciones y las licencias de terceros.
+- `index.html` en la raíz es el archivo fuente y carga `assets/cloud.bundle.js`; no copiarlo solo a Cloudflare.
+
+Abrir desde un servidor HTTP/HTTPS. No probar Auth abriendo el HTML como `file://`.
+
+## Desarrollo y construcción
+
+Node >=22, npm y Python 3. Desde el checkout existente `/workspace/loading`:
 
 ```sh
+npm ci
+npm run build
 python -m http.server 8080 --bind 0.0.0.0
 ```
 
-No requiere claves ni servicios externos. No crear otro checkout o worktree: utilizar el repositorio existente.
+`npm run build` genera el bundle y `dist/index.html`. Los archivos generados están incluidos para que el propietario no necesite instalar Node. Cada tarea de nube ya está aislada: usar este checkout; no crear worktrees salvo pedido explícito.
 
 ## Pruebas
 
-La prueba de navegador utiliza Playwright para Python y Chromium del sistema (herramientas de desarrollo, no dependencias de la aplicación). Con el servidor iniciado:
+Con el servidor estático en ejecución y Playwright para Python/Chromium del sistema disponibles:
 
 ```sh
 python tests/smoke.py
+npm ci --prefix supabase
+npm run test:database
 ```
 
-Se pueden ajustar `ARCADE_URL` y `CHROMIUM_PATH`. Resultado de esta entrega: PASS en partidas invitado/jugador, ocho mascotas, migración de perfil 0.2, persistencia, límite de tres cromos, subida/eliminación/rechazo de foto y recompensas; sin errores JavaScript. Se comprobó ausencia de desbordamiento horizontal en seis pantallas a 320, 360, 390, 768 y 1280 px. Estas comprobaciones en Chromium no sustituyen una prueba real en iPhone/Instagram.
+Para la integración completa local, iniciar en otra terminal:
+
+```sh
+npm run test:fixture
+```
+
+Luego:
+
+```sh
+npm run test:browser
+```
+
+La fixture es exclusivamente de pruebas: combina PostgreSQL local (PGlite), usuarios ficticios y Auth simulado. Reinicia sus datos con cada ejecución de `tests/cloud.py`. Nunca desplegar esa fixture. El navegador usa el SDK real y los RPC SQL reales, interceptando la red hacia la fixture; no envía correos reales ni escribe en el proyecto de producción.
+
+Comprobaciones realizadas: seis combinaciones de consola/dificultad para invitado; solicitud de enlace y callback PKCE con Auth simulado; perfil, las ocho mascotas y foto; aislamiento entre dos usuarios; puntuación del servidor, revisión, historial, cromos destacados y lectura desde otro contexto de navegador. Se simuló una partida guardada cuya respuesta de red falla: recargar y reintentar conservó un único premio de XP. Se comprobó la versión de un solo HTML y ausencia de desbordamiento en 48 combinaciones de pantalla/ancho.
+
+Comprobación remota sin sesión: Auth por correo habilitado y acceso anónimo a las tablas privadas rechazado. **Pendiente:** recibir un enlace real, entrar con una cuenta real, jugar desde dos dispositivos y comprobar persistencia en el proyecto Supabase real. No se afirma validación completa de producción.
 
 ## Actualizar el Worker existente en Cloudflare
 
-No se publicó esta versión. Reemplazar la versión pública requiere tu aprobación.
+1. Aprobar la publicación de 0.4 y guardar el despliegue actual para poder volver atrás.
+2. En **Workers & Pages**, abrir el Worker existente `loading-arcade`. Conservar nombre, dominio, rutas y bindings.
+3. Si se usa carga de archivos estáticos, sustituir el `index.html` anterior por **`dist/index.html`**. Si se usa Wrangler, reutilizar su configuración original y copiar ese archivo a `assets.directory`; revisar un `npx wrangler deploy --dry-run` antes de publicar. La configuración de ese Worker no vino en el ZIP original: no inventar un archivo de entrada ni sustituir un Worker con código por uno de assets a ciegas.
+4. Subir únicamente los archivos de la entrega estática. No publicar `supabase/`, tests, node_modules ni código de la fixture.
+5. Con las URL de Auth guardadas, abrir el sitio, comprobar el pie **Versión 0.4**, entrar con el correo del propietario y completar una partida. Revisar en Supabase **Authentication → Users** y **Table Editor → arcade_profiles / arcade_games** que aparezcan la cuenta y su partida.
+6. Cerrar y volver a abrir sesión; comprobar desde otro dispositivo. Confirmar que invitado no suma XP y que cerrar sesión oculta los datos de la cuenta.
 
-1. Descargar el ZIP y guardar una copia de la versión 0.2 y del despliegue activo para poder volver atrás.
-2. En Cloudflare, entrar a **Workers & Pages** y abrir el Worker existente `loading-arcade`. Conservar nombre, dominio, rutas y bindings. No crear otro proyecto para sustituirlo.
-3. Si el proyecto usa carga de archivos estáticos, usar `index.html` como archivo de entrada en la raíz de los assets y reemplazar el anterior. No subir el ZIP como si fuera una página HTML. La disponibilidad y el nombre de la acción de carga dependen del tipo de proyecto y del panel.
-4. Si el despliegue anterior se hizo con Wrangler, reutilizar su configuración original (no está incluida en el ZIP 0.2). Copiar el nuevo `index.html` al directorio indicado por `assets.directory`, y revisar primero un despliegue de prueba con `npx wrangler deploy --dry-run`. Publicar con el procedimiento existente solo tras aprobarlo. Si el Worker sirve HTML desde código en lugar de assets, se necesita su archivo de entrada/configuración para actualizar ese formato; no reemplazarlo a ciegas.
-5. Tras la publicación autorizada, abrir la misma URL pública, comprobar que el pie dice 0.3 y recorrer perfil, foto, trivia, álbum y recompensas. Ante problemas, restaurar el despliegue previo desde el historial del Worker.
-
-Para probar la conservación del progreso, usar el mismo dominio, navegador y perfil que en 0.2: localStorage depende del origen. Una URL de prueba o una navegación privada no comparte esos datos.
-
-## Límites actuales
-
-Todo el progreso y las fotos se guardan exclusivamente en este navegador bajo `loading_arcade_profile`. Borrar datos del sitio elimina el progreso. No hay autenticación, Supabase, ranking global/semanal, sincronización, descuentos ni servidor antitrampas. Las mascotas podrán reutilizarse cuando se implemente el ranking; esta entrega no simula uno. Un invitado no guarda XP retroactivamente. Los cromos mantienen el arte conceptual con emojis de 0.2; no contienen ilustraciones oficiales. No se modificó la tienda ni se añadieron servicios de pago.
+No actualizar la versión pública automáticamente. Si se restaura 0.3, el progreso en Supabase permanece en la base de datos, aunque 0.3 no puede consultarlo.
