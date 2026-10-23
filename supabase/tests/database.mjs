@@ -1,0 +1,36 @@
+import {PGlite} from '@electric-sql/pglite';
+import {readFileSync} from 'node:fs';
+import assert from 'node:assert/strict';
+const db=new PGlite();
+await db.exec(`create role anon; create role authenticated; create schema auth; create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth to authenticated; grant execute on function auth.uid() to authenticated;`);
+await db.exec(readFileSync(new URL('../migrations/202610230001_arcade.sql',import.meta.url),'utf8'));
+await db.exec(readFileSync(new URL('../seed.sql',import.meta.url),'utf8'));
+const alice='11111111-1111-4111-8111-111111111111',bob='22222222-2222-4222-8222-222222222222';
+await db.query('insert into auth.users values ($1),($2)',[alice,bob]);
+async function identity(id){await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated')}
+async function reject(sql,args=[]){let failed=false;try{await db.query(sql,args)}catch(e){failed=true}assert(failed,sql)}
+await identity(alice);
+await db.query("select public.arcade_save_profile('Alice',0)");
+await reject('update public.arcade_profiles set xp=100000');
+await reject('select * from arcade_private.questions');
+await reject("select public.arcade_feature_cards(array['herb'])");
+let game=(await db.query("select public.arcade_start_game('ps2','normal') as data")).rows[0].data;
+assert.equal(game.questions.length,5);assert(!('ok' in game.questions[0]));
+await reject("select public.arcade_start_game('ps2','normal')");
+await reject('select public.arcade_submit_game($1,$2)',[game.game_id,[0,0,0,0,4]]);
+await db.exec('reset role');
+const answers=(await db.query('select correct_index from arcade_private.game_questions where game_id=$1 order by position',[game.game_id])).rows.map(r=>r.correct_index);
+await identity(alice);
+let result=(await db.query('select public.arcade_submit_game($1,$2) as data',[game.game_id,answers])).rows[0].data;
+assert.equal(result.score,700);assert.equal(result.correct,5);
+await db.query('select public.arcade_submit_game($1,$2)',[game.game_id,answers]);
+let profile=(await db.query('select * from public.arcade_profiles')).rows[0];assert.equal(profile.xp,700);assert.equal(profile.games,1);
+await db.query("select public.arcade_feature_cards(array['herb','spray'])");
+await reject("select public.arcade_feature_cards(array['herb','herb'])");
+await identity(bob);await db.query("select public.arcade_save_profile('Bob',7)");
+assert.equal((await db.query('select * from public.arcade_profiles')).rows.length,1);
+assert.equal((await db.query('select * from public.arcade_games')).rows.length,0);
+await reject('select public.arcade_submit_game($1,$2)',[game.game_id,answers]);
+await db.exec('reset role; set role anon');await reject('select * from public.arcade_profiles');await reject("select public.arcade_save_profile('Fake',0)");
+console.log('PASS: migration+seed, authenticated profiles, private answer bank, server scoring, idempotent retries, invalid-answer rejection, rate limit, locked/duplicate cards, cross-user RLS, anonymous access denied.');
+await db.close();

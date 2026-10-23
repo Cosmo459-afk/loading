@@ -1,0 +1,22 @@
+-- Run once after the migration. Existing 20 quiz questions.
+insert into arcade_private.questions(category,difficulty,prompt,choices,correct_index,explanation) values
+('ps2','normal','¿Cómo se llama el protagonista de God of War (2005)?','["Kratos", "Dante", "Leon", "Sora"]'::jsonb,0,'Kratos es el guerrero espartano protagonista de God of War.'),
+('ps2','normal','¿Qué estudio desarrolló Shadow of the Colossus?','["Team Ico", "Naughty Dog", "Capcom", "Sonic Team"]'::jsonb,0,'Shadow of the Colossus fue desarrollado por Team Ico.'),
+('ps2','normal','¿Cuál es el nombre japonés de Resident Evil 4?','["Biohazard 4", "Silent Hill 4", "Parasite Eve 4", "Dino Crisis 4"]'::jsonb,0,'La franquicia Resident Evil se conoce como Biohazard en Japón.'),
+('ps2','normal','¿Quién es el protagonista principal de Devil May Cry 3?','["Vergil", "Dante", "Nero", "Trish"]'::jsonb,1,'Devil May Cry 3 sigue a un joven Dante.'),
+('ps2','normal','¿Qué saga incluye la misión Snake Eater?','["Metal Gear Solid", "Splinter Cell", "Hitman", "Syphon Filter"]'::jsonb,0,'Snake Eater es el subtítulo de Metal Gear Solid 3.'),
+('ps2','expert','¿Cómo se llama el decimotercer coloso de Shadow of the Colossus?','["Dirge", "Phalanx", "Avion", "Cenobia"]'::jsonb,1,'Phalanx es el coloso volador que se encuentra en el desierto.'),
+('ps2','expert','¿Qué estudio desarrolló God Hand para PlayStation 2?','["Clover Studio", "PlatinumGames", "Treasure", "FromSoftware"]'::jsonb,0,'God Hand fue desarrollado por Clover Studio y publicado por Capcom.'),
+('ps2','expert','¿Qué objeto de Silent Hill 2 es necesario para el final UFO en versiones que lo incluyen?','["Blue Gem", "White Chrism", "Obsidian Goblet", "Dog Key"]'::jsonb,0,'La Blue Gem está vinculada al final UFO en las ediciones que incluyen ese final.'),
+('ps2','expert','¿Qué nombre recibe el protagonista controlable de Metal Gear Solid 3?','["Solid Snake", "Naked Snake", "Liquid Snake", "Raiden"]'::jsonb,1,'En Metal Gear Solid 3 controlás a Naked Snake.'),
+('ps2','expert','¿Qué juego de PS2 fue dirigido por Fumito Ueda?','["Okami", "Ico", "God Hand", "Rule of Rose"]'::jsonb,1,'Fumito Ueda dirigió Ico y Shadow of the Colossus.'),
+('ps1','normal','¿Qué criatura acompaña a Crash en Crash Bandicoot?','["Aku Aku", "Mumbo Jumbo", "Sparx", "Clank"]'::jsonb,0,'Aku Aku es la máscara protectora de Crash.'),
+('ps1','normal','¿Cuál es el nombre del protagonista de Metal Gear Solid de PS1?','["Raiden", "Solid Snake", "Big Boss", "Ocelot"]'::jsonb,1,'Solid Snake protagoniza Metal Gear Solid de 1998.'),
+('ps1','normal','¿Qué empresa creó la franquicia Final Fantasy?','["Square", "Capcom", "Konami", "Sega"]'::jsonb,0,'La franquicia nació en Square, antes de su fusión con Enix.'),
+('ps1','normal','¿En qué ciudad transcurre principalmente Resident Evil 2?','["Silent Hill", "Raccoon City", "Midgar", "Liberty City"]'::jsonb,1,'Resident Evil 2 se desarrolla en Raccoon City.'),
+('ps1','normal','¿Qué animal es Spyro?','["Zorro", "Dragón", "Dinosaurio", "Gato"]'::jsonb,1,'Spyro es un dragón violeta.'),
+('ps1','expert','¿Cuál es el nombre del protagonista de Vagrant Story?','["Ashley Riot", "Ramza Beoulve", "Cloud Strife", "Fei Fong Wong"]'::jsonb,0,'Ashley Riot es el protagonista de Vagrant Story.'),
+('ps1','expert','¿Quién compuso gran parte de la música de Silent Hill (1999)?','["Akira Yamaoka", "Nobuo Uematsu", "Yoko Shimomura", "Koji Kondo"]'::jsonb,0,'Akira Yamaoka compuso la banda sonora de Silent Hill.'),
+('ps1','expert','¿Cómo se llama la organización a la que pertenece Aya Brea en Parasite Eve?','["NYPD", "STARS", "FOXHOUND", "SeeD"]'::jsonb,0,'Aya Brea es detective del NYPD.'),
+('ps1','expert','¿Qué juego de PS1 incluye al personaje Serge?','["Chrono Cross", "Legend of Mana", "Xenogears", "Suikoden II"]'::jsonb,0,'Serge es el protagonista de Chrono Cross.'),
+('ps1','expert','¿Cuál es el apellido de Harry, protagonista de Silent Hill?','["Mason", "Townshend", "Sunderland", "Shepherd"]'::jsonb,0,'Harry Mason protagoniza el primer Silent Hill.');
