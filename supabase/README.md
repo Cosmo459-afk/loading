@@ -45,3 +45,11 @@ La red inicialmente bloqueó el proyecto. En la comprobación posterior, `/auth/
 ## Actualización 0.5
 
 No requiere nueva migración. Las identidades anónimas de Supabase Auth tienen rol authenticated y las políticas existentes siguen aislando por auth.uid(). Habilitar Anonymous Sign-ins en Authentication → Sign In / Providers → User Signups. No desactivar la confirmación de correo; se usa solo al vincular. src/cloud.js usa signInAnonymously para el alta y updateUser para vincular sin cambiar de UID. La vinculación de dos cuentas existentes no está implementada. Ver README raíz para el detalle y los pendientes de validación real.
+
+## Actualización 0.6
+
+Para un proyecto ya configurado, ejecutar una sola vez `upgrade-v06.sql`, no `setup.sql`. No cambia usuarios, XP ni partidas anteriores. Las partidas nuevas pueden incluir `quiz_id`. Los packs de `arcade_quizzes` y su relación privada `quiz_questions` definen cinco preguntas estables; solo cuentan packs publicados con cinco preguntas activas de la consola correcta. `arcade_list_quizzes` devuelve metadatos y si el usuario actual completó cada trivia (no otros usuarios ni soluciones); permite previsualizar el catálogo sin sesión. `arcade_start_quiz` exige identidad y perfil, usa esas cinco preguntas y mantiene la puntuación y snapshots del sistema previo. No se modificó `arcade_submit_game`; completar por primera vez se deriva de las partidas finalizadas y repetir no duplica el indicador booleano.
+
+Para una instalación nueva aplicar: `setup.sql` y después `upgrade-v06.sql`. No ejecutar las migraciones individuales además de esos archivos, pues contienen los mismos cambios. La prueba de integración arranca una base nueva y aplica ambos.
+
+Agregar contenido futuro en lotes con identificadores nuevos y estables de trivia. Las dificultades del catálogo son easy/medium/hard; el campo histórico de preguntas/partidas sigue usando normal/expert para no romper clientes 0.4/0.5. En 0.6 el nivel real de una trivia lo define el catálogo. Publicar solo tras revisar sus cinco preguntas y clasificación. El material que aporte el propietario podrá transformarse en nuevos lotes sin editar pregunta por pregunta.

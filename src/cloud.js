@@ -8,7 +8,7 @@ const returning=new URLSearchParams(location.search).has('code');
 const client=createClient(config.url,config.publishableKey,{
   auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
 });
-const state={session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false};
+const state={session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null};
 profile=null; // Never turn a local profile into a verified cloud account.
 
 function message(text){$('cloudNotice').textContent=text;$('cloudNotice').hidden=!text;}
@@ -67,6 +67,7 @@ function accountUI(){
     '<div class="actions"><button onclick="openPlayer()">SEGUIR JUGANDO →</button><button class="secondary" onclick="showProfile()">EDITAR PERFIL</button><button class="secondary" onclick="showHistory()">MIS PARTIDAS</button><button class="secondary" onclick="openAccountPage(\'collection\')">MIS CROMOS</button></div>';
 }
 function publicError(error){
+  if(error?.code==='PGRST202')return 'Falta actualizar el catálogo de trivias en la base de datos. La cuenta y el progreso están conservados.';
   const text=String(error?.message||'');
   if(/anonymous.*disabled|anonymous.*not.*allowed|anonymous.*not.*enabled/i.test(text))return 'La creación sin correo todavía no está habilitada. Mientras tanto podés jugar una partida rápida o entrar con tu cuenta actual.';
   if(/already.*registered|already.*exists|email.*exists/i.test(text))return 'Ese correo ya tiene una cuenta. No podemos fusionar sus progresos automáticamente. Conservá esta sesión mientras decidimos cómo recuperar tu cuenta anterior.';
@@ -112,10 +113,11 @@ async function useSession(session){
   state.session=session;
   if(uid===state.uid)return;
   const version=++state.version;
+  state.catalog=null;state.catalogLoading=false;state.catalogError=false;state.catalogPromise=null;
   state.uid=uid;state.profileLoading=!!uid;state.profileError=false;state.game=null;state.answers=[];state.pending=null;profile=null;mode='guest';
   $('recoverGame').hidden=true;
   $('historyList').replaceChildren();$('resultReview').replaceChildren();
-  for(const id of ['playerStats','album','albumStatus','rewardTrack','rewardProgress','profilePreview','scoreTitle','scoreSummary','xpSummary','resultDetail'])$(id).replaceChildren();
+  for(const id of ['playerStats','album','albumStatus','rewardTrack','rewardProgress','profilePreview','scoreTitle','scoreSummary','xpSummary','resultDetail','triviaResultProgress'])$(id).replaceChildren();
   $('nickname').value='';$('photoInput').value='';$('linkEmail').value='';$('linkMessage').textContent='';uploadedPhoto=null;selectedAvatar=0;
   accountUI();
   if(!uid){message('');base.go('home');return;}
@@ -247,6 +249,7 @@ saveProfile=async function(){
 persistProfile=function(){return false;};
 renderMenu=function(){
   base.renderMenu();
+  renderQuizCatalog();void refreshQuizzes();
   if(mode==='player'&&profile){
     const notice=$('playerStats').querySelector(':scope > p.muted');
     if(notice)notice.textContent='Progreso guardado en tu cuenta. El ranking global todavía no está disponible.';
@@ -269,8 +272,57 @@ toggleFeatured=async function(id){
   }catch(e){message(publicError(e));}
   finally{state.featureBusy=false;}
 };
+const tierNames={easy:'Fácil',medium:'Medio',hard:'Difícil',normal:'Fácil',expert:'Difícil'};
+function groupQuizzes(cat,level){return (state.catalog||[]).filter(q=>q.category===cat&&q.difficulty===level);}
+function renderQuizCatalog(){
+  const cat=$('category').value,level=$('difficulty').value,guest=mode==='guest',mix=cat==='mix';
+  const progress=$('quizProgress'),picker=$('quizPicker'),overview=$('difficultyOverview');
+  picker.hidden=guest||mix;
+  overview.hidden=mix;
+  overview.replaceChildren();
+  if(!mix){
+    for(const tier of ['easy','medium','hard']){
+      const rows=groupQuizzes(cat,tier),done=rows.filter(q=>q.completed).length;
+      const b=document.createElement('button');b.type='button';b.setAttribute('aria-pressed',String(tier===level));
+      b.append(document.createTextNode(tierNames[tier]));
+      const count=document.createElement('small');count.textContent=state.catalogLoading?'Cargando…':state.catalogError?'Sin datos':!rows.length?'Próximamente':guest?rows.length+' disponibles':done+' / '+rows.length;
+      b.append(count);b.onclick=()=>{$('difficulty').value=tier;renderQuizCatalog();};overview.appendChild(b);
+    }
+  }
+  const rows=groupQuizzes(cat,level),done=rows.filter(q=>q.completed).length;
+  const chosen=$('quizSelect').value;$('quizSelect').replaceChildren();
+  for(const q of rows){const option=document.createElement('option');option.value=q.id;option.textContent=(q.completed?'✓ ':'')+q.title+(q.completed?' · completada':'');$('quizSelect').appendChild(option);}
+  if(rows.some(q=>q.id===chosen))$('quizSelect').value=chosen;
+  else if(rows.some(q=>!q.completed))$('quizSelect').value=rows.find(q=>!q.completed).id;
+  if(mix){progress.textContent='Modo libre: partida aleatoria que no modifica el contador de trivias por consola.';}
+  else if(state.catalogLoading){progress.textContent='Cargando trivias y progreso…';}
+  else if(state.catalogError){progress.textContent='No pudimos cargar el catálogo. Volvé al inicio y reintentá; tu progreso está conservado.';}
+  else if(!rows.length){progress.textContent='Todavía no hay trivias publicadas en '+tierNames[level]+'. Próximamente.';}
+  else if(guest){progress.textContent=rows.length+' '+(rows.length===1?'trivia disponible':'trivias disponibles')+'. La partida rápida es aleatoria; creá un jugador para completar el catálogo y guardar tu progreso.';}
+  else{progress.textContent=done+' de '+rows.length+' trivias completadas · '+(cat==='ps1'?'PlayStation 1':'PlayStation 2')+' · '+tierNames[level]+'. Repetir una trivia no aumenta este contador.';}
+  $('beginBtn').disabled=state.busy||(guest||mix?level==='medium':state.catalogLoading||state.catalogError||!rows.length);
+  $('beginBtn').textContent=guest||mix?'EMPEZAR PARTIDA LIBRE →':'JUGAR TRIVIA →';
+}
+window.updateQuizSelection=renderQuizCatalog;
+async function refreshQuizzes(){
+  if(state.catalogPromise)return state.catalogPromise;
+  const version=state.version;
+  state.catalogLoading=true;state.catalogError=false;renderQuizCatalog();
+  state.catalogPromise=(async()=>{
+    try{
+      const {data,error}=await client.rpc('arcade_list_quizzes');
+      if(error)throw error;
+      if(version!==state.version)return;
+      if(!Array.isArray(data))throw new Error('Invalid catalog');
+      state.catalog=data;
+    }catch(e){if(version===state.version){state.catalog=null;state.catalogError=true;message(publicError(e));}}
+    finally{if(version===state.version){state.catalogLoading=false;state.catalogPromise=null;renderQuizCatalog();}}
+  })();
+  return state.catalogPromise;
+}
+renderQuestion=function(){base.renderQuestion();$('qMeta').textContent='PREGUNTA '+(idx+1)+' DE '+questions.length+' · '+questions[idx].cat.toUpperCase()+' · '+(tierNames[questions[idx].level]||questions[idx].level).toUpperCase();};
 beginQuiz=async function(){
-  $('resultReview').replaceChildren();
+  $('resultReview').replaceChildren();$('triviaResultProgress').textContent='';
   if(mode==='guest'){state.game=null;base.beginQuiz();return;}
   await ready;
   if(!state.uid||!profile){void openPlayer();return;}
@@ -280,11 +332,14 @@ beginQuiz=async function(){
   const cat=$('category').value,level=$('difficulty').value;
   const button=$('beginBtn');button.disabled=true;
   try{
-    const {data,error}=await client.rpc('arcade_start_game',{p_category:cat,p_difficulty:level});
+    const mix=cat==='mix';
+    const selected=(state.catalog||[]).find(q=>q.id===$('quizSelect').value&&q.category===cat&&q.difficulty===level);
+    if(!mix&&!selected)throw new Error('Quiz unavailable');
+    const {data,error}=mix?await client.rpc('arcade_start_game',{p_category:cat,p_difficulty:level==='hard'?'expert':'normal'}):await client.rpc('arcade_start_quiz',{p_quiz_id:selected.id});
     if(error)throw error;
     if(version!==state.version)return;
     if(!data?.game_id||data.questions?.length!==5)throw new Error('Invalid game response');
-    state.game={id:data.game_id,owner:state.uid};state.answers=[];
+    state.game={id:data.game_id,owner:state.uid,quizId:data.quiz_id||null};state.answers=[];
     questions=data.questions.map(q=>({...q,cat,level}));idx=0;correct=0;message('');base.go('quiz');renderQuestion();
   }catch(e){message(publicError(e));}
   finally{state.busy=false;button.disabled=false;}
@@ -319,7 +374,7 @@ function renderReview(review,prompts){
 finish=async function(){
   if(mode==='guest'){base.finish();return;}
   if(!state.game||state.game.owner!==state.uid||state.answers.length!==5)return;
-  state.pending={owner:state.uid,gameId:state.game.id,answers:[...state.answers],questions:questions.map(q=>({q:q.q,a:q.a}))};
+  state.pending={owner:state.uid,gameId:state.game.id,quizId:state.game.quizId||null,answers:[...state.answers],questions:questions.map(q=>({q:q.q,a:q.a}))};
   rememberPending();
   await submitPending();
 };
@@ -336,6 +391,10 @@ async function submitPending(){
     // Fetch the authoritative total instead of incrementing a local counter.
     await loadProfile(state.uid,version);
     if(version!==state.version)return;
+    await refreshQuizzes();
+    if(version!==state.version)return;
+    const completed=(state.catalog||[]).find(q=>q.id===pending.quizId);
+    if(completed){const group=groupQuizzes(completed.category,completed.difficulty);$('triviaResultProgress').textContent=group.filter(q=>q.completed).length+' de '+group.length+' trivias completadas · '+completed.category.toUpperCase()+' · '+tierNames[completed.difficulty];}
     correct=data.correct;
     $('scoreTitle').textContent=data.score+' PUNTOS';
     $('scoreSummary').textContent=data.correct+' de 5 respuestas correctas';
@@ -352,7 +411,8 @@ window.retryCloudGame=async function(){await ready;await submitPending();};
 window.showHistory=async function(){
   await ready;if(!state.uid)return;
   mode='player';const version=state.version;base.go('history');$('historyList').textContent='Cargando tus últimas partidas…';
-  const {data,error}=await client.from('arcade_games').select('id,category,difficulty,started_at,finished_at,correct,score').eq('player_id',state.uid).order('started_at',{ascending:false}).limit(20);
+  await refreshQuizzes();if(version!==state.version)return;
+  const {data,error}=await client.from('arcade_games').select('id,quiz_id,category,difficulty,started_at,finished_at,correct,score').eq('player_id',state.uid).order('started_at',{ascending:false}).limit(20);
   if(version!==state.version)return;
   $('historyList').replaceChildren();
   if(error){$('historyList').textContent=publicError(error);return;}
@@ -360,7 +420,7 @@ window.showHistory=async function(){
   for(const game of data){
     const box=document.createElement('div');box.className='review-item';
     const date=new Date(game.started_at).toLocaleString('es-AR');
-    box.textContent=date+' · '+game.category.toUpperCase()+' · '+(game.difficulty==='expert'?'Experto':'Normal')+' · '+(game.finished_at?game.score+' puntos · '+game.correct+'/5':'Sin finalizar');
+    box.textContent=date+' · '+game.category.toUpperCase()+' · '+(state.catalog?.find(q=>q.id===game.quiz_id)?tierNames[state.catalog.find(q=>q.id===game.quiz_id).difficulty]:(game.quiz_id?'Trivia de catálogo':game.difficulty==='expert'?'Experto (partida libre)':'Normal (partida libre)'))+' · '+(game.finished_at?game.score+' puntos · '+game.correct+'/5':'Sin finalizar');
     $('historyList').appendChild(box);
   }
 };

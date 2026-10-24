@@ -60,6 +60,12 @@ with sync_playwright() as p:
     page.wait_for_function('uploadedPhoto!==null')
     page.get_by_text('CONTINUAR').click();page.wait_for_selector('#menu:not(.hidden)')
     assert page.evaluate('profile.xp')==0
+    page.wait_for_function("document.getElementById('quizProgress').textContent.includes('0 de 1')")
+    assert page.locator('#difficultyOverview button').count()==3
+    page.locator('#difficulty').select_option('medium');assert page.locator('#beginBtn').is_disabled()
+    assert 'Próximamente' in page.locator('#quizProgress').inner_text()
+    page.locator('#difficulty').select_option('easy')
+    page.screenshot(path='/tmp/arcade-catalog-mobile.png',full_page=True)
     assert page.locator('#playerStats .avatar-photo').count()==1
     # A server commit followed by a network error must be recoverable without duplicate XP.
     fixture('/_test/control',{'failSubmit':True})
@@ -74,6 +80,7 @@ with sync_playwright() as p:
     page.reload();page.wait_for_selector('#recoverGame:not([hidden])')
     page.locator('#recoverGame').click();page.wait_for_selector('#result:not(.hidden)')
     assert page.locator('#scoreTitle').inner_text()=='400 PUNTOS'
+    assert '1 de 1' in page.locator('#triviaResultProgress').inner_text()
     assert page.locator('#resultReview .review-item').count()==5
     assert page.evaluate('profile.xp')==400 and page.evaluate('profile.games')==1
     assert page.evaluate('JSON.parse(localStorage.getItem("loading_arcade_profile")).xp')==8000
@@ -133,6 +140,7 @@ with sync_playwright() as p:
     assert page.evaluate('profile') is None
     page.locator('#nickname').fill('Bob');page.get_by_text('CONTINUAR').click();page.wait_for_selector('#menu:not(.hidden)')
     assert page.evaluate('profile.xp')==0
+    page.wait_for_function("document.getElementById('quizProgress').textContent.includes('0 de 1')")
     page.evaluate('showHistory()');page.wait_for_function("document.getElementById('historyList').textContent.includes('Todavía no')")
     ctx.close()
     # Anonymous onboarding creates a real DB owner without an email prompt.
@@ -172,4 +180,4 @@ with sync_playwright() as p:
     assert page.locator('#homeAccount').get_by_text('Vincular un correo').count()==0
     ctx.close();assert not errors,errors
     browser.close()
-    print('PASS: real bundled SDK + local PostgreSQL RPCs; OTP request and PKCE callback (simulated Auth, no email), guest quiz, private cloud profile/photo, server questions/scoring, committed-response retry/reload without duplicate XP, featured cards/history, separate-browser persistence, logout isolation, standalone HTML, 32 responsive screens. Home session summary, direct play/profile/collection, reload persistence and load-failure retry verified. Anonymous onboarding, no upfront email, persistent reminder deferral and same-identity email linking verified with fixture. Real Supabase email/session NOT tested.')
+    print('PASS: real bundled SDK + local PostgreSQL RPCs; OTP request and PKCE callback (simulated Auth, no email), guest quiz, private cloud profile/photo, server questions/scoring, committed-response retry/reload without duplicate XP, featured cards/history, separate-browser persistence, logout isolation, standalone HTML, 32 responsive screens. Home session summary, direct play/profile/collection, reload persistence and load-failure retry verified. Anonymous onboarding, no upfront email, persistent reminder deferral and same-identity email linking verified with fixture. Console/difficulty catalog, empty medium tier and per-account completed quiz counters verified. Real Supabase email/session NOT tested.')

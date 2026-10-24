@@ -8,7 +8,7 @@ with sync_playwright() as p:
     page.goto(os.environ.get('ARCADE_URL','http://127.0.0.1:8080'))
     page.wait_for_function("!document.getElementById('sessionStatus').textContent.includes('Conectando')")
     for cat in ['ps1','ps2','mix']:
-        for difficulty in ['normal','expert']:
+        for difficulty in ['easy','hard']:
             page.evaluate("startMode('guest')")
             page.locator('#category').select_option(cat);page.locator('#difficulty').select_option(difficulty)
             page.locator('#beginBtn').click()
@@ -16,6 +16,7 @@ with sync_playwright() as p:
                 page.evaluate('answer(questions[idx].ok)');page.locator('#nextBtn').click()
             assert page.locator('#scoreTitle').inner_text()=='700 PUNTOS'
             assert page.evaluate("localStorage.getItem('loading_arcade_profile')") is None
+    page.evaluate("startMode('guest')");page.locator('#difficulty').select_option('medium');assert page.locator('#beginBtn').is_disabled()
     page.evaluate("go('home')");page.get_by_text('YA TENGO CUENTA').click();page.wait_for_selector('#auth:not(.hidden)')
     assert page.locator('#loginEmail').get_attribute('type')=='email'
     for width in [320,390,768,1280]:
