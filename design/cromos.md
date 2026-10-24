@@ -1,3 +1,5 @@
+> Documento histórico de la primera exploración. Las referencias a v0.7, XP directo, monedas o tiradas son propuestas antiguas y no describen la versión actual. Para el rediseño solicitado por el propietario ver [cartas-direccion-v10.md](cartas-direccion-v10.md); para las reglas vigentes ver el README raíz.
+
 # Dirección visual de cromos — propuesta en revisión
 
 Formato de carta vertical de inventario retro, proporción cercana a 2:3. Marco y distribución iguales para toda la colección: identificador, objeto grande sobre fondo oscuro, título, juego de origen, descripción breve y rareza. El color de rareza será un acento; no cambiará el lenguaje gráfico. En móvil, álbum de dos columnas y detalle ampliable al tocar, conservando tres destacados compactos en el perfil. Este formato aún no está integrado al álbum público.
