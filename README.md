@@ -1,8 +1,14 @@
-# LOADING ARCADE 0.12 — tu jugador y tu ruta en el inicio
+# LOADING ARCADE 0.13 — cartas Resident Evil 4 y audio retro
 
-**Actualización de interfaz lista para instalar sobre 0.9–0.11.** No requiere SQL, no reinicia XP, partidas, cartas, cofres ni cuentas. No se ha desplegado Cloudflare desde el entorno de desarrollo.
+**Actualización de interfaz lista para instalar sobre 0.9–0.12.** No requiere SQL, no reinicia XP, partidas, cartas, cofres ni cuentas. No se ha desplegado Cloudflare desde el entorno de desarrollo.
 
-El propietario confirmó la dirección «LOADING · Archivo Retro» de la primera propuesta y aclaró que las fotos son referencias para crear nuevas composiciones. Las cartas mantienen los 14 artes de la versión 0.10, generados/editados a partir de esas referencias, con fondos oscuros y luz de inventario para objetos y armas, y ambientes del juego para los personajes. El marco es HTML/CSS reutilizable: bisel metálico, tipografía pixel Silkscreen, encabezado Archivo Retro, imagen protagonista, título/juego/descripción debajo y pie con rareza/número. Comunes azules, épicas violetas/rosas y legendarias doradas.
+El propietario confirmó la dirección «LOADING · Archivo Retro» de la primera propuesta y aclaró que las fotos son referencias para crear nuevas composiciones. Se renovaron los 14 artes de Resident Evil 4 a partir de las referencias y la muestra aprobada, cuidando la cara frontal cuadrada de la caja Red Hawk y los rasgos reconocibles de objetos y armas, con fondos oscuros y luz de inventario para objetos y armas, y ambientes del juego para los personajes. El marco es HTML/CSS reutilizable: bisel metálico, tipografía pixel Silkscreen, encabezado Archivo Retro, imagen protagonista, título/juego/descripción debajo y pie con rareza/número. Comunes azules, épicas violetas/rosas y legendarias doradas.
+
+## Música y efectos originales
+
+Audio procedural propio con Web Audio, sin grabaciones ni melodías tomadas de videojuegos y sin descargas adicionales. Bucle chiptune de menú y arreglo más suave durante la trivia; silencio musical en resultados y apertura para destacar las fanfarrias. Efectos al navegar, elegir respuesta, cambiar pregunta, aprobar/reintentar, desbloquear/equipar cosméticos, subir de nivel, abrir el cofre y revelar cada rareza. No se indica acierto/error al elegir: el resultado sigue reservado al cierre del quiz.
+
+Control «♫ AUDIO» disponible en todas las pantallas, con interruptores y volúmenes separados para música y efectos; preferencias locales persistentes. No hay reproducción antes de interactuar. La música se pausa al ocultar la pestaña y se retoma al volver; se detienen las notas pendientes para evitar acumulaciones. Si Web Audio no está disponible o no logra iniciarse, se puede seguir jugando sin sonido. En móvil el primer toque habilita el contexto, sujeto a las políticas de sonido del dispositivo/navegador.
 
 ## Entrada única y portada
 
@@ -22,9 +28,9 @@ Al abrir una colección se muestran únicamente las cartas obtenidas en cofres. 
 
 Los artes y nombres de producción se conservan en los recursos del HTML independiente; esta entrega implementa el misterio de la interfaz, no un sistema de confidencialidad de assets frente a inspección del código. No afirmar que los recursos ausentes de la interfaz no viajan al cliente. Una entrega selectiva por propiedad requeriría cambiar a recursos remotos autenticados.
 
-## Actualizar desde 0.9–0.11
+## Actualizar desde 0.9–0.12
 
-Descargar `loading-arcade-v12.zip`, descomprimir y subir **solo `index.html`** a Cloudflare → Workers & Pages → loading-arcade → New deployment → Deploy. Confirmar «Versión 0.12» en el pie y refrescar con Ctrl+F5 si todavía aparece la anterior. No volver a ejecutar SQL para este cambio visual.
+Descargar `loading-arcade-v13.zip`, descomprimir y subir **solo `index.html`** a Cloudflare → Workers & Pages → loading-arcade → New deployment → Deploy. Confirmar «Versión 0.13» en el pie y refrescar con Ctrl+F5 si todavía aparece la anterior. No volver a ejecutar SQL para este cambio visual.
 
 ## Reglas implementadas
 
@@ -44,7 +50,7 @@ El propietario pidió eliminar todo el catálogo anterior y permitió reiniciar 
 
 Para actualizar, ejecutar **solo `supabase/upgrade-to-v09.sql`**: detecta si el proyecto está en 0.7 u 0.8 y aplica lo necesario en una transacción. En la primera instalación reinicia los datos de prueba; si se ejecuta otra vez tras una instalación correcta, conserva el progreso nuevo. El resultado debe mostrar common 8, epic 4 y legendary 2. No ejecutar además los upgrades individuales ni `migrations`.
 
-Después subir el HTML actual. Probar dos trivias perfectas para recibir un cofre de nivel 2, abrirlo y verificar el contador 1/14 en el álbum. Este paso SQL es únicamente para instalar el backend 0.9 que aún falte; no es parte de la actualización de interfaz 0.12.
+Después subir el HTML actual. Probar dos trivias perfectas para recibir un cofre de nivel 2, abrirlo y verificar el contador 1/14 en el álbum. Este paso SQL es únicamente para instalar el backend 0.9 que aún falte; no es parte de la actualización de interfaz 0.13.
 
 Base nueva: `setup.sql` → `upgrade-v06.sql` → `upgrade-v07.sql` → `upgrade-to-v09.sql`. No ejecutar también 0.8/0.9 individuales: el archivo único ya los incluye.
 
@@ -54,11 +60,11 @@ La corrección del límite SQL de puntuación a 900 está en `upgrade-v08.sql` y
 
 Catálogo en `content/collections/re4.json`. Los 14 archivos originales aportados por el propietario se conservan sin cambios como referencias; su procedencia y hashes están en `content/collections/re4-image-provenance.json`. La autorización para mantener la referencia del medallón del remake sigue documentada, sin atribuir esa captura a la edición original.
 
-Los artes de producción están en `assets/cards/re4/art-v10/`: cuatro láminas de arte que la UI presenta como 14 imágenes individuales mediante recortes SVG. El marco y textos se generan por separado en `src/cards.css` y `cardMarkup`, evitando texto rasterizado. `content/collections/re4-art-provenance-v10.json` registra los originales generados y hashes; `originalImageFile` conserva el vínculo con la referencia. No usar el arte como fuente de nombres, funciones o lore: esos metadatos confirmados no cambiaron.
+Los artes de producción están en `assets/cards/re4/art-v13/`: cuatro láminas de arte que la UI presenta como 14 imágenes individuales mediante recortes SVG. El marco y textos se generan por separado en `src/cards.css` y `cardMarkup`, evitando texto rasterizado. `content/collections/re4-art-provenance-v13.json` registra los originales generados y hashes; `originalImageFile` conserva el vínculo con la referencia. No usar el arte como fuente de nombres, funciones o lore: esos metadatos confirmados no cambiaron.
 
 El build incrusta cada lámina una sola vez, junto con Silkscreen Bold (OFL) y los estilos; sin CDN ni fuentes externas. El HTML final es independiente y está dentro del límite de tamaño de assets estáticos. El build falla si falta arte. `npm run build:preview` solo sirve para desarrollo y no debe empaquetarse.
 
-`loading-arcade-v12.zip` contiene el HTML independiente, README y licencias. No subir al Worker los JSON con respuestas, SQL, tests, fixture ni node_modules. Para reconstruir: `npm run build` y `node scripts/package-release.mjs`. Los ZIP previos se conservan como versiones históricas. No aplicar de nuevo la migración 0.9 al actualizar solo la interfaz.
+`loading-arcade-v13.zip` contiene el HTML independiente, README y licencias. No subir al Worker los JSON con respuestas, SQL, tests, fixture ni node_modules. Para reconstruir: `npm run build` y `node scripts/package-release.mjs`. Los ZIP previos se conservan como versiones históricas. No aplicar de nuevo la migración 0.9 al actualizar solo la interfaz.
 
 ## Desarrollo y validación
 
@@ -89,3 +95,5 @@ Mantener Anonymous Sign-ins habilitado y Confirm email para vinculación opciona
 
 
 Validación 0.12: entrada anónima sin email, selección obligatoria de personaje, bloqueo del acceso invitado antiguo y ausencia del Mix en la interfaz; dashboard con usuario, 1.800 XP y cofre; estado semanal pendiente honesto; tres partidas sin correo y recordatorio posponible; vinculación PKCE simulada conserva UID, 1.500 XP e historial. Las pruebas públicas no crean identidades remotas ni envían correo.
+
+Validación 0.13: `python tests/audio.py` comprueba la señal real del grafo Web Audio, ausencia de autoplay, música/efectos con mute independiente, persistencia de ambos volúmenes, pausa/reanudación en segundo plano, resultados sin música, controles responsive y fallback sin AudioContext. `tests/cloud.py` valida que la nueva interfaz mantiene progreso, misterio y premios. No requiere SQL ni reinicio.

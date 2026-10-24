@@ -4,6 +4,8 @@ import cardStyles from './cards.css';
 import cardFont from '../assets/fonts/Silkscreen-Bold.ttf';
 const frameStyles=document.createElement('style');frameStyles.textContent='@font-face{font-family:LoadingPixel;src:url('+cardFont+') format("truetype");font-style:normal;font-weight:700;font-display:swap}'+cardStyles;document.head.appendChild(frameStyles);
 import {collectionDefinitions,collectionCards} from './collections.js';
+import {installAudio} from './audio.js';
+const audio=installAudio();
 // Replace the provisional catalog with the confirmed RE4 collection.
 cards.splice(0,cards.length,...collectionCards);
 // Keep the original mascot picker, section navigation and question renderer.
@@ -139,6 +141,7 @@ async function useSession(session){
   const version=++state.version;
   state.cosmetics=[];state.owned=[];state.chests=[];state.chestBusy=false;state.catalog=null;state.catalogLoading=false;state.catalogError=false;state.catalogPromise=null;
   state.uid=uid;state.profileLoading=!!uid;state.profileError=false;state.game=null;state.answers=[];state.pending=null;profile=null;mode='player';
+  audio.cancelEffects();
   $('recoverGame').hidden=true;
   selectedCollection=null;
   if($('cardDetail').open)$('cardDetail').close();$('cardDetailArt').replaceChildren();
@@ -339,7 +342,7 @@ async function refreshQuizzes(){
   })();
   return state.catalogPromise;
 }
-renderQuestion=function(){base.renderQuestion();$('qMeta').textContent='PREGUNTA '+(idx+1)+' DE '+questions.length+' · '+questions[idx].cat.toUpperCase()+' · '+(tierNames[questions[idx].level]||questions[idx].level).toUpperCase();};
+renderQuestion=function(){base.renderQuestion();audio.play('question');$('qMeta').textContent='PREGUNTA '+(idx+1)+' DE '+questions.length+' · '+questions[idx].cat.toUpperCase()+' · '+(tierNames[questions[idx].level]||questions[idx].level).toUpperCase();};
 beginQuiz=async function(){
   $('resultReview').replaceChildren();$('triviaResultProgress').textContent='';
   await ready;
@@ -366,6 +369,7 @@ beginQuiz=async function(){
 };
 answer=function(i){
   if(answered||!state.game||!Number.isInteger(i)||i<0||i>3)return;
+  audio.play('select');
   answered=true;state.answers[idx]=i;
   document.querySelectorAll('.choice').forEach((button,n)=>{button.disabled=true;if(n===i)button.classList.add('selected-answer');});
   $('feedback').textContent='Respuesta elegida. Necesitás 3 de 5 para aprobar. Las soluciones se muestran al aprobar.';
@@ -422,6 +426,7 @@ async function submitPending(){
     $('progress').style.width='100%';
     if(data.review?.length)renderReview(data.review,pending.questions);else $('resultReview').replaceChildren();
     celebrateProgress(oldXP);
+    if(!earned.length)audio.play(data.passed?'success':'retry');
     forgetPending();state.game=null;state.answers=[];mode='player';message('¡Partida guardada!');base.go('result');
   }catch(e){
     if(version===state.version){if(/Game not found/i.test(String(e?.message||''))){forgetPending();state.game=null;state.answers=[];message(publicError(e)+' Elegí una nueva trivia.');base.go('menu');}else{message(publicError(e)+' Tu partida sigue pendiente: tocá REINTENTAR GUARDADO.');$('recoverGame').hidden=false;}}
@@ -495,7 +500,7 @@ function renderWardrobe(){
 }
 async function equipCosmetic(slot,id){
   if(state.cosmeticBusy||!profile)return;state.cosmeticBusy=true;renderWardrobe();const version=state.version;
-  try{const {data,error}=await client.rpc('arcade_equip_cosmetic',{p_slot:slot,p_item:id});if(error)throw error;if(version===state.version){adopt(data);message('Estilo guardado en tu jugador.');}}
+  try{const {data,error}=await client.rpc('arcade_equip_cosmetic',{p_slot:slot,p_item:id});if(error)throw error;if(version===state.version){adopt(data);audio.play('cosmetic');message('Estilo guardado en tu jugador.');}}
   catch(e){message(publicError(e));}
   finally{state.cosmeticBusy=false;renderWardrobe();}
 }
@@ -521,6 +526,7 @@ function celebrateProgress(oldXP){
  const xp=profile.xp,level=Math.floor(xp/1800)+1;
  const gained=rewardSteps().filter(r=>r.at>oldXP&&r.at<=xp);
  if(Math.floor(oldXP/1800)<Math.floor(xp/1800)||gained.length){
+  audio.play(Math.floor(oldXP/1800)<Math.floor(xp/1800)?'level':'cosmetic');
   $('levelToast').textContent=(Math.floor(oldXP/1800)<Math.floor(xp/1800)?'¡Subiste al nivel '+level+'! ':'¡Nueva recompensa! ')+(gained.length?gained.map(r=>r.name).join(' · ')+'. ':'')+'Revisá tus recompensas y cofres.';
   $('levelToast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{$('levelToast').hidden=true;},6500);
  }
@@ -613,6 +619,7 @@ function renderChests(){
  }
 }
 function revealChest(result,isNew=false){
+ audio.cancelEffects();if(isNew)audio.play(result.prize_kind);
  const box=$('chestPrize');box.replaceChildren();$('chestStage').className='chest-stage revealed';
  $('chestOpeningTitle').textContent=isNew?'¡Nuevo coleccionable!':'Tu coleccionable';
  $('chestStage').dataset.rarity=result.prize_kind;
@@ -624,6 +631,7 @@ function revealChest(result,isNew=false){
 window.openChest=async function(id){
  if(state.chestBusy||!state.uid||!profile)return;
  state.chestBusy=true;const version=state.version;
+ audio.cancelEffects();audio.play('chest');
  $('chestStage').className='chest-stage opening';delete $('chestStage').dataset.rarity;$('chestPrize').replaceChildren();$('chestOpeningTitle').textContent='Abriendo tu cofre…';$('chestOpeningStatus').textContent='¿Qué habrá adentro?';$('chestReturn').hidden=true;$('chestRetry').hidden=true;base.go('chestOpening');
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
  try{
@@ -632,6 +640,6 @@ window.openChest=async function(id){
   revealChest(response.data,true);
   try{await loadProfile(state.uid,version);}catch(e){if(version===state.version)message('Tu premio está guardado. Volvé a Mis cofres para actualizar tus cofres y la colección.');}
  }catch(e){
-  if(version===state.version){$('chestStage').className='chest-stage';$('chestOpeningTitle').textContent='Tu cofre está guardado';$('chestOpeningStatus').textContent=publicError(e)+' Reintentá para ver el premio confirmado, sin gastar otro cofre.';$('chestRetry').hidden=false;$('chestRetry').onclick=()=>openChest(id);$('chestReturn').hidden=false;}
+  if(version===state.version){audio.cancelEffects();$('chestStage').className='chest-stage';$('chestOpeningTitle').textContent='Tu cofre está guardado';$('chestOpeningStatus').textContent=publicError(e)+' Reintentá para ver el premio confirmado, sin gastar otro cofre.';$('chestRetry').hidden=false;$('chestRetry').onclick=()=>openChest(id);$('chestReturn').hidden=false;}
  }finally{if(version===state.version)state.chestBusy=false;}
 };

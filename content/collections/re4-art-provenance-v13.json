@@ -1,0 +1,47 @@
+{
+  "method": "Newly composed image generation/editing from the owner-provided originals and approved card sample. Preserve recognizable original subject geometry and packaging graphics, especially the square Red Hawk front face; background, lighting and poses may change. Generated label details are not factual metadata sources.",
+  "sourceManifest": "re4-image-provenance.json",
+  "metadata": "Names, descriptions, rarities and card IDs unchanged. The owner-approved remake medallion reference exception is retained.",
+  "boards": [
+    {
+      "id": "common-a",
+      "file": "art-v13/common-a.png",
+      "generatedOriginal": "/workspace/generated_images/exec-67e112c4-4d44-468f-a3db-414cdb06f14d.png",
+      "sha256": "980f2fa4ee6f0bc38b658cbdffc9f0a8534bafa6c2aac6b41c3ad330bef6984f",
+      "dimensions": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "id": "common-b",
+      "file": "art-v13/common-b.png",
+      "generatedOriginal": "/workspace/generated_images/exec-60f52677-1694-4239-a01d-4d8d0d689eb5.png",
+      "sha256": "84dedba939a28fb8bb1b5115efbb6bad8014b5fd96a0d6a3a6a81615a5e289a8",
+      "dimensions": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "id": "epic",
+      "file": "art-v13/epic.png",
+      "generatedOriginal": "/workspace/generated_images/exec-1388da63-ba8f-4785-b70f-ece3140cfe2f.png",
+      "sha256": "b42a1d89b07fadc9e7dceafe573d630057983f94c573f104be12f21df4bce9de",
+      "dimensions": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "id": "legendary",
+      "file": "art-v13/legendary.png",
+      "generatedOriginal": "/workspace/generated_images/exec-a79c7d9b-8352-4aba-bb2d-74b075aafbbf.png",
+      "sha256": "41cc07132037715a3f472b71d9706c7b2eff5d3c02072c87232e44954c529a72",
+      "dimensions": [
+        1774,
+        887
+      ]
+    }
+  ]
+}
