@@ -1,8 +1,18 @@
-# LOADING ARCADE 0.11 — colecciones por descubrir
+# LOADING ARCADE 0.12 — tu jugador y tu ruta en el inicio
 
-**Actualización de interfaz lista para instalar sobre 0.9 o 0.10.** No requiere SQL, no reinicia XP, partidas, cartas, cofres ni cuentas. No se ha desplegado Cloudflare desde el entorno de desarrollo.
+**Actualización de interfaz lista para instalar sobre 0.9–0.11.** No requiere SQL, no reinicia XP, partidas, cartas, cofres ni cuentas. No se ha desplegado Cloudflare desde el entorno de desarrollo.
 
 El propietario confirmó la dirección «LOADING · Archivo Retro» de la primera propuesta y aclaró que las fotos son referencias para crear nuevas composiciones. Las cartas mantienen los 14 artes de la versión 0.10, generados/editados a partir de esas referencias, con fondos oscuros y luz de inventario para objetos y armas, y ambientes del juego para los personajes. El marco es HTML/CSS reutilizable: bisel metálico, tipografía pixel Silkscreen, encabezado Archivo Retro, imagen protagonista, título/juego/descripción debajo y pie con rareza/número. Comunes azules, épicas violetas/rosas y legendarias doradas.
+
+## Entrada única y portada
+
+Se retiran la partida rápida, el modo invitado y el selector Mix libre. ENTRAR AL ARCADE crea una identidad anónima de Supabase sin pedir correo; después exige elegir apodo y avatar antes de jugar. El acceso antiguo `startMode('guest')` también conduce a crear/completar el personaje, sin abrir una partida local. Los endpoints libres antiguos del backend se conservan por compatibilidad, pero no aparecen ni se usan en la interfaz.
+
+Tras crear o recuperar un jugador, el inicio muestra su avatar, apodo, nivel, XP total y cantidad de coleccionables. Desde ahí se accede a la ruta de trivias, colección misteriosa, avatar, historial y edición del perfil. La ruta de experiencia muestra el próximo nivel/cofre, XP restantes, barra real sobre 1.800 XP, siguiente hito y acceso destacado a los cofres pendientes.
+
+Las partidas se guardan desde el principio en la identidad anónima; no se afirma que solo empiecen a guardarse al agregar correo. La vinculación opcional conserva el UID, puntos e historial y permite recuperar acceso. El recordatorio sigue apareciendo tras tres partidas o un día y se puede posponer, sin bloquear el juego. Las cuentas previas por correo se conservan.
+
+El panel semanal está ubicado en el inicio y se muestra como **EN PREPARACIÓN**, sin jugadores, puntajes, posiciones ni fechas ficticias. **El desafío semanal y su ranking real todavía no están implementados ni publicados.** Esta entrega prepara el espacio en la portada; no anuncia una competencia activa ni inventa resultados.
 
 ## Descubrimiento y misterio
 
@@ -12,9 +22,9 @@ Al abrir una colección se muestran únicamente las cartas obtenidas en cofres. 
 
 Los artes y nombres de producción se conservan en los recursos del HTML independiente; esta entrega implementa el misterio de la interfaz, no un sistema de confidencialidad de assets frente a inspección del código. No afirmar que los recursos ausentes de la interfaz no viajan al cliente. Una entrega selectiva por propiedad requeriría cambiar a recursos remotos autenticados.
 
-## Actualizar desde 0.9 o 0.10
+## Actualizar desde 0.9–0.11
 
-Descargar `loading-arcade-v11.zip`, descomprimir y subir **solo `index.html`** a Cloudflare → Workers & Pages → loading-arcade → New deployment → Deploy. Confirmar «Versión 0.11» en el pie y refrescar con Ctrl+F5 si todavía aparece la anterior. No volver a ejecutar SQL para este cambio visual.
+Descargar `loading-arcade-v12.zip`, descomprimir y subir **solo `index.html`** a Cloudflare → Workers & Pages → loading-arcade → New deployment → Deploy. Confirmar «Versión 0.12» en el pie y refrescar con Ctrl+F5 si todavía aparece la anterior. No volver a ejecutar SQL para este cambio visual.
 
 ## Reglas implementadas
 
@@ -24,7 +34,7 @@ Descargar `loading-arcade-v11.zip`, descomprimir y subir **solo `index.html`** a
 - Sorteo en servidor; premio e inventario guardados en la misma transacción. Doble clic, recarga, corte de red y otro dispositivo devuelven el mismo resultado ya guardado. No hay pagos ni compra de cofres.
 - Evento de apertura: cofre que se agita, tapa que se abre, brillo y revelación de la carta; respeta movimiento reducido. El premio queda consultable desde Mis cofres. Las probabilidades y la regla de no repetición se muestran antes de abrir.
 - Cosméticos entre niveles: gafas neón 500 XP, fondo violeta 1.000, gafas hielo 1.500, gorra 2.000, fondo noche 3.500, corona 5.000. Se guardan al equiparlos; son únicamente visuales.
-- Trivias por consola: aprobar con 3/5; reintentar hasta aprobar, sin mostrar soluciones al fallar. Recompensa única: 200 XP por aprobar + 100 por acierto + 200 por perfecta; totales 500/600/900. Una aprobada no se repite. Mix e invitado son práctica sin progreso guardado. PS1 y PS2 independientes; fáciles → medias → difíciles.
+- Trivias por consola: aprobar con 3/5; reintentar hasta aprobar, sin mostrar soluciones al fallar. Recompensa única: 200 XP por aprobar + 100 por acierto + 200 por perfecta; totales 500/600/900. Una aprobada no se repite. Todas las partidas visibles requieren un personaje y guardan su resultado. PS1 y PS2 independientes; fáciles → medias → difíciles.
 - Aviso de nivel y recompensas, botón con insignia persistente y contador de cofres sin abrir. Perfil solo con mascotas y cosméticos, sin foto.
 - Carga de trivias por lotes sin actualizar HTML: ver `content/batches/README.md`. Las preguntas/soluciones/fuentes se guardan en esquema privado. Todavía no es un panel administrativo.
 
@@ -34,7 +44,7 @@ El propietario pidió eliminar todo el catálogo anterior y permitió reiniciar 
 
 Para actualizar, ejecutar **solo `supabase/upgrade-to-v09.sql`**: detecta si el proyecto está en 0.7 u 0.8 y aplica lo necesario en una transacción. En la primera instalación reinicia los datos de prueba; si se ejecuta otra vez tras una instalación correcta, conserva el progreso nuevo. El resultado debe mostrar common 8, epic 4 y legendary 2. No ejecutar además los upgrades individuales ni `migrations`.
 
-Después subir el HTML actual. Probar dos trivias perfectas para recibir un cofre de nivel 2, abrirlo y verificar el contador 1/14 en el álbum. Este paso SQL es únicamente para instalar el backend 0.9 que aún falte; no es parte de la actualización de interfaz 0.11.
+Después subir el HTML actual. Probar dos trivias perfectas para recibir un cofre de nivel 2, abrirlo y verificar el contador 1/14 en el álbum. Este paso SQL es únicamente para instalar el backend 0.9 que aún falte; no es parte de la actualización de interfaz 0.12.
 
 Base nueva: `setup.sql` → `upgrade-v06.sql` → `upgrade-v07.sql` → `upgrade-to-v09.sql`. No ejecutar también 0.8/0.9 individuales: el archivo único ya los incluye.
 
@@ -48,7 +58,7 @@ Los artes de producción están en `assets/cards/re4/art-v10/`: cuatro láminas 
 
 El build incrusta cada lámina una sola vez, junto con Silkscreen Bold (OFL) y los estilos; sin CDN ni fuentes externas. El HTML final es independiente y está dentro del límite de tamaño de assets estáticos. El build falla si falta arte. `npm run build:preview` solo sirve para desarrollo y no debe empaquetarse.
 
-`loading-arcade-v11.zip` contiene el HTML independiente, README y licencias. No subir al Worker los JSON con respuestas, SQL, tests, fixture ni node_modules. Para reconstruir: `npm run build` y `node scripts/package-release.mjs`. Los ZIP previos se conservan como versiones históricas. No aplicar de nuevo la migración 0.9 al actualizar solo la interfaz.
+`loading-arcade-v12.zip` contiene el HTML independiente, README y licencias. No subir al Worker los JSON con respuestas, SQL, tests, fixture ni node_modules. Para reconstruir: `npm run build` y `node scripts/package-release.mjs`. Los ZIP previos se conservan como versiones históricas. No aplicar de nuevo la migración 0.9 al actualizar solo la interfaz.
 
 ## Desarrollo y validación
 
@@ -76,3 +86,6 @@ Mantener Anonymous Sign-ins habilitado y Confirm email para vinculación opciona
 - Más trivias: el catálogo actual tiene seis; todas perfectas permiten tres cofres. Para completar la colección harán falta nuevos desafíos, sin habilitar repetición de trivias aprobadas.
 - Desafío semanal temático de unas 20 preguntas, un intento, ranking por aciertos/tiempo y carta exclusiva por perfect score. Encuesta de cuatro juegos en Instagram con enlace desde la app.
 - Beneficio de compra accesible por progreso; porcentaje, condiciones y validación pendientes. No anunciar descuentos inexistentes.
+
+
+Validación 0.12: entrada anónima sin email, selección obligatoria de personaje, bloqueo del acceso invitado antiguo y ausencia del Mix en la interfaz; dashboard con usuario, 1.800 XP y cofre; estado semanal pendiente honesto; tres partidas sin correo y recordatorio posponible; vinculación PKCE simulada conserva UID, 1.500 XP e historial. Las pruebas públicas no crean identidades remotas ni envían correo.

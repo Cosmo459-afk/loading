@@ -1,4 +1,4 @@
-"""v0.11 browser integration with real local SQL and mocked Auth. No production writes."""
+"""v0.12 browser integration with real local SQL and mocked Auth. No production writes."""
 import json,os,urllib.request
 from playwright.sync_api import sync_playwright
 BASE=os.environ.get('ARCADE_URL','http://127.0.0.1:8080').rstrip('/')
@@ -18,7 +18,15 @@ with sync_playwright() as p:
     page=ctx.new_page();page.on('pageerror',lambda e:errors.append(str(e)));page.goto(BASE+'/dist/index.html')
     page.wait_for_selector('#homeAccount button');page.locator('#homeAccount button').click();page.wait_for_selector('#profile:not(.hidden)')
     assert page.locator('input[type=file]').count()==0
-    page.locator('#nickname').fill('Alice');page.get_by_text('CONTINUAR',exact=False).click();page.wait_for_selector('#menu:not(.hidden)')
+    page.locator('#nickname').fill('Alice');page.get_by_text('CONTINUAR',exact=False).click();page.wait_for_selector('#home:not(.hidden)')
+    assert page.locator('#homeHero').is_hidden()
+    assert page.locator('#homeSignup').is_hidden()
+    assert page.locator('#homeProgress [role=progressbar]').get_attribute('aria-valuenow')=='0'
+    assert '1800 XP' in page.locator('#homeProgress').inner_text()
+    assert page.locator('#homeWeekly .weekly-pending').inner_text()=='EN PREPARACIÓN'
+    assert page.locator('#homeWeekly li').count()==0
+    page.get_by_role('button',name='CONTINUAR RUTA').click();page.wait_for_selector('#menu:not(.hidden)')
+    assert page.locator('#category option').count()==2
     page.wait_for_function("document.getElementById('quizProgress').textContent.includes('0 de 1')")
     assert page.locator('#beginBtn').is_enabled();page.locator('#difficulty').select_option('medium');assert page.locator('#beginBtn').is_disabled();page.locator('#difficulty').select_option('easy')
     def play(n,fail=False):
@@ -53,6 +61,12 @@ with sync_playwright() as p:
     play(5)
     assert page.evaluate('profile.xp')==1800
     assert 'nivel 2' in page.locator('#levelToast').inner_text()
+    page.evaluate("go('home')")
+    assert 'Nivel 2' in page.locator('#homeAccount').inner_text()
+    assert '1800 XP' in page.locator('#homeProgress').inner_text()
+    assert page.locator('#homeProgress').get_by_role('button',name='ABRIR 1 COFRE').count()==1
+    page.wait_for_selector('#levelToast[hidden]',state='attached')
+    page.screenshot(path='/tmp/loading-v12-home-player.png',full_page=True)
     page.evaluate("go('menu')");page.locator('#category').select_option('ps1');page.locator('#difficulty').select_option('medium');assert page.locator('#beginBtn').is_disabled()
     page.locator('#difficulty').select_option('easy');assert page.locator('#beginBtn').is_enabled()
     page.evaluate('openWardrobe()');page.wait_for_selector('#wardrobe:not(.hidden)');assert page.locator('#wardrobeItems .cosmetic-item').count()==6
@@ -141,5 +155,46 @@ with sync_playwright() as p:
         page.evaluate('selectCollection(null)')
     page.set_viewport_size({'width':390,'height':844});page.evaluate("go('rewards')");page.screenshot(path='/tmp/loading-v08-rewards.png',full_page=True)
     assert not errors,errors
+    ctx.close()
+    # New players create only an anonymous identity first, choose a mascot and play.
+    ctx=browser.new_context(viewport={'width':390,'height':844});ctx.route(HOST+'/**',intercept)
+    page=ctx.new_page();page.on('pageerror',lambda e:errors.append(str(e)));signup=[]
+    page.on('request',lambda r:signup.append(r.post_data_json) if '/auth/v1/signup' in r.url and r.method=='POST' else None)
+    page.goto(BASE+'/dist/index.html');page.wait_for_selector('#createPlayerBtn:not([disabled])')
+    assert page.get_by_role('button',name='JUGAR COMO INVITADO',exact=False).count()==0
+    assert 'partida rápida' not in page.locator('#home').inner_text().lower()
+    page.screenshot(path='/tmp/loading-v12-home-entry.png',full_page=True)
+    page.locator('#createPlayerBtn').click();page.wait_for_selector('#profile:not(.hidden)')
+    assert len(signup)==1 and not signup[0].get('email')
+    page.evaluate("startMode('guest')")
+    page.wait_for_selector('#profile:not(.hidden)')
+    assert page.locator('#quiz').evaluate('(e)=>e.classList.contains("hidden")')
+    assert page.evaluate('questions.length')==0
+    page.locator('#nickname').fill('PixelNuevo');page.locator('.avatar-btn').nth(3).click()
+    page.get_by_text('CONTINUAR',exact=False).click();page.wait_for_selector('#home:not(.hidden)')
+    assert 'PixelNuevo' in page.locator('#homeAccount').inner_text()
+    assert 'Sin correo vinculado' in page.locator('#homeAccount').inner_text()
+    session=page.evaluate('(key)=>JSON.parse(localStorage.getItem(key))',STORE)
+    uid=session['user']['id'];assert session['user']['is_anonymous']
+    assert fixture('/_test/control',{})['otpRequests']==[]
+    page.get_by_role('button',name='CONTINUAR RUTA').click();page.wait_for_selector('#menu:not(.hidden)')
+    for tier in ['easy','medium','hard']:
+        page.locator('#difficulty').select_option(tier);play(3)
+        if tier!='hard':page.evaluate("go('menu')")
+    assert page.evaluate('profile.xp')==1500
+    assert page.locator('#accountProtection').is_visible()
+    page.get_by_role('button',name='MÁS TARDE',exact=True).click()
+    assert page.locator('#accountProtection').is_hidden()
+    page.evaluate("go('home')")
+    page.get_by_role('button',name='Vincular correo para proteger mi acceso').click()
+    page.wait_for_selector('#linkAccount:not(.hidden)');page.locator('#linkEmail').fill('pixel@example.invalid');page.locator('#linkAccountBtn').click()
+    page.wait_for_function('document.getElementById("linkMessage").textContent.includes("Revisá tu correo")')
+    page.goto(BASE+'/?code=link-temp');page.wait_for_function('profile?.xp===1500')
+    assert page.locator('#home').is_visible()
+    assert 'Acceso protegido' in page.locator('#homeAccount').inner_text()
+    linked=page.evaluate('(key)=>JSON.parse(localStorage.getItem(key))',STORE)
+    assert linked['user']['id']==uid and not linked['user']['is_anonymous']
+    assert page.evaluate('profile.games')==3
+    assert not errors,errors
     ctx.close();browser.close()
-print('PASS v0.11 browser: mascot-only profile; failure hides solutions; retry and interrupted-save recovery; single 900 XP grant; completion blocked; independent tiers; persisted badge acknowledgement; level toast; wardrobe; standalone HTML; 40 responsive screens; collection overview only, zero unknown card names/art/preview controls, first card revealed by chest, owned-only detail/featured, hidden-card direct access rejected, persisted progress; no JS errors.')
+print('PASS v0.12 browser: mascot-only profile; failure hides solutions; retry and interrupted-save recovery; single 900 XP grant; completion blocked; independent tiers; persisted badge acknowledgement; level toast; wardrobe; standalone HTML; 40 responsive screens; collection overview only, zero unknown card names/art/preview controls, first card revealed by chest, owned-only detail/featured, hidden-card direct access rejected, persisted progress; unified anonymous entry without email, no guest bypass or Mix option, home XP/cofre dashboard, honest unpublished weekly panel, optional reminder and same-UID email link; no JS errors.')

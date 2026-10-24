@@ -6,8 +6,8 @@ const frameStyles=document.createElement('style');frameStyles.textContent='@font
 import {collectionDefinitions,collectionCards} from './collections.js';
 // Replace the provisional catalog with the confirmed RE4 collection.
 cards.splice(0,cards.length,...collectionCards);
-// Existing v0.3 UI remains responsible for mascot art, album and guest quizzes.
-const base={go,showProfile,renderMenu,beginQuiz,renderQuestion,answer,nextQuestion,finish};
+// Keep the original mascot picker, section navigation and question renderer.
+const base={go,showProfile,renderMenu,renderQuestion};
 const $=id=>document.getElementById(id);
 const returning=new URLSearchParams(location.search).has('code');
 const client=createClient(config.url,config.publishableKey,{
@@ -37,9 +37,14 @@ function accountUI(){
   protectionUI();
   rewardInboxUI();
   const loggedIn=!!state.uid;
-  $('sessionStatus').textContent=loggedIn?(profile?(isTemporary()?'Jugador temporal · ':'Sesión iniciada · ')+profile.name:'Sesión iniciada · tu cuenta está conectada'):'Invitado · sin sesión';
+  $('sessionStatus').textContent=loggedIn?(profile?'Jugador · '+profile.name:'Tu sesión está conectada'):'Tu aventura empieza con un personaje';
   $('logoutBtn').hidden=!loggedIn;
-  $('homeModeNote').textContent=loggedIn?(isTemporary()?'Tu progreso ya se guarda. Podés vincular un correo más adelante para recuperar tu acceso desde otro dispositivo.':'Tu progreso se guarda en tu cuenta. El ranking global todavía no está disponible.'):'Probá una partida rápida o creá un jugador sin correo. Después podés vincularlo para recuperar tu acceso desde otro dispositivo.';
+  $('sessionStatus').parentElement.hidden=!loggedIn;
+  $('homeDashboard').classList.toggle('has-player',loggedIn);
+  $('homeModeNote').textContent='Tus partidas se guardan desde el inicio. Más adelante podés vincular un correo para recuperar tu jugador en otro dispositivo.';
+  $('homeModeNote').hidden=loggedIn;
+  $('homeHero').hidden=loggedIn;
+  $('homeProgress').hidden=true;
   $('homeSignup').hidden=loggedIn;
   const panel=$('homeAccount');
   panel.hidden=!loggedIn;
@@ -57,21 +62,20 @@ function accountUI(){
     return;
   }
   const xp=profile.xp,level=Math.floor(xp/1800)+1;
-  const sorted=rewardSteps();
-  const next=sorted.find(c=>c.at>xp);
-  const percent=(xp%1800)/18;
-  panel.innerHTML='<div class="profile-top">'+avatarHTML(profile)+
-    '<div><div class="eyebrow">QUÉ BUENO VERTE DE NUEVO</div><h2>'+esc(profile.name)+
-    '</h2><p>Nivel '+level+' · '+(isTemporary()?'Acceso temporal en este navegador':'Sesión iniciada')+'</p></div></div>'+
-    '<div class="home-numbers"><div class="home-number"><strong>'+xp+'</strong><small>XP acumulados</small></div>'+
-    '<div class="home-number"><strong>'+profile.games+'</strong><small>Partidas</small></div>'+
-    '<div class="home-number"><strong>'+profile.unlocked.filter(id=>cards.find(c=>c.id===id)?.collection==='re4').length+'/14'+'</strong><small>Resident Evil 4</small></div></div>'+
-    '<p class="home-reward">'+(next?'Próxima recompensa: <strong>'+esc(next.name)+'</strong> · te faltan '+(next.at-xp)+' XP.':'¡Completaste la colección actual!')+'</p>'+
-    '<div class="bar" role="progressbar" aria-label="Progreso al siguiente nivel" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.round(percent)+'"><div class="fill" style="width:'+percent+'%"></div></div>'+
-    '<p class="muted">'+(xp%1800)+'/1800 XP · Cofre al alcanzar el nivel '+(level+1)+'</p>'+
-    (isTemporary()?'<p class="muted">Tu progreso se guarda. <button class="text-button" onclick="openLinkAccount()">Vincular un correo para recuperarlo</button></p>':'')+
-    '<p class="muted">'+state.chests.filter(c=>!c.opened_at).length+' cofres por abrir</p>'+
-    '<div class="actions"><button onclick="openChests()">MIS COFRES</button><button onclick="openPlayer()">SEGUIR JUGANDO →</button><button class="secondary" onclick="showProfile()">EDITAR PERFIL</button><button class="secondary" onclick="showHistory()">MIS PARTIDAS</button><button class="secondary" onclick="openAccountPage(\'collection\')">MI ÁLBUM</button></div>';
+  const unopened=state.chests.filter(c=>!c.opened_at).length,remaining=1800-xp%1800,next=rewardSteps().find(c=>c.at>xp),percent=(xp%1800)/18;
+  panel.innerHTML='<div class="profile-top">'+avatarHTML(profile)+'<div><div class="eyebrow">TU JUGADOR</div><h2>'+esc(profile.name)+'</h2><p>Nivel '+level+' · '+(isTemporary()?'Sin correo vinculado':'Acceso protegido')+'</p></div></div>'+
+    '<div class="home-mini-stats"><span><strong>'+xp+'</strong> XP totales</span><span><strong>'+profile.unlocked.length+'</strong> coleccionables</span></div>'+
+    '<button class="home-play" onclick="openPlayer()">CONTINUAR RUTA →</button>'+
+    '<div class="home-shortcuts"><button class="secondary" onclick="showCollections()">MI COLECCIÓN</button><button class="secondary" onclick="openWardrobe()">MI AVATAR</button><button class="secondary" onclick="showHistory()">HISTORIAL</button><button class="secondary" onclick="showProfile()">EDITAR PERFIL</button></div>'+
+    (isTemporary()?'<button class="text-button home-link" onclick="openLinkAccount()">Vincular correo para proteger mi acceso</button>':'');
+  $('homeProgress').hidden=false;
+  $('homeProgress').innerHTML='<div class="home-route-heading"><div><div class="eyebrow">TU RUTA DE EXPERIENCIA</div><h2>Próximo cofre · Nivel '+(level+1)+'</h2></div><span class="home-chest-icon" aria-hidden="true">▣</span></div>'+
+    '<p class="home-xp-left">Te faltan <strong>'+remaining+' XP</strong></p>'+
+    '<div class="bar" role="progressbar" aria-label="Experiencia hacia el próximo cofre" aria-valuemin="0" aria-valuemax="1800" aria-valuenow="'+(xp%1800)+'"><div class="fill" style="width:'+percent+'%"></div></div>'+
+    '<div class="progress-text"><small>Nivel '+level+'</small><small>'+(xp%1800)+' / 1800 XP</small></div>'+
+    '<p class="home-next-hint">'+(next?'Siguiente hito: <strong>'+esc(next.name)+'</strong> · '+(next.at-xp)+' XP.':'Seguí completando trivias para avanzar.')+'</p>'+
+    (unopened?'<button class="home-open-chest" onclick="openChests()">ABRIR '+unopened+' '+(unopened===1?'COFRE':'COFRES')+' →</button>':'<button class="secondary" onclick="openChests()">MIS COFRES</button>');
+
 }
 function publicError(error){
   if(/Collection complete/i.test(String(error?.message||'')))return 'Ya completaste las cartas disponibles. Tu cofre sigue guardado para futuras colecciones.';
@@ -79,7 +83,7 @@ function publicError(error){
   if(/Game not found/i.test(String(error?.message||'')))return 'La partida ya no existe; puede pertenecer a la prueba anterior del prototipo.';
   if(error?.code==='PGRST202')return 'Falta actualizar el catálogo de trivias en la base de datos. La cuenta y el progreso están conservados.';
   const text=String(error?.message||'');
-  if(/anonymous.*disabled|anonymous.*not.*allowed|anonymous.*not.*enabled/i.test(text))return 'La creación sin correo todavía no está habilitada. Mientras tanto podés jugar una partida rápida o entrar con tu cuenta actual.';
+  if(/anonymous.*disabled|anonymous.*not.*allowed|anonymous.*not.*enabled/i.test(text))return 'La creación sin correo todavía no está habilitada. Podés entrar con una cuenta existente mientras se habilita esta opción.';
   if(/already.*registered|already.*exists|email.*exists/i.test(text))return 'Ese correo ya tiene una cuenta. No podemos fusionar sus progresos automáticamente. Conservá esta sesión mientras decidimos cómo recuperar tu cuenta anterior.';
   if(/rate|seconds|too many/i.test(text))return 'Esperá unos segundos antes de volver a intentarlo.';
   if(/expired|jwt|refresh token/i.test(text))return 'Tu sesión o enlace venció. Volvé a ingresar con tu correo.';
@@ -134,7 +138,7 @@ async function useSession(session){
   if(uid===state.uid)return;
   const version=++state.version;
   state.cosmetics=[];state.owned=[];state.chests=[];state.chestBusy=false;state.catalog=null;state.catalogLoading=false;state.catalogError=false;state.catalogPromise=null;
-  state.uid=uid;state.profileLoading=!!uid;state.profileError=false;state.game=null;state.answers=[];state.pending=null;profile=null;mode='guest';
+  state.uid=uid;state.profileLoading=!!uid;state.profileError=false;state.game=null;state.answers=[];state.pending=null;profile=null;mode='player';
   $('recoverGame').hidden=true;
   selectedCollection=null;
   if($('cardDetail').open)$('cardDetail').close();$('cardDetailArt').replaceChildren();
@@ -151,9 +155,9 @@ let ready=(async()=>{
     const {data,error}=await client.auth.getSession();
     if(error)throw error;
     await useSession(data.session);
-    if(returning&&state.uid){if(profile){mode='player';base.go('menu');}else base.showProfile();}
+    if(returning&&state.uid){if(profile){mode='player';base.go('home');}else base.showProfile();}
   }catch(e){message(publicError(e));if(returning){base.go('auth');authMessage('No pudimos abrir ese enlace. Pedí uno nuevo y abrilo en este mismo navegador.');}}
-  finally{accountUI();}
+  finally{$('createPlayerBtn').disabled=false;accountUI();}
 })();
 client.auth.onAuthStateChange((event,session)=>{
   // Avoid awaiting another Supabase operation inside the SDK's auth lock.
@@ -164,7 +168,7 @@ client.auth.onAuthStateChange((event,session)=>{
       void useSession(null);
     }else if(session?.user?.id!==state.uid){
       ready=useSession(session).then(()=>{
-        if(state.uid){if(profile){mode='player';base.go('menu');}else base.showProfile();}
+        if(state.uid){if(profile){mode='player';base.go('home');}else base.showProfile();}
       }).catch(e=>message(publicError(e)));
     }else{state.session=session;accountUI();}
   },0);
@@ -248,10 +252,7 @@ window.logout=async function(){
   }catch(e){message(publicError(e));}
   finally{state.signingOut=false;}
 };
-startMode=function(m){
-  if(m==='player'){void openPlayer();return;}
-  mode='guest';state.game=null;state.answers=[];base.go('menu');
-};
+startMode=function(){if(state.uid&&profile){void openPlayer();return;}void createPlayer();};
 saveProfile=async function(){
   if(state.profileBusy)return;
   await ready;
@@ -264,18 +265,19 @@ saveProfile=async function(){
     const {data,error}=await client.rpc('arcade_save_profile',{p_nickname:name,p_avatar:selectedAvatar,p_photo:null});
     if(error)throw error;
     if(version!==state.version)return;
-    adopt(data);mode='player';message('Perfil guardado en tu cuenta.');base.go('menu');
+    adopt(data);mode='player';message('Tu jugador está listo. Tus partidas ya se guardan.');base.go('home');
   }catch(e){message(publicError(e));}
   finally{state.profileBusy=false;}
 };
 // This function is used by v0.3 only; cloud writes always go through RPCs.
 persistProfile=function(){return false;};
 renderMenu=function(){
-  base.renderMenu();
+  if(!state.uid||!profile){void createPlayer();return;}
+  mode='player';base.renderMenu();$('modeLabel').textContent='TU RUTA · QUIZ POR CONSOLA';
   renderQuizCatalog();void refreshQuizzes();
   if(mode==='player'&&profile){
     const notice=$('playerStats').querySelector(':scope > p.muted');
-    if(notice)notice.textContent='Progreso guardado en tu cuenta. El ranking global todavía no está disponible.';
+    if(notice)notice.textContent='Tu progreso se guarda en tu jugador. Volvé al inicio para ver tu ruta y tus cofres.';
     const nav=$('playerStats').querySelector('.nav-extra');
     const btn=document.createElement('button');btn.className='secondary';btn.textContent='MIS PARTIDAS';btn.onclick=()=>showHistory();nav.appendChild(btn);
     const wardrobe=document.createElement('button');wardrobe.className='secondary';wardrobe.textContent='VESTUARIO';wardrobe.onclick=()=>openWardrobe();nav.appendChild(wardrobe);
@@ -299,37 +301,26 @@ toggleFeatured=async function(id){
 const tierNames={easy:'Fácil',medium:'Medio',hard:'Difícil',normal:'Fácil',expert:'Difícil'};
 function groupQuizzes(cat,level){return (state.catalog||[]).filter(q=>q.category===cat&&q.difficulty===level);}
 function renderQuizCatalog(){
-  const cat=$('category').value,level=$('difficulty').value,guest=mode==='guest',mix=cat==='mix';
-  const progress=$('quizProgress'),picker=$('quizPicker'),overview=$('difficultyOverview');
-  picker.hidden=guest||mix;
-  overview.hidden=mix;
-  overview.replaceChildren();
-  if(!mix){
-    for(const tier of ['easy','medium','hard']){
-      const rows=groupQuizzes(cat,tier),done=rows.filter(q=>q.completed).length;
-      const b=document.createElement('button');b.type='button';b.setAttribute('aria-pressed',String(tier===level));
-      b.append(document.createTextNode(tierNames[tier]));
-      const count=document.createElement('small');count.textContent=state.catalogLoading?'Cargando…':state.catalogError?'Sin datos':!rows.length?'Próximamente':rows.every(q=>q.unlocked===false)?'Bloqueado':guest?rows.length+' disponibles':done+' / '+rows.length;
-      b.append(count);b.onclick=()=>{$('difficulty').value=tier;renderQuizCatalog();};overview.appendChild(b);
-    }
+  const cat=$('category').value,level=$('difficulty').value;
+  const progress=$('quizProgress');$('quizPicker').hidden=false;const overview=$('difficultyOverview');overview.hidden=false;overview.replaceChildren();
+  for(const tier of ['easy','medium','hard']){
+    const rows=groupQuizzes(cat,tier),done=rows.filter(q=>q.completed).length;
+    const button=document.createElement('button');button.type='button';button.setAttribute('aria-pressed',String(tier===level));button.append(document.createTextNode(tierNames[tier]));
+    const count=document.createElement('small');count.textContent=state.catalogLoading?'Cargando…':state.catalogError?'Sin datos':!rows.length?'Próximamente':rows.every(q=>q.unlocked===false)?'Bloqueado':done+' / '+rows.length;
+    button.append(count);button.onclick=()=>{$('difficulty').value=tier;renderQuizCatalog();};overview.appendChild(button);
   }
-  const rows=groupQuizzes(cat,level),done=rows.filter(q=>q.completed).length;
-  const locked=!mix&&rows.length>0&&rows.every(q=>q.unlocked===false);
-  const mixLocked=mix&&level!=='easy'&&(guest||!['ps1','ps2'].every(c=>groupQuizzes(c,level).length>0&&groupQuizzes(c,level).every(q=>q.unlocked)));
+  const rows=groupQuizzes(cat,level),done=rows.filter(q=>q.completed).length,locked=rows.length>0&&rows.every(q=>q.unlocked===false);
   const chosen=$('quizSelect').value;$('quizSelect').replaceChildren();
   for(const q of rows){const option=document.createElement('option');option.value=q.id;option.disabled=q.unlocked===false||q.completed;option.textContent=(q.completed?'✓ ':'')+q.title+(q.completed?' · completada':q.in_progress?' · en curso':'');$('quizSelect').appendChild(option);}
   if(rows.some(q=>q.id===chosen&&!q.completed))$('quizSelect').value=chosen;
   else if(rows.some(q=>!q.completed))$('quizSelect').value=rows.find(q=>!q.completed).id;
-  if(mix&&mixLocked){progress.textContent='Mix avanzado bloqueado: completá los niveles anteriores de las consolas incluidas.';}
-  else if(mix){progress.textContent='Práctica libre: no entrega XP ni recompensas y no modifica tu progreso.';}
-  else if(state.catalogLoading){progress.textContent='Cargando trivias y progreso…';}
-  else if(state.catalogError){progress.textContent='No pudimos cargar el catálogo. Volvé al inicio y reintentá; tu progreso está conservado.';}
-  else if(!rows.length){progress.textContent='Todavía no hay trivias publicadas en '+tierNames[level]+'. Próximamente.';}
-  else if(locked){progress.textContent='Bloqueado: completá todas las trivias '+(level==='medium'?'fáciles':'medias')+' de esta consola para abrir '+tierNames[level]+'.';}
-  else if(guest){progress.textContent=rows.length+' '+(rows.length===1?'trivia disponible':'trivias disponibles')+'. La partida rápida es aleatoria; creá un jugador para completar el catálogo y guardar tu progreso.';}
-  else{progress.textContent=done+' de '+rows.length+' trivias completadas · '+(cat==='ps1'?'PlayStation 1':'PlayStation 2')+' · '+tierNames[level]+'. Aprobá con 3 de 5. Podés reintentar sin soluciones hasta aprobar; después queda cerrada.';}
-  $('beginBtn').disabled=state.busy||locked||mixLocked||(guest?level!=='easy':mix?false:state.catalogLoading||state.catalogError||!rows.length||!rows.some(q=>!q.completed));
-  $('beginBtn').textContent=!guest&&!mix&&rows.length&&rows.every(q=>q.completed)?'NIVEL COMPLETADO ✓':guest||mix?'EMPEZAR PARTIDA LIBRE →':'JUGAR TRIVIA →';
+  if(state.catalogLoading)progress.textContent='Cargando trivias y progreso…';
+  else if(state.catalogError)progress.textContent='No pudimos cargar el catálogo. Volvé al inicio y reintentá; tu progreso está conservado.';
+  else if(!rows.length)progress.textContent='Todavía no hay trivias publicadas en '+tierNames[level]+'. Próximamente.';
+  else if(locked)progress.textContent='Bloqueado: completá todas las trivias '+(level==='medium'?'fáciles':'medias')+' de esta consola para abrir '+tierNames[level]+'.';
+  else progress.textContent=done+' de '+rows.length+' trivias completadas · '+(cat==='ps1'?'PlayStation 1':'PlayStation 2')+' · '+tierNames[level]+'. Aprobá con 3 de 5. Podés reintentar sin soluciones hasta aprobar; después queda cerrada.';
+  $('beginBtn').disabled=state.busy||!state.uid||!profile||locked||state.catalogLoading||state.catalogError||!rows.length||!rows.some(q=>!q.completed);
+  $('beginBtn').textContent=rows.length&&rows.every(q=>q.completed)?'NIVEL COMPLETADO ✓':'JUGAR TRIVIA →';
 }
 window.updateQuizSelection=renderQuizCatalog;
 async function refreshQuizzes(){
@@ -351,21 +342,20 @@ async function refreshQuizzes(){
 renderQuestion=function(){base.renderQuestion();$('qMeta').textContent='PREGUNTA '+(idx+1)+' DE '+questions.length+' · '+questions[idx].cat.toUpperCase()+' · '+(tierNames[questions[idx].level]||questions[idx].level).toUpperCase();};
 beginQuiz=async function(){
   $('resultReview').replaceChildren();$('triviaResultProgress').textContent='';
-  if(mode==='guest'){state.game=null;base.beginQuiz();return;}
   await ready;
-  if(!state.uid||!profile){void openPlayer();return;}
+  if(!state.uid||!profile){void createPlayer();return;}
+  mode='player';
   if(state.pending){message('Guardá la partida pendiente antes de empezar otra.');$('recoverGame').hidden=false;return;}
   if(state.busy)return;
   state.busy=true;const version=state.version;
   const cat=$('category').value,level=$('difficulty').value;
   const button=$('beginBtn');button.disabled=true;
   try{
-    const mix=cat==='mix';
     const selected=(state.catalog||[]).find(q=>q.id===$('quizSelect').value&&q.category===cat&&q.difficulty===level);
-    if(!mix&&!selected)throw new Error('Quiz unavailable');
+    if(!selected)throw new Error('Quiz unavailable');
     if(selected?.completed)throw new Error('Quiz already completed');
     if(selected?.unlocked===false)throw new Error('Difficulty locked');
-    const {data,error}=mix?await client.rpc('arcade_start_game',{p_category:cat,p_difficulty:level==='hard'?'expert':'normal'}):await client.rpc('arcade_start_quiz',{p_quiz_id:selected.id});
+    const {data,error}=await client.rpc('arcade_start_quiz',{p_quiz_id:selected.id});
     if(error)throw error;
     if(version!==state.version)return;
     if(!data?.game_id||data.questions?.length!==5)throw new Error('Invalid game response');
@@ -375,7 +365,6 @@ beginQuiz=async function(){
   finally{state.busy=false;button.disabled=false;}
 };
 answer=function(i){
-  if(mode==='guest'){base.answer(i);return;}
   if(answered||!state.game||!Number.isInteger(i)||i<0||i>3)return;
   answered=true;state.answers[idx]=i;
   document.querySelectorAll('.choice').forEach((button,n)=>{button.disabled=true;if(n===i)button.classList.add('selected-answer');});
@@ -385,7 +374,6 @@ answer=function(i){
 };
 nextQuestion=function(){
   if(!answered||state.busy)return;
-  if(mode==='guest'){base.nextQuestion();return;}
   if(idx<questions.length-1){idx++;renderQuestion();}
   else void finish();
 };
@@ -402,7 +390,6 @@ function renderReview(review,prompts){
   }
 }
 finish=async function(){
-  if(mode==='guest'){base.finish();return;}
   if(!state.game||state.game.owner!==state.uid||state.answers.length!==5)return;
   state.pending={owner:state.uid,gameId:state.game.id,quizId:state.game.quizId||null,answers:[...state.answers],questions:questions.map(q=>({q:q.q,a:q.a}))};
   rememberPending();
@@ -435,7 +422,7 @@ async function submitPending(){
     $('progress').style.width='100%';
     if(data.review?.length)renderReview(data.review,pending.questions);else $('resultReview').replaceChildren();
     celebrateProgress(oldXP);
-    forgetPending();state.game=null;state.answers=[];mode='player';message('Partida guardada en Supabase.');base.go('result');
+    forgetPending();state.game=null;state.answers=[];mode='player';message('¡Partida guardada!');base.go('result');
   }catch(e){
     if(version===state.version){if(/Game not found/i.test(String(e?.message||''))){forgetPending();state.game=null;state.answers=[];message(publicError(e)+' Elegí una nueva trivia.');base.go('menu');}else{message(publicError(e)+' Tu partida sigue pendiente: tocá REINTENTAR GUARDADO.');$('recoverGame').hidden=false;}}
   }finally{state.busy=false;$('nextBtn').disabled=false;$('recoverGame').disabled=false;}
