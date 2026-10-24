@@ -29,7 +29,7 @@ with sync_playwright() as p:
         page.wait_for_function("!document.getElementById('sessionStatus').textContent.includes('Conectando')")
         return ctx,page
     ctx,page=context()
-    page.get_by_text('ENTRAR / CREAR JUGADOR').click();page.wait_for_selector('#auth:not(.hidden)')
+    page.get_by_text('YA TENGO CUENTA').click();page.wait_for_selector('#auth:not(.hidden)')
     page.locator('#loginEmail').fill('alice@example.invalid');page.locator('#sendLoginBtn').click()
     page.wait_for_function("document.getElementById('authMessage').textContent.includes('Revisá tu correo')")
     requests=fixture('/_test/control',{})['otpRequests']
@@ -47,7 +47,7 @@ with sync_playwright() as p:
     ctx,page=context('alice')
     old={'name':'LocalOnly','avatar':0,'xp':8000,'games':20,'featured':[]}
     page.evaluate('(v)=>localStorage.setItem("loading_arcade_profile",JSON.stringify(v))',old)
-    page.get_by_text('ENTRAR / CREAR JUGADOR').click();page.wait_for_selector('#profile:not(.hidden)')
+    page.locator('#homeAccount button').first.click();page.wait_for_selector('#profile:not(.hidden)')
     page.locator('#nickname').fill('Alice')
     assert page.locator('.avatar-btn').count()==8
     for i in range(8):
@@ -93,21 +93,83 @@ with sync_playwright() as p:
     page.wait_for_function("document.getElementById('sessionStatus').textContent.includes('Invitado')")
     assert page.evaluate('profile') is None
     assert page.locator('#playerStats').inner_text()==''
+    assert page.locator('#homeAccount').is_hidden()
+    assert page.locator('#homeAccount').inner_text()==''
+    assert page.locator('#homeSignup').is_visible()
     ctx.close()
     # A separate browser context reads the same authoritative profile from the DB.
     ctx,page=context('alice',BASE+'/dist/')
-    page.get_by_text('ENTRAR / CREAR JUGADOR').click();page.wait_for_selector('#profile:not(.hidden)')
+    page.wait_for_function("document.getElementById('homeAccount').textContent.includes('Próxima recompensa')")
+    assert page.locator('#homeSignup').is_hidden()
+    assert 'Alice' in page.locator('#homeAccount').inner_text()
+    assert '400' in page.locator('#homeAccount').inner_text()
+    assert '100 XP' in page.locator('#homeAccount').inner_text()
+    page.locator('#homeAccount').get_by_text('SEGUIR JUGANDO').click()
+    page.wait_for_selector('#menu:not(.hidden)')
+    page.evaluate("go('home')")
+    page.locator('#homeAccount').get_by_text('EDITAR PERFIL').click()
+    page.wait_for_selector('#profile:not(.hidden)')
     assert page.locator('#nickname').input_value()=='Alice'
     assert page.evaluate('profile.xp')==400 and page.evaluate('profile.featured.length')==1
     assert page.locator('#profilePreview .avatar-photo').count()==1
+    page.route(HOST+'/rest/v1/arcade_profiles*',lambda route:route.fulfill(status=400,json={'message':'Network unavailable'}))
+    page.reload()
+    page.wait_for_function("document.getElementById('homeAccount').textContent.includes('REINTENTAR')")
+    assert page.locator('#homeSignup').is_hidden()
+    assert 'No necesitás registrarte' in page.locator('#homeAccount').inner_text()
+    page.unroute(HOST+'/rest/v1/arcade_profiles*')
+    page.locator('#homeAccount button').click();page.wait_for_selector('#menu:not(.hidden)')
+    page.evaluate("go('home')")
+    page.screenshot(path='/tmp/arcade-home-v041.png',full_page=True)
+    page.locator('#homeAccount').get_by_text('MIS CROMOS').click()
+    page.wait_for_selector('#collection:not(.hidden)')
+    page.reload()
+    page.wait_for_function("document.getElementById('homeAccount').textContent.includes('Alice')")
+    assert page.locator('#homeSignup').is_hidden()
     ctx.close()
     ctx,page=context('bob')
-    page.get_by_text('ENTRAR / CREAR JUGADOR').click();page.wait_for_selector('#profile:not(.hidden)')
+    page.locator('#homeAccount button').first.click();page.wait_for_selector('#profile:not(.hidden)')
     assert page.locator('#nickname').input_value()==''
     assert page.evaluate('profile') is None
     page.locator('#nickname').fill('Bob');page.get_by_text('CONTINUAR').click();page.wait_for_selector('#menu:not(.hidden)')
     assert page.evaluate('profile.xp')==0
     page.evaluate('showHistory()');page.wait_for_function("document.getElementById('historyList').textContent.includes('Todavía no')")
+    ctx.close()
+    # Anonymous onboarding creates a real DB owner without an email prompt.
+    ctx,page=context()
+    otp_before=len(fixture('/_test/control',{})['otpRequests'])
+    page.locator('#createPlayerBtn').click();page.wait_for_selector('#profile:not(.hidden)')
+    page.locator('#nickname').fill('SinCorreo');page.get_by_text('CONTINUAR').click()
+    page.wait_for_selector('#menu:not(.hidden)')
+    page.evaluate("go('home')")
+    assert 'temporal' in page.locator('#sessionStatus').inner_text()
+    assert 'SinCorreo' in page.locator('#homeAccount').inner_text()
+    assert page.locator('#accountProtection').is_hidden()
+    page.locator('#homeAccount').get_by_text('SEGUIR JUGANDO').click()
+    page.wait_for_selector('#menu:not(.hidden)');page.locator('#beginBtn').click()
+    page.wait_for_selector('#quiz:not(.hidden)')
+    for i in range(5):page.locator('.choice').nth(0).click();page.locator('#nextBtn').click()
+    page.wait_for_selector('#result:not(.hidden)')
+    assert page.evaluate('profile.xp')==400
+    assert len(fixture('/_test/control',{})['otpRequests'])==otp_before
+    page.evaluate('(key)=>{let s=JSON.parse(localStorage.getItem(key));s.user.created_at=new Date(Date.now()-2*86400000).toISOString();localStorage.setItem(key,JSON.stringify(s));}',STORE)
+    page.reload();page.wait_for_selector('#accountProtection:not([hidden])')
+    page.locator('#accountProtection').get_by_text('MÁS TARDE').click()
+    assert page.locator('#accountProtection').is_hidden()
+    page.reload();page.wait_for_function("document.getElementById('homeAccount').textContent.includes('SinCorreo')")
+    assert page.locator('#accountProtection').is_hidden()
+    page.locator('#homeAccount').get_by_text('Vincular un correo').click()
+    page.wait_for_selector('#linkAccount:not(.hidden)')
+    page.locator('#linkEmail').fill('temporal@example.invalid');page.locator('#linkAccountBtn').click()
+    page.wait_for_function("document.getElementById('linkMessage').textContent.includes('Revisá tu correo')")
+    # Confirmation simulates Auth verifying the email on the SAME identity.
+    page.goto(BASE+'/?code=link-temp');page.wait_for_selector('#menu:not(.hidden)')
+    assert page.evaluate('profile.xp')==400 and page.evaluate('profile.games')==1
+    page.evaluate("go('home')")
+    assert 'temporal' not in page.locator('#sessionStatus').inner_text()
+    assert 'SinCorreo' in page.locator('#homeAccount').inner_text()
+    assert page.locator('#accountProtection').is_hidden()
+    assert page.locator('#homeAccount').get_by_text('Vincular un correo').count()==0
     ctx.close();assert not errors,errors
     browser.close()
-    print('PASS: real bundled SDK + local PostgreSQL RPCs; OTP request and PKCE callback (simulated Auth, no email), guest quiz, private cloud profile/photo, server questions/scoring, committed-response retry/reload without duplicate XP, featured cards/history, separate-browser persistence, logout isolation, standalone HTML, 32 responsive screens. Real Supabase email/session NOT tested.')
+    print('PASS: real bundled SDK + local PostgreSQL RPCs; OTP request and PKCE callback (simulated Auth, no email), guest quiz, private cloud profile/photo, server questions/scoring, committed-response retry/reload without duplicate XP, featured cards/history, separate-browser persistence, logout isolation, standalone HTML, 32 responsive screens. Home session summary, direct play/profile/collection, reload persistence and load-failure retry verified. Anonymous onboarding, no upfront email, persistent reminder deferral and same-identity email linking verified with fixture. Real Supabase email/session NOT tested.')

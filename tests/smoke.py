@@ -16,7 +16,7 @@ with sync_playwright() as p:
                 page.evaluate('answer(questions[idx].ok)');page.locator('#nextBtn').click()
             assert page.locator('#scoreTitle').inner_text()=='700 PUNTOS'
             assert page.evaluate("localStorage.getItem('loading_arcade_profile')") is None
-    page.evaluate("go('home')");page.get_by_text('ENTRAR / CREAR JUGADOR').click();page.wait_for_selector('#auth:not(.hidden)')
+    page.evaluate("go('home')");page.get_by_text('YA TENGO CUENTA').click();page.wait_for_selector('#auth:not(.hidden)')
     assert page.locator('#loginEmail').get_attribute('type')=='email'
     for width in [320,390,768,1280]:
         page.set_viewport_size({'width':width,'height':844})

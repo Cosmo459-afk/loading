@@ -41,3 +41,7 @@ Desde `supabase/`, instalar dependencias con `npm ci` y ejecutar `npm test`. PGl
 - Aprobar el despliegue en Cloudflare. Nada de esta carpeta publica ni cambia la versión pública automáticamente.
 
 La red inicialmente bloqueó el proyecto. En la comprobación posterior, `/auth/v1/settings` respondió HTTP 200 y confirmó correo habilitado; la lectura de `arcade_cards` sin sesión fue rechazada con permiso denegado, según lo previsto. No se enviaron correos ni se crearon usuarios reales durante estas pruebas.
+
+## Actualización 0.5
+
+No requiere nueva migración. Las identidades anónimas de Supabase Auth tienen rol authenticated y las políticas existentes siguen aislando por auth.uid(). Habilitar Anonymous Sign-ins en Authentication → Sign In / Providers → User Signups. No desactivar la confirmación de correo; se usa solo al vincular. src/cloud.js usa signInAnonymously para el alta y updateUser para vincular sin cambiar de UID. La vinculación de dos cuentas existentes no está implementada. Ver README raíz para el detalle y los pendientes de validación real.

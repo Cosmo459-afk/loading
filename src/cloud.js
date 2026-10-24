@@ -8,17 +8,68 @@ const returning=new URLSearchParams(location.search).has('code');
 const client=createClient(config.url,config.publishableKey,{
   auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
 });
-const state={session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false};
+const state={session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false};
 profile=null; // Never turn a local profile into a verified cloud account.
 
 function message(text){$('cloudNotice').textContent=text;$('cloudNotice').hidden=!text;}
 function authMessage(text){$('authMessage').textContent=text;}
+function isTemporary(){return state.session?.user?.is_anonymous===true;}
+function protectionUI(){
+  const panel=$('accountProtection');
+  let snoozedUntil=0;
+  try{snoozedUntil=Number(localStorage.getItem('loading_arcade_reminder_'+state.uid))||0;}catch{}
+  const created=Date.parse(state.session?.user?.created_at||'');
+  const due=profile&&(profile.games>=3||(Number.isFinite(created)&&Date.now()-created>=86400000));
+  panel.hidden=!(state.uid&&isTemporary()&&due&&Date.now()>=snoozedUntil);
+  if(panel.hidden)panel.replaceChildren();
+  else panel.innerHTML='<strong>Protegé tu progreso</strong><p>Ya tenés un recorrido en el arcade. Vinculá un correo para recuperar tu jugador si cambiás de dispositivo, cerrás sesión o borrás los datos del navegador. Podés seguir jugando sin hacerlo.</p><div class="actions"><button onclick="openLinkAccount()">GUARDAR MI ACCESO</button><button class="secondary" onclick="snoozeAccountReminder()">MÁS TARDE</button></div>';
+}
+window.snoozeAccountReminder=function(){
+  try{localStorage.setItem('loading_arcade_reminder_'+state.uid,String(Date.now()+86400000));}catch{}
+  $('accountProtection').hidden=true;
+};
 function accountUI(){
-  $('sessionStatus').textContent=state.uid?'Sesión iniciada · progreso en tu cuenta':'Invitado · sin sesión';
-  $('logoutBtn').hidden=!state.uid;
+  protectionUI();
+  const loggedIn=!!state.uid;
+  $('sessionStatus').textContent=loggedIn?(profile?(isTemporary()?'Jugador temporal · ':'Sesión iniciada · ')+profile.name:'Sesión iniciada · tu cuenta está conectada'):'Invitado · sin sesión';
+  $('logoutBtn').hidden=!loggedIn;
+  $('homeModeNote').textContent=loggedIn?(isTemporary()?'Tu progreso ya se guarda. Podés vincular un correo más adelante para recuperar tu acceso desde otro dispositivo.':'Tu progreso se guarda en tu cuenta. El ranking global todavía no está disponible.'):'Probá una partida rápida o creá un jugador sin correo. Después podés vincularlo para recuperar tu acceso desde otro dispositivo.';
+  $('homeSignup').hidden=loggedIn;
+  const panel=$('homeAccount');
+  panel.hidden=!loggedIn;
+  if(!loggedIn){panel.replaceChildren();return;}
+  if(state.profileLoading){
+    panel.innerHTML='<h2>Tu sesión está abierta</h2><p>Cargando tu jugador…</p>';
+    return;
+  }
+  if(state.profileError){
+    panel.innerHTML='<h2>Tu sesión está abierta</h2><p>No pudimos cargar tu progreso. No necesitás registrarte de nuevo.</p><button onclick="openPlayer()">REINTENTAR →</button>';
+    return;
+  }
+  if(!profile){
+    panel.innerHTML='<div class="eyebrow">YA ESTÁS DENTRO</div><h2>Completá tu jugador</h2><p>Tu cuenta ya está creada. Solo falta elegir un apodo y tu compañero.</p><button onclick="showProfile()">ELEGIR APODO Y AVATAR →</button>';
+    return;
+  }
+  const xp=profile.xp,level=Math.floor(xp/1000)+1;
+  const sorted=[...cards].sort((a,b)=>a.at-b.at);
+  const next=sorted.find(c=>c.at>xp);
+  const previous=[...sorted].reverse().find(c=>c.at<=xp)?.at||0;
+  const percent=next?Math.min(100,Math.max(0,(xp-previous)/(next.at-previous)*100)):100;
+  panel.innerHTML='<div class="profile-top">'+avatarHTML(profile)+
+    '<div><div class="eyebrow">QUÉ BUENO VERTE DE NUEVO</div><h2>'+esc(profile.name)+
+    '</h2><p>Nivel '+level+' · '+(isTemporary()?'Acceso temporal en este navegador':'Sesión iniciada')+'</p></div></div>'+
+    '<div class="home-numbers"><div class="home-number"><strong>'+xp+'</strong><small>XP acumulados</small></div>'+
+    '<div class="home-number"><strong>'+profile.games+'</strong><small>Partidas</small></div>'+
+    '<div class="home-number"><strong>'+profile.unlocked.length+'/'+cards.length+'</strong><small>Cromos</small></div></div>'+
+    '<p class="home-reward">'+(next?'Próxima recompensa: <strong>'+esc(next.name)+'</strong> · te faltan '+(next.at-xp)+' XP.':'¡Completaste la colección actual!')+'</p>'+
+    '<div class="bar" role="progressbar" aria-label="Progreso hacia la próxima recompensa" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.round(percent)+'"><div class="fill" style="width:'+percent+'%"></div></div>'+
+    (isTemporary()?'<p class="muted">Tu progreso se guarda. <button class="text-button" onclick="openLinkAccount()">Vincular un correo para recuperarlo</button></p>':'')+
+    '<div class="actions"><button onclick="openPlayer()">SEGUIR JUGANDO →</button><button class="secondary" onclick="showProfile()">EDITAR PERFIL</button><button class="secondary" onclick="showHistory()">MIS PARTIDAS</button><button class="secondary" onclick="openAccountPage(\'collection\')">MIS CROMOS</button></div>';
 }
 function publicError(error){
   const text=String(error?.message||'');
+  if(/anonymous.*disabled|anonymous.*not.*allowed|anonymous.*not.*enabled/i.test(text))return 'La creación sin correo todavía no está habilitada. Mientras tanto podés jugar una partida rápida o entrar con tu cuenta actual.';
+  if(/already.*registered|already.*exists|email.*exists/i.test(text))return 'Ese correo ya tiene una cuenta. No podemos fusionar sus progresos automáticamente. Conservá esta sesión mientras decidimos cómo recuperar tu cuenta anterior.';
   if(/rate|seconds|too many/i.test(text))return 'Esperá unos segundos antes de volver a intentarlo.';
   if(/expired|jwt|refresh token/i.test(text))return 'Tu sesión o enlace venció. Volvé a ingresar con tu correo.';
   if(/not enough/i.test(text))return 'Todavía no hay suficientes preguntas para ese reto. Elegí otra categoría.';
@@ -28,20 +79,24 @@ function publicError(error){
 function unpack(row){return Array.isArray(row)?row[0]:row;}
 function adopt(row){
   row=unpack(row);
-  if(!row){profile=null;return;}
+  if(!row){profile=null;accountUI();return;}
   profile={name:row.nickname,avatar:row.avatar,photo:row.photo,xp:Number(row.xp),games:row.games,featured:row.featured||[],unlocked:[]};
-  syncUnlocks();
+  syncUnlocks();accountUI();
 }
 async function loadProfile(uid,version){
-  const [player,catalog]=await Promise.all([
-    client.from('arcade_profiles').select('*').eq('id',uid).maybeSingle(),
-    client.from('arcade_cards').select('id,name,required_xp')
-  ]);
-  if(version!==state.version)return;
-  if(player.error)throw player.error;
-  if(catalog.error)throw catalog.error;
-  for(const c of catalog.data){const local=cards.find(x=>x.id===c.id);if(local){local.at=c.required_xp;local.name=c.name;}}
-  adopt(player.data);
+  state.profileLoading=true;state.profileError=false;accountUI();
+  try{
+    const [player,catalog]=await Promise.all([
+      client.from('arcade_profiles').select('*').eq('id',uid).maybeSingle(),
+      client.from('arcade_cards').select('id,name,required_xp')
+    ]);
+    if(version!==state.version)return;
+    if(player.error)throw player.error;
+    if(catalog.error)throw catalog.error;
+    for(const c of catalog.data){const local=cards.find(x=>x.id===c.id);if(local){local.at=c.required_xp;local.name=c.name;}}
+    adopt(player.data);
+  }catch(e){if(version===state.version)state.profileError=true;throw e;}
+  finally{if(version===state.version){state.profileLoading=false;accountUI();}}
 }
 function pendingKey(){return 'loading_arcade_pending_'+state.uid;}
 function rememberPending(){try{sessionStorage.setItem(pendingKey(),JSON.stringify(state.pending));}catch{message('Mantené esta pestaña abierta hasta confirmar el guardado de la partida.');}}
@@ -57,11 +112,11 @@ async function useSession(session){
   state.session=session;
   if(uid===state.uid)return;
   const version=++state.version;
-  state.uid=uid;state.game=null;state.answers=[];state.pending=null;profile=null;mode='guest';
+  state.uid=uid;state.profileLoading=!!uid;state.profileError=false;state.game=null;state.answers=[];state.pending=null;profile=null;mode='guest';
   $('recoverGame').hidden=true;
   $('historyList').replaceChildren();$('resultReview').replaceChildren();
   for(const id of ['playerStats','album','albumStatus','rewardTrack','rewardProgress','profilePreview','scoreTitle','scoreSummary','xpSummary','resultDetail'])$(id).replaceChildren();
-  $('nickname').value='';$('photoInput').value='';uploadedPhoto=null;selectedAvatar=0;
+  $('nickname').value='';$('photoInput').value='';$('linkEmail').value='';$('linkMessage').textContent='';uploadedPhoto=null;selectedAvatar=0;
   accountUI();
   if(!uid){message('');base.go('home');return;}
   try{await loadProfile(uid,version);if(version===state.version){readPending();message('');}}
@@ -87,18 +142,59 @@ client.auth.onAuthStateChange((event,session)=>{
       ready=useSession(session).then(()=>{
         if(state.uid){if(profile){mode='player';base.go('menu');}else base.showProfile();}
       }).catch(e=>message(publicError(e)));
-    }else state.session=session;
+    }else{state.session=session;accountUI();}
   },0);
 });
 
-window.openPlayer=showProfile=async function(){
+async function enterPlayer(edit=false){
   await ready;
   if(!state.uid){base.go('auth');return;}
   const version=state.version;
   try{
     await loadProfile(state.uid,version);
-    if(version===state.version)base.showProfile();
+    if(version!==state.version)return;
+    message('');
+    if(edit||!profile)base.showProfile();else{mode='player';base.go('menu');}
   }catch(e){message(publicError(e));}
+}
+window.openPlayer=()=>enterPlayer(false);
+showProfile=()=>enterPlayer(true);
+window.openAccountPage=async function(id){
+  await ready;if(!state.uid){base.go('auth');return;}
+  if(!profile){await enterPlayer(true);return;}
+  mode='player';base.go(id);
+};
+window.createPlayer=async function(){
+  await ready;
+  if(state.uid){await enterPlayer(false);return;}
+  if(state.creating)return;
+  state.creating=true;$('createPlayerBtn').disabled=true;message('Creando tu jugador…');
+  try{
+    const {data,error}=await client.auth.signInAnonymously();
+    if(error)throw error;
+    ready=useSession(data.session);await ready;
+    message('Elegí tu apodo y avatar. No necesitás correo para empezar.');base.showProfile();
+  }catch(e){message(publicError(e));}
+  finally{state.creating=false;$('createPlayerBtn').disabled=false;}
+};
+window.openLinkAccount=async function(){
+  await ready;
+  if(!state.uid){base.go('auth');return;}
+  if(!isTemporary()){message('Tu cuenta ya tiene un acceso vinculado.');return;}
+  $('linkMessage').textContent='';base.go('linkAccount');
+};
+window.sendAccountLink=async function(event){
+  event.preventDefault();await ready;
+  if(!state.uid||!isTemporary()||state.linkBusy)return;
+  if(!$('linkEmail').reportValidity())return;
+  state.linkBusy=true;$('linkAccountBtn').disabled=true;
+  $('linkMessage').textContent='Enviando enlace…';
+  try{
+    const {error}=await client.auth.updateUser({email:$('linkEmail').value.trim()},{emailRedirectTo:new URL(location.pathname,location.origin).href});
+    if(error)throw error;
+    $('linkMessage').textContent='Revisá tu correo y abrí el enlace en este mismo navegador. Mientras tanto podés seguir jugando. Vincular conserva tu jugador y sus puntos.';
+  }catch(e){$('linkMessage').textContent=publicError(e);}
+  finally{state.linkBusy=false;$('linkAccountBtn').disabled=false;}
 };
 window.sendLogin=async function(event){
   event.preventDefault();
@@ -116,7 +212,8 @@ window.sendLogin=async function(event){
 };
 window.logout=async function(){
   if(state.busy){message('Esperá a que termine el guardado antes de salir.');return;}
-  if(state.game||state.pending){if(!confirm('Hay una partida en curso o pendiente. ¿Querés cerrar sesión igualmente?'))return;}
+  if(isTemporary()){if(!confirm('Tu jugador todavía no tiene un correo vinculado. Si cerrás sesión no podrás recuperar este progreso. ¿Querés salir igualmente?'))return;}
+  else if(state.game||state.pending){if(!confirm('Hay una partida en curso o pendiente. ¿Querés cerrar sesión igualmente?'))return;}
   state.signingOut=true;
   try{
     const {error}=await client.auth.signOut({scope:'local'});
@@ -254,7 +351,7 @@ async function submitPending(){
 window.retryCloudGame=async function(){await ready;await submitPending();};
 window.showHistory=async function(){
   await ready;if(!state.uid)return;
-  const version=state.version;base.go('history');$('historyList').textContent='Cargando tus últimas partidas…';
+  mode='player';const version=state.version;base.go('history');$('historyList').textContent='Cargando tus últimas partidas…';
   const {data,error}=await client.from('arcade_games').select('id,category,difficulty,started_at,finished_at,correct,score').eq('player_id',state.uid).order('started_at',{ascending:false}).limit(20);
   if(version!==state.version)return;
   $('historyList').replaceChildren();
