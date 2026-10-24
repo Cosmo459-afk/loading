@@ -9,6 +9,7 @@ await db.exec(readFileSync(new URL('../upgrade-v06.sql',import.meta.url),'utf8')
 await db.exec(readFileSync(new URL('../upgrade-v07.sql',import.meta.url),'utf8'));
 await db.exec(readFileSync(new URL('../upgrade-v08.sql',import.meta.url),'utf8'));
 await db.exec(readFileSync(new URL('../upgrade-v09.sql',import.meta.url),'utf8'));
+await db.exec(readFileSync(new URL('../upgrade-v14.sql',import.meta.url),'utf8'));
 const alice='11111111-1111-4111-8111-111111111111',bob='22222222-2222-4222-8222-222222222222',temp='33333333-3333-4333-8333-333333333333';
 await db.query('insert into auth.users values ($1),($2)',[alice,bob]);
 let queue=Promise.resolve(),failSubmit=false,failChest=false,failProfile=false,otpRequests=[],linked=false,pendingEmail=null;
@@ -18,7 +19,7 @@ function session(uid){
  const user={id:uid,aud:'authenticated',role:'authenticated',email:uid===temp?(linked?pendingEmail:null):(uid===alice?'alice@example.invalid':'bob@example.invalid'),is_anonymous:uid===temp&&!linked,app_metadata:{provider:'email'},user_metadata:{},created_at:new Date().toISOString()};
  return {access_token:encode({alg:'HS256',typ:'JWT'})+'.'+encode({sub:uid,role:'authenticated',aud:'authenticated',iat:now,exp:now+3600})+'.fixture',refresh_token:'fixture-refresh',token_type:'bearer',expires_in:3600,expires_at:now+3600,user};
 }
-const funcs={arcade_open_chest:['p_chest_id'],arcade_ack_rewards:['p_xp'],arcade_equip_cosmetic:['p_slot','p_item'],arcade_list_quizzes:[],arcade_start_quiz:['p_quiz_id'],arcade_save_profile:['p_nickname','p_avatar','p_photo'],arcade_feature_cards:['p_ids'],arcade_start_game:['p_category','p_difficulty'],arcade_submit_game:['p_game_id','p_answers']};
+const funcs={arcade_community:[],arcade_set_community_visibility:['p_visible'],arcade_open_chest:['p_chest_id'],arcade_ack_rewards:['p_xp'],arcade_equip_cosmetic:['p_slot','p_item'],arcade_list_quizzes:[],arcade_start_quiz:['p_quiz_id'],arcade_save_profile:['p_nickname','p_avatar','p_photo'],arcade_feature_cards:['p_ids'],arcade_start_game:['p_category','p_difficulty'],arcade_submit_game:['p_game_id','p_answers']};
 async function handle(req,res){
  res.setHeader('Access-Control-Allow-Origin','*');res.setHeader('Access-Control-Allow-Headers','*');
  res.setHeader('Content-Type','application/json');

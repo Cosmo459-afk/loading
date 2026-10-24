@@ -23,7 +23,7 @@ const imagePlugin={name:'card-originals',setup(b){
   return {contents:'const files='+JSON.stringify(files)+';export default {'+Object.entries(images).map(([id,file])=>JSON.stringify(id)+':files['+JSON.stringify(file)+']').join(',')+'}',loader:'js'};
  });
 }};
-await build({loader:{'.ttf':'dataurl','.css':'text'},plugins:[imagePlugin],entryPoints:[path.join(root,'src/cloud.js')],outfile:path.join(root,'assets/cloud.bundle.js'),bundle:true,minify:true,format:'iife',platform:'browser',target:['es2020'],legalComments:'inline'});
+await build({loader:{'.ttf':'dataurl','.png':'dataurl','.css':'text'},plugins:[imagePlugin],entryPoints:[path.join(root,'src/cloud.js')],outfile:path.join(root,'assets/cloud.bundle.js'),bundle:true,minify:true,format:'iife',platform:'browser',target:['es2020'],legalComments:'inline'});
 const notices=await readFile(path.join(root,'THIRD_PARTY_NOTICES.txt'),'utf8');
 const html=(await readFile(path.join(root,'index.html'),'utf8')).replace('<!doctype html>','<!doctype html><!--\n'+notices.replace(/-->/g,'-- >')+'\n-->');
 const js=await readFile(path.join(root,'assets/cloud.bundle.js'),'utf8');

@@ -5,17 +5,20 @@ import cardFont from '../assets/fonts/Silkscreen-Bold.ttf';
 const frameStyles=document.createElement('style');frameStyles.textContent='@font-face{font-family:LoadingPixel;src:url('+cardFont+') format("truetype");font-style:normal;font-weight:700;font-display:swap}'+cardStyles;document.head.appendChild(frameStyles);
 import {collectionDefinitions,collectionCards} from './collections.js';
 import {installAudio} from './audio.js';
+import {decorateAvatar,badges,slotNames} from './cosmetics.js';
+import brandLogo from '../assets/brand/loading-arcade.png';
+const lockup=document.querySelector('header > div');lockup.className='brand-lockup';lockup.innerHTML='<img class="brand-logo" src="'+brandLogo+'" alt="LOADING ARCADE" width="1966" height="804">';
 const audio=installAudio();
 // Replace the provisional catalog with the confirmed RE4 collection.
 cards.splice(0,cards.length,...collectionCards);
 // Keep the original mascot picker, section navigation and question renderer.
-const base={go,showProfile,renderMenu,renderQuestion};
+const base={go,showProfile,renderQuestion};
 const $=id=>document.getElementById(id);
 const returning=new URLSearchParams(location.search).has('code');
 const client=createClient(config.url,config.publishableKey,{
   auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
 });
-const state={session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false,owned:[],chests:[],chestBusy:false};
+const state={session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false,owned:[],chests:[],chestBusy:false,community:null,communityBusy:false,communityError:false,visibilityBusy:false};
 profile=null; // Never turn a local profile into a verified cloud account.
 
 function message(text){$('cloudNotice').textContent=text;$('cloudNotice').hidden=!text;}
@@ -35,7 +38,87 @@ window.snoozeAccountReminder=function(){
   try{localStorage.setItem('loading_arcade_reminder_'+state.uid,String(Date.now()+86400000));}catch{}
   $('accountProtection').hidden=true;
 };
+function applyPersonalStyle(){
+ const c=profile?.cosmetics||{};
+ document.body.dataset.theme=['ocean-theme','amber-theme','violet-theme','jade-theme'].includes(c.theme)?c.theme:'';
+ document.body.dataset.personalFont=['pixel-font','terminal-font'].includes(c.font)?c.font:'';
+}
+function renderProgressTrack(target){
+ if(!target||!profile)return;
+ const xp=profile.xp,steps=rewardSteps(),next=steps.find(s=>s.at>xp);
+ target.replaceChildren();
+ const list=document.createElement('ol');list.className='progress-route';list.tabIndex=0;list.setAttribute('aria-label','Ruta horizontal de progreso. Desplazá para ver las recompensas.');
+ for(const step of steps){
+  const item=document.createElement('li');item.className='progress-stop'+(xp>=step.at?' earned':'')+(step===next?' next':'');
+  const button=document.createElement('button');button.type='button';button.className='progress-prize secondary';button.setAttribute('aria-label',step.name+' · '+step.at+' XP · '+(xp>=step.at?'Desbloqueado':'Pendiente'));
+  const icon=document.createElement('span');icon.className='progress-prize-icon';icon.setAttribute('aria-hidden','true');icon.textContent=step.kind==='Cofre'?'▣':({background:'▧',frame:'◇',badge:'✦',font:'Aa',theme:'◒',hat:'♜',glasses:'⌐■-■'})[step.slot]||'✦';
+  const title=document.createElement('strong');title.textContent=step.name;
+  const value=document.createElement('small');value.textContent=step.at+' XP';
+  const status=document.createElement('small');status.className='progress-stop-status';status.textContent=xp>=step.at?'✓ Desbloqueado':step===next?'Próximo · '+(step.at-xp)+' XP':'Pendiente';
+  button.append(icon,title,value,status);button.onclick=()=>step.kind==='Cofre'?openChests():openWardrobe();item.appendChild(button);list.appendChild(item);
+ }
+ target.appendChild(list);
+ requestAnimationFrame(()=>centerProgress(list));
+}
+function centerProgress(list){
+ if(!list?.clientWidth)return;
+ const node=list.querySelector('.next');if(node)list.scrollLeft=Math.max(0,node.offsetLeft-list.offsetLeft-list.clientWidth/2+node.offsetWidth/2);
+}
+async function refreshCommunity(version=state.version){
+ if(!state.uid||state.communityBusy)return;
+ state.communityBusy=true;state.communityError=false;renderCommunity();
+ try{const {data,error}=await client.rpc('arcade_community');if(error)throw error;if(version===state.version)state.community=data;}
+ catch{if(version===state.version)state.communityError=true;}
+ finally{if(version===state.version){state.communityBusy=false;renderCommunity();}}
+}
+function renderCommunity(){
+ const panel=$('homeCommunity');if(!panel)return;
+ panel.hidden=!profile;panel.replaceChildren();if(!profile)return;
+ const header=document.createElement('div');header.className='eyebrow';header.textContent='COMUNIDAD';const title=document.createElement('h2');title.textContent='Jugadores del arcade';panel.append(header,title);
+ const note=document.createElement('p');note.className='muted';note.textContent='Compartimos el recorrido. Sin puestos ni competencia: acá aparecen quienes eligen mostrar su jugador.';panel.appendChild(note);
+ if(state.communityError){const text=document.createElement('p');text.textContent='La comunidad no está disponible por el momento.';panel.appendChild(text);}
+ else if(state.communityBusy&&!state.community){const text=document.createElement('p');text.textContent='Cargando jugadores…';panel.appendChild(text);}
+ else{
+  const count=document.createElement('p');count.className='community-count';const n=state.community?.total||0;count.textContent=n+' '+(n===1?'jugador comparte':'jugadores comparten')+' su perfil';panel.appendChild(count);
+  const list=document.createElement('ul');list.className='community-players';
+  for(const p of state.community?.players||[]){
+   const item=document.createElement('li');item.innerHTML=avatarHTML({avatar:p.avatar,cosmetics:p.cosmetics||{}});
+   const text=document.createElement('div'),name=document.createElement('strong'),level=document.createElement('small');name.textContent=p.nickname+(p.is_me?' · Vos':'');level.textContent='Nivel '+p.level;text.append(name,level);item.appendChild(text);list.appendChild(item);
+  }
+  panel.appendChild(list);
+  if(!n){const empty=document.createElement('p');empty.textContent='Todavía no hay jugadores visibles. Podés ser el primero en sumarte.';panel.appendChild(empty);}
+ }
+ const consent=document.createElement('p');consent.className='muted';consent.textContent='Al sumarte se muestran tu apodo, avatar y nivel. Podés ocultarlos cuando quieras.';
+ const actions=document.createElement('div');actions.className='actions';
+ const join=document.createElement('button');join.type='button';join.disabled=state.visibilityBusy||state.communityError;join.textContent=profile.communityVisible?'OCULTAR MI JUGADOR':'SUMARME A LA COMUNIDAD';join.onclick=()=>setCommunityVisibility(!profile.communityVisible);
+ const refresh=document.createElement('button');refresh.type='button';refresh.className='secondary';refresh.disabled=state.communityBusy;refresh.textContent='ACTUALIZAR';refresh.onclick=()=>refreshCommunity();actions.append(join,refresh);panel.append(consent,actions);
+}
+async function setCommunityVisibility(visible){
+ if(!profile||state.visibilityBusy)return;
+ const version=state.version;state.visibilityBusy=true;renderCommunity();
+ try{const {data,error}=await client.rpc('arcade_set_community_visibility',{p_visible:visible});if(error)throw error;if(version!==state.version)return;adopt(data);await refreshCommunity(version);}
+ catch(e){if(version===state.version)message(publicError(e));}
+ finally{if(version===state.version){state.visibilityBusy=false;renderCommunity();}}
+}
+function updateContinueButton(){
+ const next=nextRouteQuiz($('category').value),button=$('continueQuizBtn');
+ button.textContent=next?(next.in_progress?'RETOMAR TRIVIA →':'SIGUIENTE TRIVIA →'):'ELEGIR OTRA CONSOLA →';
+}
+window.continueRoute=async function(){
+ await ready;if(!profile)return;
+ await refreshQuizzes();if(state.catalogError)return;
+ if(nextRouteQuiz($('category').value))await beginQuiz();
+ else{const other=$('category').value==='ps1'?'ps2':'ps1';$('category').value=other;base.go('menu');}
+};
+// Restore the route's current milestone when navigating home from a hidden screen.
+document.body.dataset.home=String(!$('home').classList.contains('hidden'));
+const homeObserver=new MutationObserver(()=>{
+ const visible=!$('home').classList.contains('hidden');document.body.dataset.home=String(visible);
+ if(visible){if($('cloudNotice').textContent==='¡Partida guardada!')message('');centerProgress($('homeRewardTrack')?.querySelector('.progress-route'));}
+});
+homeObserver.observe($('home'),{attributes:true,attributeFilter:['class']});
 function accountUI(){
+  applyPersonalStyle();renderCommunity();
   protectionUI();
   rewardInboxUI();
   const loggedIn=!!state.uid;
@@ -64,20 +147,20 @@ function accountUI(){
     return;
   }
   const xp=profile.xp,level=Math.floor(xp/1800)+1;
-  const unopened=state.chests.filter(c=>!c.opened_at).length,remaining=1800-xp%1800,next=rewardSteps().find(c=>c.at>xp),percent=(xp%1800)/18;
-  panel.innerHTML='<div class="profile-top">'+avatarHTML(profile)+'<div><div class="eyebrow">TU JUGADOR</div><h2>'+esc(profile.name)+'</h2><p>Nivel '+level+' · '+(isTemporary()?'Sin correo vinculado':'Acceso protegido')+'</p></div></div>'+
+  const unopened=state.chests.filter(c=>!c.opened_at).length,remaining=1800-xp%1800,percent=(xp%1800)/18;
+  panel.innerHTML='<div class="profile-top">'+avatarHTML(profile)+'<div><div class="eyebrow">TU JUGADOR</div><h2>'+esc(profile.name)+'</h2><p>Nivel '+level+' · '+(isTemporary()?'Sin correo vinculado':'Acceso protegido')+'</p></div><button class="secondary home-exit" onclick="logout()" aria-label="Cerrar sesión" title="Cerrar sesión">↪</button></div>'+
     '<div class="home-mini-stats"><span><strong>'+xp+'</strong> XP totales</span><span><strong>'+profile.unlocked.length+'</strong> coleccionables</span></div>'+
     '<button class="home-play" onclick="openPlayer()">CONTINUAR RUTA →</button>'+
-    '<div class="home-shortcuts"><button class="secondary" onclick="showCollections()">MI COLECCIÓN</button><button class="secondary" onclick="openWardrobe()">MI AVATAR</button><button class="secondary" onclick="showHistory()">HISTORIAL</button><button class="secondary" onclick="showProfile()">EDITAR PERFIL</button></div>'+
+    '<div class="home-shortcuts"><button class="secondary" onclick="showCollections()">MI COLECCIÓN</button><button class="secondary" onclick="openWardrobe()">MI ESTILO</button><button class="secondary" onclick="showHistory()">HISTORIAL</button><button class="secondary" onclick="showProfile()">EDITAR PERFIL</button></div>'+
     (isTemporary()?'<button class="text-button home-link" onclick="openLinkAccount()">Vincular correo para proteger mi acceso</button>':'');
   $('homeProgress').hidden=false;
-  $('homeProgress').innerHTML='<div class="home-route-heading"><div><div class="eyebrow">TU RUTA DE EXPERIENCIA</div><h2>Próximo cofre · Nivel '+(level+1)+'</h2></div><span class="home-chest-icon" aria-hidden="true">▣</span></div>'+
+  $('homeProgress').innerHTML='<div class="home-route-heading"><div><div class="eyebrow">PROGRESO</div><h2>Próximo cofre · Nivel '+(level+1)+'</h2></div><span class="home-chest-icon" aria-hidden="true">▣</span></div>'+
     '<p class="home-xp-left">Te faltan <strong>'+remaining+' XP</strong></p>'+
     '<div class="bar" role="progressbar" aria-label="Experiencia hacia el próximo cofre" aria-valuemin="0" aria-valuemax="1800" aria-valuenow="'+(xp%1800)+'"><div class="fill" style="width:'+percent+'%"></div></div>'+
     '<div class="progress-text"><small>Nivel '+level+'</small><small>'+(xp%1800)+' / 1800 XP</small></div>'+
-    '<p class="home-next-hint">'+(next?'Siguiente hito: <strong>'+esc(next.name)+'</strong> · '+(next.at-xp)+' XP.':'Seguí completando trivias para avanzar.')+'</p>'+
+    '<div id="homeRewardTrack"></div>'+
     (unopened?'<button class="home-open-chest" onclick="openChests()">ABRIR '+unopened+' '+(unopened===1?'COFRE':'COFRES')+' →</button>':'<button class="secondary" onclick="openChests()">MIS COFRES</button>');
-
+  renderProgressTrack($('homeRewardTrack'));
 }
 function publicError(error){
   if(/Collection complete/i.test(String(error?.message||'')))return 'Ya completaste las cartas disponibles. Tu cofre sigue guardado para futuras colecciones.';
@@ -90,7 +173,8 @@ function publicError(error){
   if(/rate|seconds|too many/i.test(text))return 'Esperá unos segundos antes de volver a intentarlo.';
   if(/expired|jwt|refresh token/i.test(text))return 'Tu sesión o enlace venció. Volvé a ingresar con tu correo.';
   if(/Quiz already completed/i.test(text))return 'Ya aprobaste esta trivia. Elegí una nueva para seguir avanzando.';
-  if(/Finish active quiz/i.test(text))return 'Tenés una trivia en curso. Seleccioná la que dice «en curso» para retomarla.';
+  if(/Finish active quiz/i.test(text))return 'Tenés una trivia en curso. Volvé a tu ruta para retomarla.';
+  if(/Quiz out of order/i.test(text))return 'Primero completá la trivia pendiente. Actualizá tu ruta para continuar.';
   if(/Difficulty locked/i.test(text))return 'Esta dificultad está bloqueada. Completá primero el nivel anterior de esa misma consola.';
   if(/Cosmetic locked/i.test(text))return 'Todavía no alcanzaste los XP necesarios para ese cosmético.';
   if(/not enough/i.test(text))return 'Todavía no hay suficientes preguntas para ese reto. Elegí otra categoría.';
@@ -101,7 +185,7 @@ function unpack(row){return Array.isArray(row)?row[0]:row;}
 function adopt(row){
   row=unpack(row);
   if(!row){profile=null;accountUI();return;}
-  profile={name:row.nickname,avatar:row.avatar,photo:null,rewardsSeenXP:Number(row.rewards_seen_xp||0),xp:Number(row.xp),games:row.games,featured:row.featured||[],unlocked:[],cosmetics:row.cosmetics||{}};
+  profile={name:row.nickname,avatar:row.avatar,communityVisible:row.community_visible===true,photo:null,rewardsSeenXP:Number(row.rewards_seen_xp||0),xp:Number(row.xp),games:row.games,featured:row.featured||[],unlocked:[],cosmetics:row.cosmetics||{}};
   syncUnlocks();accountUI();
 }
 async function loadProfile(uid,version){
@@ -121,7 +205,7 @@ async function loadProfile(uid,version){
     if(owned.error)throw owned.error;if(chests.error)throw chests.error;
     state.cosmetics=cosmetics.data;state.owned=owned.data.map(x=>x.card_id);state.chests=chests.data;
     for(const c of catalog.data){const local=cards.find(x=>x.id===c.id);if(local){local.name=c.name;local.kind=c.kind;local.collection=c.collection_id;local.description=c.description;local.rarityKey=c.rarity;local.rarity=({common:'Común',rare:'Rara',epic:'Épica',legendary:'Legendaria'})[c.rarity]||'Por definir';}}
-    adopt(player.data);
+    adopt(player.data);void refreshCommunity(version);
   }catch(e){if(version===state.version)state.profileError=true;throw e;}
   finally{if(version===state.version){state.profileLoading=false;accountUI();}}
 }
@@ -140,6 +224,7 @@ async function useSession(session){
   if(uid===state.uid)return;
   const version=++state.version;
   state.cosmetics=[];state.owned=[];state.chests=[];state.chestBusy=false;state.catalog=null;state.catalogLoading=false;state.catalogError=false;state.catalogPromise=null;
+  state.community=null;state.communityBusy=false;state.communityError=false;wardrobeSlot='all';
   state.uid=uid;state.profileLoading=!!uid;state.profileError=false;state.game=null;state.answers=[];state.pending=null;profile=null;mode='player';
   audio.cancelEffects();
   $('recoverGame').hidden=true;
@@ -276,15 +361,9 @@ saveProfile=async function(){
 persistProfile=function(){return false;};
 renderMenu=function(){
   if(!state.uid||!profile){void createPlayer();return;}
-  mode='player';base.renderMenu();$('modeLabel').textContent='TU RUTA · QUIZ POR CONSOLA';
+  mode='player';$('playerStats').replaceChildren();$('playerStats').classList.add('hidden');
+  $('modeLabel').textContent='TU RUTA · QUIZ POR CONSOLA';
   renderQuizCatalog();void refreshQuizzes();
-  if(mode==='player'&&profile){
-    const notice=$('playerStats').querySelector(':scope > p.muted');
-    if(notice)notice.textContent='Tu progreso se guarda en tu jugador. Volvé al inicio para ver tu ruta y tus cofres.';
-    const nav=$('playerStats').querySelector('.nav-extra');
-    const btn=document.createElement('button');btn.className='secondary';btn.textContent='MIS PARTIDAS';btn.onclick=()=>showHistory();nav.appendChild(btn);
-    const wardrobe=document.createElement('button');wardrobe.className='secondary';wardrobe.textContent='VESTUARIO';wardrobe.onclick=()=>openWardrobe();nav.appendChild(wardrobe);
-  }
 };
 // base.go calls the current global renderMenu, so enhancements apply everywhere.
 toggleFeatured=async function(id){
@@ -302,28 +381,30 @@ toggleFeatured=async function(id){
   finally{state.featureBusy=false;}
 };
 const tierNames={easy:'Fácil',medium:'Medio',hard:'Difícil',normal:'Fácil',expert:'Difícil'};
-function groupQuizzes(cat,level){return (state.catalog||[]).filter(q=>q.category===cat&&q.difficulty===level);}
+function orderedQuizzes(rows){return [...rows].sort((a,b)=>['easy','medium','hard'].indexOf(a.difficulty)-['easy','medium','hard'].indexOf(b.difficulty)||(a.sort_order||0)-(b.sort_order||0)||a.id.localeCompare(b.id));}
+function groupQuizzes(cat,level){return orderedQuizzes((state.catalog||[]).filter(q=>q.category===cat&&q.difficulty===level));}
+function nextRouteQuiz(cat){return (state.catalog||[]).find(q=>q.in_progress)||orderedQuizzes((state.catalog||[]).filter(q=>q.category===cat&&!q.completed))[0];}
 function renderQuizCatalog(){
-  const cat=$('category').value,level=$('difficulty').value;
-  const progress=$('quizProgress');$('quizPicker').hidden=false;const overview=$('difficultyOverview');overview.hidden=false;overview.replaceChildren();
+  const cat=$('category').value,progress=$('quizProgress'),overview=$('difficultyOverview');overview.replaceChildren();
+  const next=nextRouteQuiz(cat);
+  if(next?.in_progress)$('category').value=next.category;
+  const consoleKey=$('category').value;
+  $('difficulty').value=next?.difficulty||'easy';
   for(const tier of ['easy','medium','hard']){
-    const rows=groupQuizzes(cat,tier),done=rows.filter(q=>q.completed).length;
-    const button=document.createElement('button');button.type='button';button.setAttribute('aria-pressed',String(tier===level));button.append(document.createTextNode(tierNames[tier]));
-    const count=document.createElement('small');count.textContent=state.catalogLoading?'Cargando…':state.catalogError?'Sin datos':!rows.length?'Próximamente':rows.every(q=>q.unlocked===false)?'Bloqueado':done+' / '+rows.length;
-    button.append(count);button.onclick=()=>{$('difficulty').value=tier;renderQuizCatalog();};overview.appendChild(button);
+    const rows=groupQuizzes(consoleKey,tier),done=rows.filter(q=>q.completed).length;
+    const item=document.createElement('div');item.className='route-tier'+(next?.difficulty===tier?' current':'');
+    item.textContent=tierNames[tier];const count=document.createElement('small');count.textContent=state.catalogLoading?'Cargando…':state.catalogError?'Sin datos':done+' / '+rows.length;
+    item.appendChild(count);overview.appendChild(item);
   }
-  const rows=groupQuizzes(cat,level),done=rows.filter(q=>q.completed).length,locked=rows.length>0&&rows.every(q=>q.unlocked===false);
-  const chosen=$('quizSelect').value;$('quizSelect').replaceChildren();
-  for(const q of rows){const option=document.createElement('option');option.value=q.id;option.disabled=q.unlocked===false||q.completed;option.textContent=(q.completed?'✓ ':'')+q.title+(q.completed?' · completada':q.in_progress?' · en curso':'');$('quizSelect').appendChild(option);}
-  if(rows.some(q=>q.id===chosen&&!q.completed))$('quizSelect').value=chosen;
-  else if(rows.some(q=>!q.completed))$('quizSelect').value=rows.find(q=>!q.completed).id;
-  if(state.catalogLoading)progress.textContent='Cargando trivias y progreso…';
-  else if(state.catalogError)progress.textContent='No pudimos cargar el catálogo. Volvé al inicio y reintentá; tu progreso está conservado.';
-  else if(!rows.length)progress.textContent='Todavía no hay trivias publicadas en '+tierNames[level]+'. Próximamente.';
-  else if(locked)progress.textContent='Bloqueado: completá todas las trivias '+(level==='medium'?'fáciles':'medias')+' de esta consola para abrir '+tierNames[level]+'.';
-  else progress.textContent=done+' de '+rows.length+' trivias completadas · '+(cat==='ps1'?'PlayStation 1':'PlayStation 2')+' · '+tierNames[level]+'. Aprobá con 3 de 5. Podés reintentar sin soluciones hasta aprobar; después queda cerrada.';
-  $('beginBtn').disabled=state.busy||!state.uid||!profile||locked||state.catalogLoading||state.catalogError||!rows.length||!rows.some(q=>!q.completed);
-  $('beginBtn').textContent=rows.length&&rows.every(q=>q.completed)?'NIVEL COMPLETADO ✓':'JUGAR TRIVIA →';
+  if(state.catalogLoading)progress.textContent='Cargando tu próxima trivia…';
+  else if(state.catalogError)progress.textContent='No pudimos cargar tu ruta. Volvé al inicio y reintentá; tu progreso está conservado.';
+  else if(!next)progress.textContent='¡Completaste todas las trivias disponibles de esta consola! Podés jugar en la otra consola mientras llegan nuevos desafíos.';
+  else{
+    const rows=groupQuizzes(next.category,next.difficulty),position=rows.findIndex(q=>q.id===next.id)+1;
+    progress.textContent=(next.in_progress?'Retomá tu trivia en curso. ':'')+'Trivia '+position+' de '+rows.length+' · '+tierNames[next.difficulty]+'. Aprobá con 3 de 5 para avanzar. Sin límite de tiempo.';
+  }
+  $('beginBtn').disabled=state.busy||!state.uid||!profile||state.catalogLoading||state.catalogError||!next||next.unlocked===false;
+  $('beginBtn').textContent=!next?'RUTA COMPLETADA ✓':next.in_progress?'RETOMAR TRIVIA →':'JUGAR SIGUIENTE TRIVIA →';
 }
 window.updateQuizSelection=renderQuizCatalog;
 async function refreshQuizzes(){
@@ -351,10 +432,10 @@ beginQuiz=async function(){
   if(state.pending){message('Guardá la partida pendiente antes de empezar otra.');$('recoverGame').hidden=false;return;}
   if(state.busy)return;
   state.busy=true;const version=state.version;
-  const cat=$('category').value,level=$('difficulty').value;
+  const selected=nextRouteQuiz($('category').value);
+  const cat=selected?.category,level=selected?.difficulty;
   const button=$('beginBtn');button.disabled=true;
   try{
-    const selected=(state.catalog||[]).find(q=>q.id===$('quizSelect').value&&q.category===cat&&q.difficulty===level);
     if(!selected)throw new Error('Quiz unavailable');
     if(selected?.completed)throw new Error('Quiz already completed');
     if(selected?.unlocked===false)throw new Error('Difficulty locked');
@@ -425,6 +506,7 @@ async function submitPending(){
     if(earned.length)$('resultDetail').textContent+=' ¡Desbloqueaste: '+earned.map(r=>r.name).join(', ')+'!';
     $('progress').style.width='100%';
     if(data.review?.length)renderReview(data.review,pending.questions);else $('resultReview').replaceChildren();
+    updateContinueButton();
     celebrateProgress(oldXP);
     if(!earned.length)audio.play(data.passed?'success':'retry');
     forgetPending();state.game=null;state.answers=[];mode='player';message('¡Partida guardada!');base.go('result');
@@ -471,31 +553,34 @@ syncUnlocks=function(){
  profile.featured=(profile.featured||[]).filter((id,i,a)=>state.owned.includes(id)&&a.indexOf(id)===i).slice(0,3);
 };
 const originalAvatarSVG=avatarSVG;
-avatarSVG=function(n){
-  let svg=decodeURIComponent(originalAvatarSVG(n).split(',')[1]);
-  const style=profile?.cosmetics||{};
-  if(style.background==='violet-grid')svg=svg.replace('fill="#1c1c30"','fill="#3b224d"');
-  if(style.background==='night-sky')svg=svg.replace('fill="#1c1c30"','fill="#102c49"').replace('<path d="M0 96','<path d="M14 14h3v3h-3zM106 19h3v3h-3zM14 84h3v3h-3zM111 82h3v3h-3z" fill="#e1c6ff"/><path d="M0 96');
-  let overlay='';const y=n===4?28:50;
-  if(style.glasses){const color=style.glasses==='pink-glasses'?'#ff83d3':'#83e7ff';overlay+='<g stroke="'+color+'" stroke-width="4" fill="#283461" fill-opacity=".5"><rect x="30" y="'+y+'" width="25" height="21" rx="4"/><rect x="73" y="'+y+'" width="25" height="21" rx="4"/><path d="M55 '+(y+9)+'H73" fill="none"/></g>';}
-  if(style.hat==='retro-cap')overlay+='<path d="M29 34L35 16 65 10 90 17 97 35 55 37Z" fill="#984a76"/><path d="M23 34L97 34 107 43 43 43Z" fill="#2845c5"/><path d="M60 16H69V29H60Z" fill="#f4d4eb"/>';
-  if(style.hat==='gold-crown')overlay+='<path d="M32 35L26 12 47 23 64 7 80 23 102 12 96 35Z" fill="#e7bd63"/><path d="M32 35H96V42H32Z" fill="#a77b31"/><path d="M59 24L64 18 69 24 64 31Z" fill="#984a76"/>';
-  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg.replace('</svg>',overlay+'</svg>'));
+avatarSVG=n=>decorateAvatar(originalAvatarSVG(n),n,profile?.cosmetics||{});
+avatarHTML=function(p){
+ const n=Number.isInteger(p.avatar)&&mascots[p.avatar]?p.avatar:0,style=p.cosmetics||profile?.cosmetics||{};
+ const frame=['pixel-frame','gold-frame','holo-frame','pulse-frame','champion-frame'].includes(style.frame)?style.frame:'';
+ return '<span class="avatar-shell '+frame+'"><img class="avatar-art" src="'+decorateAvatar(originalAvatarSVG(n),n,style)+'" alt="'+esc(mascots[n].animal+' '+mascots[n].name)+'">'+(badges[style.badge]?'<span class="avatar-badge" aria-label="Emblema">'+badges[style.badge]+'</span>':'')+'</span>';
 };
 window.openWardrobe=async function(){
   await ready;if(!profile){await enterPlayer(true);return;}mode='player';renderWardrobe();base.go('wardrobe');
 };
+let wardrobeSlot='all';
+window.filterWardrobe=function(slot){if(slot==='all'||slotNames[slot]){wardrobeSlot=slot;renderWardrobe();}};
 function renderWardrobe(){
   if(!profile)return;
+  $('cosmeticCategory').value=wardrobeSlot;
   $('wardrobePreview').innerHTML=avatarHTML(profile);
   $('wardrobeItems').replaceChildren();
-  for(const item of state.cosmetics){
+  for(const item of [...state.cosmetics].filter(c=>wardrobeSlot==='all'||c.slot===wardrobeSlot).sort((a,b)=>a.required_xp-b.required_xp)){
     const owned=profile.xp>=item.required_xp,selected=profile.cosmetics[item.slot]===item.id;
     const box=document.createElement('div');box.className='panel cosmetic-item';
     const label=document.createElement('strong');label.textContent=item.name;
     const detail=document.createElement('p');detail.className='muted';detail.textContent=item.required_xp+' XP · '+(owned?'Desbloqueado':'Te faltan '+(item.required_xp-profile.xp)+' XP');
     const button=document.createElement('button');button.className='secondary';button.disabled=!owned||state.cosmeticBusy;button.setAttribute('aria-pressed',String(selected));button.textContent=selected?'QUITAR':owned?'EQUIPAR':'BLOQUEADO';button.onclick=()=>equipCosmetic(item.slot,selected?null:item.id);
-    box.append(label,detail,button);$('wardrobeItems').appendChild(box);
+    const preview=document.createElement('div');preview.className='cosmetic-preview';
+    if(['background','glasses','hat','frame','badge'].includes(item.slot))preview.innerHTML=avatarHTML({...profile,cosmetics:{...profile.cosmetics,[item.slot]:item.id}});
+    else if(item.slot==='theme'){preview.classList.add('theme-preview',item.id);preview.innerHTML='<span>LOADING ARCADE</span><i></i><i></i>';}
+    else{preview.classList.add('font-preview',item.id);preview.textContent='Player 01';}
+    const type=document.createElement('small');type.textContent=slotNames[item.slot]||'Cosmético';
+    box.append(preview,type,label,detail,button);$('wardrobeItems').appendChild(box);
   }
 }
 async function equipCosmetic(slot,id){
@@ -508,8 +593,7 @@ renderRewards=function(){
  const xp=profile?.xp||0,steps=rewardSteps(),next=steps.find(x=>x.at>xp);
  if(profile)void acknowledgeRewards(xp);
  $('rewardProgress').textContent='Nivel '+(Math.floor(xp/1800)+1)+' · '+(xp%1800)+'/1800 XP · '+state.chests.filter(c=>!c.opened_at).length+' cofres disponibles. '+(next?'Próximo desbloqueo: '+next.name+' ('+(next.at-xp)+' XP restantes)':'Completaste las recompensas actuales.');
- $('rewardTrack').replaceChildren();
- for(const step of steps){const row=document.createElement('div');row.className='milestone '+(xp>=step.at?'earned':'');const title=document.createElement('strong');title.textContent=step.at+' XP · '+step.name;const detail=document.createElement('small');detail.textContent=step.kind+' · '+(xp>=step.at?'✓ Desbloqueado':'Pendiente');row.append(title,detail);$('rewardTrack').appendChild(row);}
+ renderProgressTrack($('rewardTrack'));
 };
 
 function rewardInboxUI(){

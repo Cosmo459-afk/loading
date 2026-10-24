@@ -1,4 +1,4 @@
-"""v0.12 browser integration with real local SQL and mocked Auth. No production writes."""
+"""v0.14 browser integration with real local SQL and mocked Auth. No production writes."""
 import json,os,urllib.request
 from playwright.sync_api import sync_playwright
 BASE=os.environ.get('ARCADE_URL','http://127.0.0.1:8080').rstrip('/')
@@ -27,8 +27,8 @@ with sync_playwright() as p:
     assert page.locator('#homeWeekly li').count()==0
     page.get_by_role('button',name='CONTINUAR RUTA').click();page.wait_for_selector('#menu:not(.hidden)')
     assert page.locator('#category option').count()==2
-    page.wait_for_function("document.getElementById('quizProgress').textContent.includes('0 de 1')")
-    assert page.locator('#beginBtn').is_enabled();page.locator('#difficulty').select_option('medium');assert page.locator('#beginBtn').is_disabled();page.locator('#difficulty').select_option('easy')
+    page.wait_for_function("document.getElementById('quizProgress').textContent.includes('Trivia 1 de 1')")
+    assert page.locator('#beginBtn').is_enabled();assert page.locator('#quizSelect').count()==0;assert page.locator('#difficulty').is_hidden()
     def play(n,fail=False):
         fixture('/_test/control',{'ageStarts':True,'failSubmit':fail})
         page.locator('#beginBtn').click();page.wait_for_selector('#quiz:not(.hidden)')
@@ -51,13 +51,12 @@ with sync_playwright() as p:
     page.evaluate("go('menu')");page.wait_for_function('!document.getElementById("beginBtn").disabled')
     play(5,True)
     assert page.evaluate('profile.xp')==900;assert page.locator('#resultReview .review-item').count()==5
-    assert page.locator('#rewardBadge').is_visible() # Reload already adopted committed XP; badge survives recovery.
-    page.reload();page.wait_for_selector('#rewardBadge:not([hidden])')
-    page.locator('#rewardInbox').click();page.wait_for_selector('#rewards:not(.hidden)');page.wait_for_selector('#rewardBadge[hidden]',state='attached')
-    page.reload();page.wait_for_function('profile!==null');assert page.locator('#rewardBadge').is_hidden()
-    page.evaluate('openPlayer()');page.wait_for_selector('#menu:not(.hidden)');page.wait_for_function('document.querySelector("#quizSelect option")?.disabled')
-    assert page.locator('#beginBtn').is_disabled();assert page.locator('#quizSelect option').first.is_disabled()
-    page.locator('#difficulty').select_option('medium');page.wait_for_function('!document.getElementById("beginBtn").disabled')
+    assert page.locator('#rewardBadge').get_attribute('hidden') is None # Reload already adopted committed XP; badge survives recovery.
+    page.reload();page.wait_for_selector('#rewardBadge:not([hidden])',state='attached')
+    page.evaluate("openAccountPage('rewards')");page.wait_for_selector('#rewards:not(.hidden)');page.wait_for_selector('#rewardBadge[hidden]',state='attached')
+    page.reload();page.wait_for_function('profile!==null');assert page.locator('#rewardBadge').get_attribute('hidden') is not None
+    page.evaluate('openPlayer()');page.wait_for_selector('#menu:not(.hidden)');page.wait_for_function('!document.getElementById("beginBtn").disabled')
+    assert page.locator('#difficulty').input_value()=='medium'
     play(5)
     assert page.evaluate('profile.xp')==1800
     assert 'nivel 2' in page.locator('#levelToast').inner_text()
@@ -67,9 +66,8 @@ with sync_playwright() as p:
     assert page.locator('#homeProgress').get_by_role('button',name='ABRIR 1 COFRE').count()==1
     page.wait_for_selector('#levelToast[hidden]',state='attached')
     page.screenshot(path='/tmp/loading-v12-home-player.png',full_page=True)
-    page.evaluate("go('menu')");page.locator('#category').select_option('ps1');page.locator('#difficulty').select_option('medium');assert page.locator('#beginBtn').is_disabled()
-    page.locator('#difficulty').select_option('easy');assert page.locator('#beginBtn').is_enabled()
-    page.evaluate('openWardrobe()');page.wait_for_selector('#wardrobe:not(.hidden)');assert page.locator('#wardrobeItems .cosmetic-item').count()==6
+    page.evaluate("go('menu')");page.locator('#category').select_option('ps1');assert page.locator('#difficulty').input_value()=='easy';assert page.locator('#beginBtn').is_enabled()
+    page.evaluate('openWardrobe()');page.wait_for_selector('#wardrobe:not(.hidden)');assert page.locator('#wardrobeItems .cosmetic-item').count()==31
     page.locator('#wardrobeItems .cosmetic-item').filter(has_text='Gafas neón').get_by_role('button').click();page.wait_for_function('profile.cosmetics.glasses==="pink-glasses"')
     page.evaluate('showCollections()');page.wait_for_selector('#collection:not(.hidden)')
     assert page.locator('#collectionContent').is_hidden()
@@ -179,7 +177,7 @@ with sync_playwright() as p:
     assert fixture('/_test/control',{})['otpRequests']==[]
     page.get_by_role('button',name='CONTINUAR RUTA').click();page.wait_for_selector('#menu:not(.hidden)')
     for tier in ['easy','medium','hard']:
-        page.locator('#difficulty').select_option(tier);play(3)
+        assert page.locator('#difficulty').input_value()==tier;play(3)
         if tier!='hard':page.evaluate("go('menu')")
     assert page.evaluate('profile.xp')==1500
     assert page.locator('#accountProtection').is_visible()
@@ -197,4 +195,4 @@ with sync_playwright() as p:
     assert page.evaluate('profile.games')==3
     assert not errors,errors
     ctx.close();browser.close()
-print('PASS v0.12 browser: mascot-only profile; failure hides solutions; retry and interrupted-save recovery; single 900 XP grant; completion blocked; independent tiers; persisted badge acknowledgement; level toast; wardrobe; standalone HTML; 40 responsive screens; collection overview only, zero unknown card names/art/preview controls, first card revealed by chest, owned-only detail/featured, hidden-card direct access rejected, persisted progress; unified anonymous entry without email, no guest bypass or Mix option, home XP/cofre dashboard, honest unpublished weekly panel, optional reminder and same-UID email link; no JS errors.')
+print('PASS v0.14 browser: mascot-only profile; failure hides solutions; retry and interrupted-save recovery; single 900 XP grant; completion blocked; independent tiers; persisted badge acknowledgement; level toast; wardrobe; standalone HTML; 40 responsive screens; collection overview only, zero unknown card names/art/preview controls, first card revealed by chest, owned-only detail/featured, hidden-card direct access rejected, persisted progress; unified anonymous entry without email, no guest bypass or Mix option, home XP/cofre dashboard, honest unpublished weekly panel, optional reminder and same-UID email link; no JS errors.')

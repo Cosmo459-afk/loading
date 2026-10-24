@@ -1,14 +1,36 @@
-# LOADING ARCADE 0.13 — cartas Resident Evil 4 y audio retro
+# LOADING ARCADE 0.14 — progreso visible, comunidad y personalización
 
-**Actualización de interfaz lista para instalar sobre 0.9–0.12.** No requiere SQL, no reinicia XP, partidas, cartas, cofres ni cuentas. No se ha desplegado Cloudflare desde el entorno de desarrollo.
+**Actualizar desde 0.9–0.13: primero ejecutar `supabase/upgrade-v14.sql` en Supabase SQL Editor; después subir el HTML de esta versión a Cloudflare.** No reinicia XP, partidas, cartas, cofres ni cuentas. El entorno de desarrollo no ejecuta SQL remoto ni despliega Cloudflare.
 
 El propietario confirmó la dirección «LOADING · Archivo Retro» de la primera propuesta y aclaró que las fotos son referencias para crear nuevas composiciones. Se renovaron los 14 artes de Resident Evil 4 a partir de las referencias y la muestra aprobada, cuidando la cara frontal cuadrada de la caja Red Hawk y los rasgos reconocibles de objetos y armas, con fondos oscuros y luz de inventario para objetos y armas, y ambientes del juego para los personajes. El marco es HTML/CSS reutilizable: bisel metálico, tipografía pixel Silkscreen, encabezado Archivo Retro, imagen protagonista, título/juego/descripción debajo y pie con rareza/número. Comunes azules, épicas violetas/rosas y legendarias doradas.
 
-## Música y efectos originales
+## Solo efectos de sonido
 
-Audio procedural propio con Web Audio, sin grabaciones ni melodías tomadas de videojuegos y sin descargas adicionales. Bucle chiptune de menú y arreglo más suave durante la trivia; silencio musical en resultados y apertura para destacar las fanfarrias. Efectos al navegar, elegir respuesta, cambiar pregunta, aprobar/reintentar, desbloquear/equipar cosméticos, subir de nivel, abrir el cofre y revelar cada rareza. No se indica acierto/error al elegir: el resultado sigue reservado al cierre del quiz.
+Se retiró por completo la música, sus bucles y sus controles; las preferencias antiguas de música no pueden reactivarla. Se conservan los efectos originales de navegación, selección neutra, cambio de pregunta, resultado, nivel, cosméticos, apertura y revelación por rareza. Elegir una respuesta no da pistas de acierto. No hay archivos de videojuegos ni grabaciones externas.
 
-Control «♫ AUDIO» disponible en todas las pantallas, con interruptores y volúmenes separados para música y efectos; preferencias locales persistentes. No hay reproducción antes de interactuar. La música se pausa al ocultar la pestaña y se retoma al volver; se detienen las notas pendientes para evitar acumulaciones. Si Web Audio no está disponible o no logra iniciarse, se puede seguir jugando sin sonido. En móvil el primer toque habilita el contexto, sujeto a las políticas de sonido del dispositivo/navegador.
+Control «♪ EFECTOS» con interruptor y volumen persistentes. Sin autoplay antes de un gesto, silencio al quedar inactivo, pausa al ocultar la pestaña y fallback sin audio cuando el navegador no lo admite.
+
+## Progreso en el inicio
+
+La ruta completa aparece horizontalmente en el inicio, con cada cosmético y cofre, XP requerida, estados y próximo hito destacado. Se desplaza dentro de su propio contenedor, con teclado y táctil; la página no desborda. El acceso anterior «Recompensas» se llama «Progreso». En el inicio se evita duplicar el botón y los datos de sesión: la ruta ya está a la vista y el panel del jugador ofrece salida.
+
+## Trivias en orden fijo
+
+Solo se elige consola. Se quitaron el selector de trivias, sus títulos y la selección manual de dificultad. Se juega la primera pendiente de la consola en orden fácil → medio → difícil, `sort_order` y luego ID como desempate estable para todos. Los títulos tampoco viajan en las respuestas de listado/inicio del nuevo backend. Los tres contadores de dificultad siguen visibles como información.
+
+La comprobación de orden se hace en servidor, con bloqueo por perfil. Un intento activo se retoma, incluso si venía de la versión anterior; si fallás, la misma trivia sigue pendiente. Una aprobada no se repite. Al terminar, «Siguiente trivia» comienza directamente la siguiente; al acabar esa consola invita a elegir la otra. Las trivias de progreso no tienen tiempo. El desafío semanal sigue pendiente y será el único con cronómetro.
+
+## Comunidad sin competencia
+
+Vista real de hasta doce jugadores que eligen compartir apodo, avatar con cosméticos y nivel; ordenada por actividad reciente, sin puestos, puntos competitivos, jugadores inventados ni indicador falso de conexión. La cantidad corresponde únicamente a perfiles visibles. La visibilidad comienza desactivada y se puede activar/retirar desde el panel, con explicación clara de lo que se comparte. Actualización manual y después de cargar el jugador. Nunca se muestran correos, UUID ni historial. No reemplaza el futuro ranking semanal.
+
+## Personalización ampliada
+
+Se añaden **25 cosméticos**, para **31 en total**, en siete categorías: fondos, gafas/visores, accesorios, marcos, emblemas, temas y tipografías. Escenas SVG originales (ciudad, aurora, sala arcade, espacio, jardín y más), auriculares, visor, marcos con acabados y dos animados, cuatro emblemas, cuatro temas de menú y dos estilos de tipografía. No se usan GIF externos. Las animaciones respetan movimiento reducido.
+
+Cada ítem tiene vista previa y filtro por categoría; previsualizar no equipa. El servidor valida XP, categoría y propiedad, conserva los otros elementos equipados y permite quitarlos. Los ítems nuevos se desbloquean retroactivamente con la XP existente; no requieren volver a empezar. Los hitos llegan hasta 14.100 XP entre cofres de 1.800 XP. Para llegar a todos harán falta más trivias publicadas: el catálogo actual de seis solo entrega hasta 5.400 XP. No se modifican puntos ni se permite repetir para farmear.
+
+Los temas afectan el menú y la tipografía se aplica a nombres/títulos del menú; las preguntas y opciones mantienen una fuente legible. Nuevo logo «LOADING ARCADE» adaptado a partir de la referencia del propietario, incrustado en el HTML para escritorio y celular.
 
 ## Entrada única y portada
 
@@ -28,9 +50,13 @@ Al abrir una colección se muestran únicamente las cartas obtenidas en cofres. 
 
 Los artes y nombres de producción se conservan en los recursos del HTML independiente; esta entrega implementa el misterio de la interfaz, no un sistema de confidencialidad de assets frente a inspección del código. No afirmar que los recursos ausentes de la interfaz no viajan al cliente. Una entrega selectiva por propiedad requeriría cambiar a recursos remotos autenticados.
 
-## Actualizar desde 0.9–0.12
+## Actualizar desde 0.9–0.13
 
-Descargar `loading-arcade-v13.zip`, descomprimir y subir **solo `index.html`** a Cloudflare → Workers & Pages → loading-arcade → New deployment → Deploy. Confirmar «Versión 0.13» en el pie y refrescar con Ctrl+F5 si todavía aparece la anterior. No volver a ejecutar SQL para este cambio visual.
+1. Abrir [`supabase/upgrade-v14.sql`](https://github.com/Cosmo459-afk/loading/blob/supabase-setup/supabase/upgrade-v14.sql), copiar su contenido completo en **Supabase → SQL Editor → New query → Run**. Conserva el progreso y permite reejecución sin reinicios. Devuelve las cantidades por categoría de cosméticos.
+2. Descargar `loading-arcade-v14.zip`, descomprimir y subir **solo `index.html`** a Cloudflare → Workers & Pages → loading-arcade → New deployment → Deploy.
+3. Confirmar «Versión 0.14» en el pie y refrescar con Ctrl+F5 si aparece la anterior. Revisar Progreso, Personalización y elegir si compartir el jugador en Comunidad.
+
+Si falta el SQL nuevo, la comunidad se muestra temporalmente no disponible; el progreso existente no se borra. Aplicar el SQL antes del HTML para tener también la comprobación de orden en servidor. **No volver a ejecutar upgrades antiguos ni el reinicio 0.9.**
 
 ## Reglas implementadas
 
@@ -50,9 +76,9 @@ El propietario pidió eliminar todo el catálogo anterior y permitió reiniciar 
 
 Para actualizar, ejecutar **solo `supabase/upgrade-to-v09.sql`**: detecta si el proyecto está en 0.7 u 0.8 y aplica lo necesario en una transacción. En la primera instalación reinicia los datos de prueba; si se ejecuta otra vez tras una instalación correcta, conserva el progreso nuevo. El resultado debe mostrar common 8, epic 4 y legendary 2. No ejecutar además los upgrades individuales ni `migrations`.
 
-Después subir el HTML actual. Probar dos trivias perfectas para recibir un cofre de nivel 2, abrirlo y verificar el contador 1/14 en el álbum. Este paso SQL es únicamente para instalar el backend 0.9 que aún falte; no es parte de la actualización de interfaz 0.13.
+Después subir el HTML actual. Probar dos trivias perfectas para recibir un cofre de nivel 2, abrirlo y verificar el contador 1/14 en el álbum. Este paso SQL es únicamente para instalar el backend 0.9 que aún falte; no es parte de la actualización de versión 0.14.
 
-Base nueva: `setup.sql` → `upgrade-v06.sql` → `upgrade-v07.sql` → `upgrade-to-v09.sql`. No ejecutar también 0.8/0.9 individuales: el archivo único ya los incluye.
+Base nueva: `setup.sql` → `upgrade-v06.sql` → `upgrade-v07.sql` → `upgrade-to-v09.sql` → `upgrade-v14.sql`. No ejecutar también 0.8/0.9 individuales: el archivo único ya los incluye.
 
 La corrección del límite SQL de puntuación a 900 está en `upgrade-v08.sql` y también en 0.9 para proyectos que ya habían aplicado la revisión previa de 0.8.
 
@@ -64,7 +90,7 @@ Los artes de producción están en `assets/cards/re4/art-v13/`: cuatro láminas 
 
 El build incrusta cada lámina una sola vez, junto con Silkscreen Bold (OFL) y los estilos; sin CDN ni fuentes externas. El HTML final es independiente y está dentro del límite de tamaño de assets estáticos. El build falla si falta arte. `npm run build:preview` solo sirve para desarrollo y no debe empaquetarse.
 
-`loading-arcade-v13.zip` contiene el HTML independiente, README y licencias. No subir al Worker los JSON con respuestas, SQL, tests, fixture ni node_modules. Para reconstruir: `npm run build` y `node scripts/package-release.mjs`. Los ZIP previos se conservan como versiones históricas. No aplicar de nuevo la migración 0.9 al actualizar solo la interfaz.
+`loading-arcade-v14.zip` contiene el HTML independiente, README y licencias. No subir al Worker los JSON con respuestas, SQL, tests, fixture ni node_modules. Para reconstruir: `npm run build` y `node scripts/package-release.mjs`. Los ZIP previos se conservan como versiones históricas. No aplicar de nuevo la migración 0.9 al actualizar solo la interfaz.
 
 ## Desarrollo y validación
 
@@ -78,7 +104,7 @@ npm run test:database
 python -m http.server 8080 --bind 0.0.0.0
 ```
 
-En otra terminal: `npm run test:fixture`. Luego `npm run test:browser` y `python tests/smoke.py`. `ARCADE_URL` cambia el puerto. La fixture usa PGlite y Auth simulado; las solicitudes de integración se interceptan y no escriben en Supabase remoto ni envían correos. Nunca desplegar la fixture.
+En otra terminal: `npm run test:fixture`. Luego `npm run test:browser`, `python tests/home-v14.py`, `python tests/audio.py` y `python tests/smoke.py`. Ejecutar las pruebas que usan la fixture de forma secuencial porque reinician únicamente su base local. `ARCADE_URL` cambia el puerto. La fixture usa PGlite y Auth simulado; las solicitudes de integración se interceptan y no escriben en Supabase remoto ni envían correos. Nunca desplegar la fixture.
 
 Pruebas de servidor: reinicio autorizado conserva identidades; catálogo 8/4/2; dos perfectas entregan 1.800 XP y un solo cofre; XP sin cartas; partición exacta de probabilidades 85/10/5; normalización de rarezas agotadas; 14 premios únicos; colección completa no consume cofres; reintentos idempotentes, aislamiento por usuario y rechazo de escrituras/invocaciones privadas.
 
@@ -90,10 +116,10 @@ Mantener Anonymous Sign-ins habilitado y Confirm email para vinculación opciona
 
 - Imágenes de las siguientes colecciones: Metal Gear Solid PS1, Silent Hill 2 PS2 y Parasite Eve 2 PS1, todos originales.
 - Más trivias: el catálogo actual tiene seis; todas perfectas permiten tres cofres. Para completar la colección harán falta nuevos desafíos, sin habilitar repetición de trivias aprobadas.
-- Desafío semanal temático de unas 20 preguntas, un intento, ranking por aciertos/tiempo y carta exclusiva por perfect score. Encuesta de cuatro juegos en Instagram con enlace desde la app.
+- Desafío semanal temático de 20 preguntas con tiempo por pregunta (sin responder: cero), un intento, ranking por aciertos/tiempo y carta exclusiva por perfect score. Encuesta de cuatro juegos en Instagram con enlace desde la app.
 - Beneficio de compra accesible por progreso; porcentaje, condiciones y validación pendientes. No anunciar descuentos inexistentes.
 
 
 Validación 0.12: entrada anónima sin email, selección obligatoria de personaje, bloqueo del acceso invitado antiguo y ausencia del Mix en la interfaz; dashboard con usuario, 1.800 XP y cofre; estado semanal pendiente honesto; tres partidas sin correo y recordatorio posponible; vinculación PKCE simulada conserva UID, 1.500 XP e historial. Las pruebas públicas no crean identidades remotas ni envían correo.
 
-Validación 0.13: `python tests/audio.py` comprueba la señal real del grafo Web Audio, ausencia de autoplay, música/efectos con mute independiente, persistencia de ambos volúmenes, pausa/reanudación en segundo plano, resultados sin música, controles responsive y fallback sin AudioContext. `tests/cloud.py` valida que la nueva interfaz mantiene progreso, misterio y premios. No requiere SQL ni reinicio.
+Validación 0.14: toda la suite SQL anterior más `route-community.mjs` comprueba orden fijo (incluyendo empates y varios quizzes en una dificultad), rechazo de saltos, intento activo/reintentos, títulos ausentes, privacidad y opt-in de comunidad, 31 cosméticos en siete categorías, límites de XP y migración reejecutable sin reinicio. `home-v14.py` prueba el logo, ruta horizontal, comunidad real local, altas/bajas, vistas previas/equipamiento/persistencia, temas/fuentes legibles, movimiento reducido y continuación con un clic. `audio.py` comprueba señal de efectos, silencio inactivo incluso con preferencias antiguas de música, mute/volumen y pausa. Sin solicitudes de escritura ni correos a producción.

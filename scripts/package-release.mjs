@@ -18,6 +18,9 @@ for(const image of originals.images){
 const art=JSON.parse(await readFile(new URL('content/collections/re4-art-provenance-v13.json',root),'utf8'));
 for(const board of art.boards){const bytes=await readFile(new URL('assets/cards/re4/'+board.file,root));if(createHash('sha256').update(bytes).digest('hex')!==board.sha256)throw new Error('Artwork changed: '+board.file);}
 const catalog=JSON.parse(await readFile(new URL('content/collections/re4.json',root),'utf8'));
+const logo=await readFile(new URL('assets/brand/loading-arcade.png',root));
+const brand=JSON.parse(await readFile(new URL('assets/brand/provenance.json',root),'utf8'));
+if(createHash('sha256').update(logo).digest('hex')!==brand.sha256||!html.includes(logo.toString('base64')))throw new Error('Brand logo changed or not embedded');
 if(catalog.cards.length!==14)throw new Error('Expected 14 RE4 collectibles');
 for(const file of new Set(catalog.cards.map(c=>c.imageFile))){
  const bytes=await readFile(new URL('assets/cards/re4/'+file,root));
