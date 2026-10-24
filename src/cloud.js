@@ -136,7 +136,8 @@ async function useSession(session){
   state.cosmetics=[];state.owned=[];state.chests=[];state.chestBusy=false;state.catalog=null;state.catalogLoading=false;state.catalogError=false;state.catalogPromise=null;
   state.uid=uid;state.profileLoading=!!uid;state.profileError=false;state.game=null;state.answers=[];state.pending=null;profile=null;mode='guest';
   $('recoverGame').hidden=true;
-  if($('cardDetail').open)$('cardDetail').close();
+  selectedCollection=null;
+  if($('cardDetail').open)$('cardDetail').close();$('cardDetailArt').replaceChildren();
   $('historyList').replaceChildren();$('resultReview').replaceChildren();$('chestList').replaceChildren();$('chestPrize').replaceChildren();
   for(const id of ['playerStats','album','albumStatus','rewardTrack','rewardProgress','profilePreview','scoreTitle','scoreSummary','xpSummary','resultDetail','triviaResultProgress','wardrobeItems','wardrobePreview'])$(id).replaceChildren();
   $('nickname').value='';$('photoInput').value='';$('linkEmail').value='';$('linkMessage').textContent='';uploadedPhoto=null;selectedAvatar=0;
@@ -185,6 +186,7 @@ showProfile=()=>enterPlayer(true);
 window.openAccountPage=async function(id){
   await ready;if(!state.uid){base.go('auth');return;}
   if(!profile){await enterPlayer(true);return;}
+  if(id==='collection')selectedCollection=null;
   mode='player';base.go(id);
 };
 window.createPlayer=async function(){
@@ -547,8 +549,10 @@ async function acknowledgeRewards(xp){
  profile.rewardsSeenXP=Number(unpack(data).rewards_seen_xp);rewardInboxUI();
 }
 
-let selectedCollection='re4';
+let selectedCollection=null;
+function mysteryCardMarkup(){return '<div class="mystery-card" role="img" aria-label="Coleccionable por descubrir"><span>LOADING</span><strong aria-hidden="true">?</strong><small>POR DESCUBRIR</small></div>';}
 function cardMarkup(c,locked=false){
+ if(locked)return mysteryCardMarkup();
  const rarity=c.rarityKey||({Común:'common','Épica':'epic','Legendaria':'legendary'})[c.rarity]||'common';
  let artwork;
  if(c.image){
@@ -557,34 +561,51 @@ function cardMarkup(c,locked=false){
  }else artwork='<span class="pending-art">Imagen original pendiente</span>';
  return '<article class="game-card rarity-'+rarity+(locked?' card-locked':'')+'"><div class="card-top"><span class="card-brand">LOADING<small>ARCHIVO RETRO</small></span><span class="card-number">'+String(c.ordinal||0).padStart(3,'0')+'</span></div><div class="card-art">'+artwork+'</div><div class="card-caption"><h3>'+esc(c.name)+'</h3><span class="card-game">'+esc(c.game)+'</span><p>'+esc(c.description||c.game)+'</p></div><div class="card-footer"><span class="rarity-label">'+esc(c.rarity)+(locked?' 🔒':'')+'</span><span class="card-serial">'+String(c.ordinal||0).padStart(2,'0')+'/14</span></div></article>';
 }
-cardHTML=function(c,equipped=false,locked=false){return '<div class="featured-card'+(equipped?' equipped':'')+'">'+cardMarkup(c,locked)+'</div>';};
-window.selectCollection=function(id){if(collectionDefinitions.some(c=>c.id===id)){selectedCollection=id;renderAlbum();}};
+cardHTML=function(c,equipped=false,locked=false){if(locked||!profile?.unlocked?.includes(c.id))return mysteryCardMarkup();return '<div class="featured-card'+(equipped?' equipped':'')+'">'+cardMarkup(c)+'</div>';};
+window.showCollections=async function(){
+ await ready;if(!state.uid||!profile){await enterPlayer(true);return;}
+ selectedCollection=null;mode='player';base.go('collection');
+};
+window.selectCollection=function(id){
+ if(id===null||collectionDefinitions.some(c=>c.id===id)){const focus=id||selectedCollection;selectedCollection=selectedCollection===id?null:id;renderAlbum();[...$('collectionOverview').querySelectorAll('button')].find(b=>b.dataset.collection===focus)?.focus({preventScroll:true});}
+};
 renderAlbum=function(){
- const list=$('album');list.replaceChildren();$('collectionOverview').replaceChildren();
+ const list=$('album');list.replaceChildren();$('collectionOverview').replaceChildren();$('collectionMystery').replaceChildren();$('collectionContent').hidden=true;
  if(!profile){$('albumStatus').textContent='Creá tu jugador para guardar coleccionables.';return;}
  syncUnlocks();
  for(const collection of collectionDefinitions){
   const items=cards.filter(c=>c.collection===collection.id),owned=items.filter(c=>profile.unlocked.includes(c.id));
-  const button=document.createElement('button');button.className='collection-summary secondary';button.setAttribute('aria-pressed',String(selectedCollection===collection.id));
-  const title=document.createElement('strong');title.textContent=collection.title+' · '+owned.length+'/'+items.length;
-  const detail=document.createElement('small');detail.textContent=collection.edition+' · Te faltan '+(items.length-owned.length);
-  const breakdown=document.createElement('small');breakdown.textContent=[['common','Comunes'],['epic','Épicas'],['legendary','Legendarias']].map(([key,name])=>name+' '+owned.filter(c=>c.rarityKey===key).length+'/'+items.filter(c=>c.rarityKey===key).length).join(' · ');
-  button.append(title,detail,breakdown);button.onclick=()=>selectCollection(collection.id);$('collectionOverview').appendChild(button);
+  const button=document.createElement('button');button.className='collection-summary secondary';button.dataset.collection=collection.id;button.setAttribute('aria-expanded',String(selectedCollection===collection.id));button.setAttribute('aria-controls','collectionContent');
+  const mark=document.createElement('span');mark.className='collection-mark';mark.textContent='?';mark.setAttribute('aria-hidden','true');
+  const copy=document.createElement('span');copy.className='collection-copy';
+  const title=document.createElement('strong');title.textContent=collection.title;
+  const count=document.createElement('span');count.className='collection-count';count.textContent=owned.length+' de '+items.length+' descubiertos';
+  const action=document.createElement('small');action.textContent=selectedCollection===collection.id?'CERRAR COLECCIÓN':'VER MI COLECCIÓN';
+  copy.append(title,count,action);button.append(mark,copy);button.onclick=()=>selectCollection(collection.id);$('collectionOverview').appendChild(button);
  }
- $('albumStatus').textContent=(profile.featured||[]).length+' de 3 destacados · Resident Evil 4';
- const items=cards.filter(c=>c.collection===selectedCollection);
- for(const c of items){
-  const owned=profile.unlocked.includes(c.id),featured=profile.featured.includes(c.id),box=document.createElement('div');box.className='album-entry';box.innerHTML=cardMarkup(c,!owned);
-  const detail=document.createElement('small');detail.className='card-ownership';detail.textContent=owned?(featured?'✓ En tu perfil':'✓ Conseguida'):'Se consigue en cofres';
+ const collection=collectionDefinitions.find(c=>c.id===selectedCollection);if(!collection)return;
+ $('collectionContent').hidden=false;$('collectionHeading').textContent=collection.title;
+ const items=cards.filter(c=>c.collection===selectedCollection),discovered=items.filter(c=>profile.unlocked.includes(c.id)),missing=items.length-discovered.length;
+ list.classList.toggle('single-card',discovered.length===1);
+ $('albumStatus').textContent=discovered.length+' de '+items.length+' descubiertos · '+profile.featured.length+' de 3 destacados';
+ if(missing){
+  const note=document.createElement('div');note.className='mystery-note';
+  note.innerHTML=mysteryCardMarkup();const copy=document.createElement('div');const title=document.createElement('strong');title.textContent=missing+' '+(missing===1?'coleccionable por descubrir':'coleccionables por descubrir');
+  const text=document.createElement('p');text.textContent=discovered.length?'Tu próximo cofre puede revelar una nueva sorpresa.':'Tu colección empieza con una sorpresa. Abrí un cofre para descubrir tu primera carta.';
+  copy.append(title,text);note.appendChild(copy);$('collectionMystery').appendChild(note);
+ }else{$('collectionMystery').textContent='¡Completaste esta colección!';}
+ for(const c of discovered){
+  const featured=profile.featured.includes(c.id),box=document.createElement('div');box.className='album-entry';box.innerHTML=cardMarkup(c);
+  const detail=document.createElement('small');detail.className='card-ownership';detail.textContent=featured?'✓ En tu perfil':'✓ Conseguida';
   const preview=document.createElement('button');preview.className='secondary mini';preview.textContent='VER CARTA';preview.onclick=()=>showCollectible(c.id);
   const controls=document.createElement('div');controls.className='card-controls';controls.appendChild(preview);box.append(detail,controls);
-  if(owned){const button=document.createElement('button');button.className='secondary mini';button.textContent=featured?'QUITAR DEL PERFIL':'EXHIBIR';button.disabled=state.featureBusy;button.setAttribute('aria-pressed',String(featured));button.onclick=()=>toggleFeatured(c.id);controls.appendChild(button);}
+  const button=document.createElement('button');button.className='secondary mini';button.textContent=featured?'QUITAR DEL PERFIL':'EXHIBIR';button.disabled=state.featureBusy;button.setAttribute('aria-pressed',String(featured));button.onclick=()=>toggleFeatured(c.id);controls.appendChild(button);
   list.appendChild(box);
  }
 };
 window.showCollectible=function(id){
- const c=cards.find(c=>c.id===id);if(!c||!profile)return;
- $('cardDetailArt').innerHTML=cardMarkup(c,!profile.unlocked.includes(id));$('cardDetail').showModal();
+ const c=cards.find(c=>c.id===id);if(!c||!profile?.unlocked?.includes(id))return;
+ $('cardDetailArt').innerHTML=cardMarkup(c);$('cardDetail').showModal();
 };
 
 window.openChests=async function(){

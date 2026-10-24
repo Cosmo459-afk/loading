@@ -1,4 +1,4 @@
-"""v0.10 browser integration with real local SQL and mocked Auth. No production writes."""
+"""v0.11 browser integration with real local SQL and mocked Auth. No production writes."""
 import json,os,urllib.request
 from playwright.sync_api import sync_playwright
 BASE=os.environ.get('ARCADE_URL','http://127.0.0.1:8080').rstrip('/')
@@ -57,27 +57,27 @@ with sync_playwright() as p:
     page.locator('#difficulty').select_option('easy');assert page.locator('#beginBtn').is_enabled()
     page.evaluate('openWardrobe()');page.wait_for_selector('#wardrobe:not(.hidden)');assert page.locator('#wardrobeItems .cosmetic-item').count()==6
     page.locator('#wardrobeItems .cosmetic-item').filter(has_text='Gafas neón').get_by_role('button').click();page.wait_for_function('profile.cosmetics.glasses==="pink-glasses"')
-    page.evaluate("go('collection')");page.wait_for_selector('#album .game-card')
-    assert page.locator('#album .game-card').count()==14
-    assert page.locator('#album svg image').count()==14
-    assert page.locator('#album .pending-art').count()==0
-    decoded=page.locator('#album svg image').evaluate_all('''els=>Promise.all(els.map(async el=>{const i=new Image();i.src=el.getAttribute('href');await i.decode();return [i.naturalWidth,i.naturalHeight];}))''')
-    assert len(decoded)==14 and all(w>0 and h>0 for w,h in decoded)
-    assert page.locator('#album .card-brand').count()==14
-    assert page.locator('#album .card-footer').count()==14
-    assert page.locator('#album .card-serial').first.inner_text()=='01/14'
-    assert page.locator('#album .card-serial').last.inner_text()=='14/14'
-    assert page.locator('#album .card-locked .card-art').first.evaluate('(e)=>getComputedStyle(e).filter')=='none'
-    assert len(set(page.locator('#album svg image').evaluate_all('els=>els.map(e=>e.getAttribute("href"))')))==4
-    page.evaluate('document.fonts.ready')
-    assert page.evaluate("document.fonts.check('700 14px LoadingPixel')")
-    assert 'PREVISUALIZACIÓN' not in page.locator('body').inner_text()
-    assert page.locator('#album .rarity-common').count()==8
-    assert page.locator('#album .rarity-epic').count()==4
-    assert page.locator('#album .rarity-legendary').count()==2
-    assert '0/14' in page.locator('#collectionOverview').inner_text()
-    assert 'Comunes 0/8' in page.locator('#collectionOverview').inner_text()
-    assert page.get_by_role('button',name='EXHIBIR',exact=True).count()==0
+    page.evaluate('showCollections()');page.wait_for_selector('#collection:not(.hidden)')
+    assert page.locator('#collectionContent').is_hidden()
+    assert page.locator('#album .game-card').count()==0
+    assert '0 de 14' in page.locator('#collectionOverview').inner_text()
+    names=page.evaluate('cards.map(c=>c.name)')
+    def no_hidden_card_details(except_name=None):
+        html=page.locator('#collection').inner_html()
+        assert all(name not in html for name in names if name.casefold()!=(except_name or '').casefold()), [name for name in names if name.casefold()!=(except_name or '').casefold() and name in html]
+    no_hidden_card_details()
+    page.locator('#collectionOverview button').click()
+    assert page.locator('#collectionContent').is_visible()
+    assert '14 coleccionables por descubrir' in page.locator('#collectionMystery').inner_text()
+    assert page.locator('#album .game-card').count()==0
+    assert page.locator('#collection svg image').count()==0
+    assert page.locator('#collection').get_by_role('button',name='VER CARTA',exact=True).count()==0
+    no_hidden_card_details()
+    page.evaluate("showCollectible('key')")
+    assert page.locator('#cardDetail').is_hidden()
+    assert page.locator('#cardDetailArt').inner_html()==''
+    assert 'Llave insignia' not in page.evaluate('cardHTML(cards[0])')
+    page.screenshot(path='/tmp/re4-v11-empty-collection.png',full_page=True)
     page.evaluate('openChests()');page.wait_for_selector('#chests:not(.hidden)')
     assert '1 cofres' in page.locator('#chestBalance').inner_text()
     assert '85%' in page.locator('.chest-rules').inner_text()
@@ -97,30 +97,49 @@ with sync_playwright() as p:
     assert len(page.evaluate('profile.unlocked'))==1
     page.locator('#chestPrize .game-card').evaluate('(e)=>Promise.all(e.getAnimations().map(a=>a.finished))')
     page.screenshot(path='/tmp/loading-re4-chest-preview.png',full_page=True)
-    page.evaluate("go('collection')")
-    assert '1/14' in page.locator('#collectionOverview').inner_text()
+    page.evaluate('showCollections()');page.wait_for_selector('#collection:not(.hidden)')
+    assert '1 de 14' in page.locator('#collectionOverview').inner_text()
+    assert page.locator('#collectionContent').is_hidden()
+    page.screenshot(path='/tmp/re4-v11-overview.png',full_page=True)
+    page.locator('#collectionOverview button').click()
+    assert page.locator('#album .game-card').count()==1
+    assert page.locator('#album svg image').count()==1
+    assert page.locator('#album h3').inner_text()==awarded
+    assert '13 coleccionables por descubrir' in page.locator('#collectionMystery').inner_text()
+    no_hidden_card_details(awarded)
+    decoded=page.locator('#album svg image').evaluate_all("els=>Promise.all(els.map(async el=>{const i=new Image();i.src=el.getAttribute('href');await i.decode();return i.naturalWidth>0;}))")
+    assert decoded==[True]
     page.get_by_role('button',name='EXHIBIR',exact=True).click()
     page.wait_for_function('profile.featured.length===1')
-    page.locator('#album .album-entry').filter(has=page.get_by_role('heading',name='El Buhonero',exact=True)).get_by_role('button',name='VER CARTA').click()
+    page.locator('#album').get_by_role('button',name='VER CARTA',exact=True).click()
     assert page.locator('#cardDetail').is_visible()
-    assert page.locator('#cardDetail .rarity-legendary').count()==1
+    assert page.locator('#cardDetail h3').inner_text()==awarded
     page.locator('#cardDetail').get_by_role('button',name='Cerrar detalle').click()
-    page.screenshot(path='/tmp/loading-re4-album-preview.png',full_page=True)
-    page.set_viewport_size({'width':1280,'height':1100})
-    page.locator('#album').screenshot(path='/tmp/re4-gallery-desktop.png')
-    page.evaluate("""()=>{
-      const preview=document.createElement('div');preview.id='designShowcase';preview.style.cssText='width:1100px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;padding:28px;background:#08080a;';
-      const cards=document.querySelectorAll('#album .game-card');for(const i of [0,11,13])preview.appendChild(cards[i].cloneNode(true));document.body.appendChild(preview);
-    }""")
-    page.locator('#designShowcase').screenshot(path='/tmp/re4-v10-showcase.png')
-    page.evaluate('document.getElementById("designShowcase").remove()')
+    unknown=page.evaluate('cards.find(c=>!profile.unlocked.includes(c.id)).id')
+    page.evaluate('(id)=>showCollectible(id)',unknown)
+    assert page.locator('#cardDetail').is_hidden()
+    page.evaluate('document.fonts.ready')
+    assert page.evaluate("document.fonts.check('700 14px LoadingPixel')")
+    page.screenshot(path='/tmp/re4-v11-discovered.png',full_page=True)
+    page.get_by_role('button',name='VOLVER A COLECCIONES').click()
+    assert page.locator('#collectionContent').is_hidden()
+    assert page.locator('#album .game-card').count()==0
+    page.reload();page.wait_for_function('profile?.unlocked?.length===1 && profile?.featured?.length===1')
+    assert page.evaluate('profile.xp')==1800
+    page.evaluate('showCollections()');page.wait_for_selector('#collection:not(.hidden)')
+    assert '1 de 14' in page.locator('#collectionOverview').inner_text()
+    assert page.locator('#collectionContent').is_hidden()
     for width in [320,390,768,1280]:
         page.set_viewport_size({'width':width,'height':844})
         for screen in ['home','menu','rewards','wardrobe','result','profile','collection','chests','chestOpening']:
             page.evaluate('(id)=>go(id)',screen)
             page.evaluate('()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))')
             assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),(width,screen,page.evaluate('[document.documentElement.scrollWidth,innerWidth,document.body.scrollWidth]'),page.evaluate('Array.from(document.querySelectorAll("body *")).filter(e=>e.getBoundingClientRect().right>innerWidth+1).map(e=>[e.tagName,e.id,e.className,e.textContent.slice(0,80),e.getBoundingClientRect().right]).slice(0,12)'))
+        page.evaluate("go('collection');selectCollection('re4')")
+        assert page.locator('#album .game-card').count()==1
+        assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),('discovered collection',width)
+        page.evaluate('selectCollection(null)')
     page.set_viewport_size({'width':390,'height':844});page.evaluate("go('rewards')");page.screenshot(path='/tmp/loading-v08-rewards.png',full_page=True)
     assert not errors,errors
     ctx.close();browser.close()
-print('PASS v0.10 browser: mascot-only profile; failure hides solutions; retry and interrupted-save recovery; single 900 XP grant; completion blocked; independent tiers; persisted badge acknowledgement; level toast; wardrobe; standalone HTML; 36 responsive screens; RE4 8/4/2, progress, featured, animated chest and committed-open recovery, stored prize replay and modal preview; no JS errors.')
+print('PASS v0.11 browser: mascot-only profile; failure hides solutions; retry and interrupted-save recovery; single 900 XP grant; completion blocked; independent tiers; persisted badge acknowledgement; level toast; wardrobe; standalone HTML; 40 responsive screens; collection overview only, zero unknown card names/art/preview controls, first card revealed by chest, owned-only detail/featured, hidden-card direct access rejected, persisted progress; no JS errors.')
