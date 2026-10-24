@@ -8,7 +8,7 @@ const returning=new URLSearchParams(location.search).has('code');
 const client=createClient(config.url,config.publishableKey,{
   auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
 });
-const state={session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null};
+const state={session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false};
 profile=null; // Never turn a local profile into a verified cloud account.
 
 function message(text){$('cloudNotice').textContent=text;$('cloudNotice').hidden=!text;}
@@ -51,7 +51,7 @@ function accountUI(){
     return;
   }
   const xp=profile.xp,level=Math.floor(xp/1000)+1;
-  const sorted=[...cards].sort((a,b)=>a.at-b.at);
+  const sorted=rewardSteps();
   const next=sorted.find(c=>c.at>xp);
   const previous=[...sorted].reverse().find(c=>c.at<=xp)?.at||0;
   const percent=next?Math.min(100,Math.max(0,(xp-previous)/(next.at-previous)*100)):100;
@@ -73,6 +73,8 @@ function publicError(error){
   if(/already.*registered|already.*exists|email.*exists/i.test(text))return 'Ese correo ya tiene una cuenta. No podemos fusionar sus progresos automáticamente. Conservá esta sesión mientras decidimos cómo recuperar tu cuenta anterior.';
   if(/rate|seconds|too many/i.test(text))return 'Esperá unos segundos antes de volver a intentarlo.';
   if(/expired|jwt|refresh token/i.test(text))return 'Tu sesión o enlace venció. Volvé a ingresar con tu correo.';
+  if(/Difficulty locked/i.test(text))return 'Esta dificultad está bloqueada. Completá primero el nivel anterior de esa misma consola.';
+  if(/Cosmetic locked/i.test(text))return 'Todavía no alcanzaste los XP necesarios para ese cosmético.';
   if(/not enough/i.test(text))return 'Todavía no hay suficientes preguntas para ese reto. Elegí otra categoría.';
   if(/fetch|network|timeout|connection/i.test(text))return 'No pudimos conectar. Revisá tu conexión y volvé a intentar.';
   return 'No pudimos completar la operación. Volvé a intentar; si sigue ocurriendo, avisá a LOADING.';
@@ -81,20 +83,22 @@ function unpack(row){return Array.isArray(row)?row[0]:row;}
 function adopt(row){
   row=unpack(row);
   if(!row){profile=null;accountUI();return;}
-  profile={name:row.nickname,avatar:row.avatar,photo:row.photo,xp:Number(row.xp),games:row.games,featured:row.featured||[],unlocked:[]};
+  profile={name:row.nickname,avatar:row.avatar,photo:row.photo,xp:Number(row.xp),games:row.games,featured:row.featured||[],unlocked:[],cosmetics:row.cosmetics||{}};
   syncUnlocks();accountUI();
 }
 async function loadProfile(uid,version){
   state.profileLoading=true;state.profileError=false;accountUI();
   try{
-    const [player,catalog]=await Promise.all([
+    const [player,catalog,cosmetics]=await Promise.all([
       client.from('arcade_profiles').select('*').eq('id',uid).maybeSingle(),
-      client.from('arcade_cards').select('id,name,required_xp')
+      client.from('arcade_cards').select('id,name,required_xp,kind,rarity'),
+      client.from('arcade_cosmetics').select('id,slot,name,required_xp')
     ]);
     if(version!==state.version)return;
     if(player.error)throw player.error;
     if(catalog.error)throw catalog.error;
-    for(const c of catalog.data){const local=cards.find(x=>x.id===c.id);if(local){local.at=c.required_xp;local.name=c.name;}}
+    if(cosmetics.error)throw cosmetics.error;state.cosmetics=cosmetics.data;
+    for(const c of catalog.data){const local=cards.find(x=>x.id===c.id);if(local){local.at=c.required_xp;local.name=c.name;local.kind=c.kind;local.rarity=({common:'Común',rare:'Rara',epic:'Épica',legendary:'Legendaria'})[c.rarity]||'Por definir';}}
     adopt(player.data);
   }catch(e){if(version===state.version)state.profileError=true;throw e;}
   finally{if(version===state.version){state.profileLoading=false;accountUI();}}
@@ -113,11 +117,11 @@ async function useSession(session){
   state.session=session;
   if(uid===state.uid)return;
   const version=++state.version;
-  state.catalog=null;state.catalogLoading=false;state.catalogError=false;state.catalogPromise=null;
+  state.cosmetics=[];state.catalog=null;state.catalogLoading=false;state.catalogError=false;state.catalogPromise=null;
   state.uid=uid;state.profileLoading=!!uid;state.profileError=false;state.game=null;state.answers=[];state.pending=null;profile=null;mode='guest';
   $('recoverGame').hidden=true;
   $('historyList').replaceChildren();$('resultReview').replaceChildren();
-  for(const id of ['playerStats','album','albumStatus','rewardTrack','rewardProgress','profilePreview','scoreTitle','scoreSummary','xpSummary','resultDetail','triviaResultProgress'])$(id).replaceChildren();
+  for(const id of ['playerStats','album','albumStatus','rewardTrack','rewardProgress','profilePreview','scoreTitle','scoreSummary','xpSummary','resultDetail','triviaResultProgress','wardrobeItems','wardrobePreview'])$(id).replaceChildren();
   $('nickname').value='';$('photoInput').value='';$('linkEmail').value='';$('linkMessage').textContent='';uploadedPhoto=null;selectedAvatar=0;
   accountUI();
   if(!uid){message('');base.go('home');return;}
@@ -255,6 +259,7 @@ renderMenu=function(){
     if(notice)notice.textContent='Progreso guardado en tu cuenta. El ranking global todavía no está disponible.';
     const nav=$('playerStats').querySelector('.nav-extra');
     const btn=document.createElement('button');btn.className='secondary';btn.textContent='MIS PARTIDAS';btn.onclick=()=>showHistory();nav.appendChild(btn);
+    const wardrobe=document.createElement('button');wardrobe.className='secondary';wardrobe.textContent='VESTUARIO';wardrobe.onclick=()=>openWardrobe();nav.appendChild(wardrobe);
   }
 };
 // base.go calls the current global renderMenu, so enhancements apply everywhere.
@@ -285,22 +290,26 @@ function renderQuizCatalog(){
       const rows=groupQuizzes(cat,tier),done=rows.filter(q=>q.completed).length;
       const b=document.createElement('button');b.type='button';b.setAttribute('aria-pressed',String(tier===level));
       b.append(document.createTextNode(tierNames[tier]));
-      const count=document.createElement('small');count.textContent=state.catalogLoading?'Cargando…':state.catalogError?'Sin datos':!rows.length?'Próximamente':guest?rows.length+' disponibles':done+' / '+rows.length;
+      const count=document.createElement('small');count.textContent=state.catalogLoading?'Cargando…':state.catalogError?'Sin datos':!rows.length?'Próximamente':rows.every(q=>q.unlocked===false)?'Bloqueado':guest?rows.length+' disponibles':done+' / '+rows.length;
       b.append(count);b.onclick=()=>{$('difficulty').value=tier;renderQuizCatalog();};overview.appendChild(b);
     }
   }
   const rows=groupQuizzes(cat,level),done=rows.filter(q=>q.completed).length;
+  const locked=!mix&&rows.length>0&&rows.every(q=>q.unlocked===false);
+  const mixLocked=mix&&level!=='easy'&&(guest||!['ps1','ps2'].every(c=>groupQuizzes(c,level).length>0&&groupQuizzes(c,level).every(q=>q.unlocked)));
   const chosen=$('quizSelect').value;$('quizSelect').replaceChildren();
-  for(const q of rows){const option=document.createElement('option');option.value=q.id;option.textContent=(q.completed?'✓ ':'')+q.title+(q.completed?' · completada':'');$('quizSelect').appendChild(option);}
+  for(const q of rows){const option=document.createElement('option');option.value=q.id;option.disabled=q.unlocked===false;option.textContent=(q.completed?'✓ ':'')+q.title+(q.completed?' · completada':'');$('quizSelect').appendChild(option);}
   if(rows.some(q=>q.id===chosen))$('quizSelect').value=chosen;
   else if(rows.some(q=>!q.completed))$('quizSelect').value=rows.find(q=>!q.completed).id;
-  if(mix){progress.textContent='Modo libre: partida aleatoria que no modifica el contador de trivias por consola.';}
+  if(mix&&mixLocked){progress.textContent='Mix avanzado bloqueado: completá los niveles anteriores de las consolas incluidas.';}
+  else if(mix){progress.textContent='Modo libre: partida aleatoria que no modifica el contador de trivias por consola.';}
   else if(state.catalogLoading){progress.textContent='Cargando trivias y progreso…';}
   else if(state.catalogError){progress.textContent='No pudimos cargar el catálogo. Volvé al inicio y reintentá; tu progreso está conservado.';}
   else if(!rows.length){progress.textContent='Todavía no hay trivias publicadas en '+tierNames[level]+'. Próximamente.';}
+  else if(locked){progress.textContent='Bloqueado: completá todas las trivias '+(level==='medium'?'fáciles':'medias')+' de esta consola para abrir '+tierNames[level]+'.';}
   else if(guest){progress.textContent=rows.length+' '+(rows.length===1?'trivia disponible':'trivias disponibles')+'. La partida rápida es aleatoria; creá un jugador para completar el catálogo y guardar tu progreso.';}
   else{progress.textContent=done+' de '+rows.length+' trivias completadas · '+(cat==='ps1'?'PlayStation 1':'PlayStation 2')+' · '+tierNames[level]+'. Repetir una trivia no aumenta este contador.';}
-  $('beginBtn').disabled=state.busy||(guest||mix?level==='medium':state.catalogLoading||state.catalogError||!rows.length);
+  $('beginBtn').disabled=state.busy||locked||mixLocked||(guest?level!=='easy':mix?false:state.catalogLoading||state.catalogError||!rows.length);
   $('beginBtn').textContent=guest||mix?'EMPEZAR PARTIDA LIBRE →':'JUGAR TRIVIA →';
 }
 window.updateQuizSelection=renderQuizCatalog;
@@ -335,6 +344,7 @@ beginQuiz=async function(){
     const mix=cat==='mix';
     const selected=(state.catalog||[]).find(q=>q.id===$('quizSelect').value&&q.category===cat&&q.difficulty===level);
     if(!mix&&!selected)throw new Error('Quiz unavailable');
+    if(selected?.unlocked===false)throw new Error('Difficulty locked');
     const {data,error}=mix?await client.rpc('arcade_start_game',{p_category:cat,p_difficulty:level==='hard'?'expert':'normal'}):await client.rpc('arcade_start_quiz',{p_quiz_id:selected.id});
     if(error)throw error;
     if(version!==state.version)return;
@@ -381,7 +391,7 @@ finish=async function(){
 async function submitPending(){
   const pending=state.pending;
   if(state.busy||!pending||pending.owner!==state.uid)return;
-  state.busy=true;const version=state.version;
+  state.busy=true;const version=state.version;const oldXP=profile?.xp||0;
   $('nextBtn').disabled=true;$('recoverGame').disabled=true;
   message('Guardando la partida…');
   try{
@@ -400,6 +410,8 @@ async function submitPending(){
     $('scoreSummary').textContent=data.correct+' de 5 respuestas correctas';
     $('xpSummary').textContent='+'+data.score+' XP · Total: '+profile.xp+' XP · Guardado en tu cuenta';
     $('resultDetail').textContent='100 puntos por acierto y 200 extra por partida perfecta. Revisá tus nuevos cromos desde tu perfil.';
+    const earned=rewardSteps().filter(r=>r.at>oldXP&&r.at<=profile.xp);
+    if(earned.length)$('resultDetail').textContent+=' ¡Desbloqueaste: '+earned.map(r=>r.name).join(', ')+'!';
     $('progress').style.width='100%';
     renderReview(data.review,pending.questions);
     forgetPending();state.game=null;state.answers=[];mode='player';message('Partida guardada en Supabase.');base.go('result');
@@ -432,4 +444,49 @@ shareScore=async function(){
     if(navigator.clipboard){await navigator.clipboard.writeText(text);message('Resultado copiado.');return;}
   }catch(e){if(e.name==='AbortError')return;}
   prompt('Copiá tu resultado:',text);
+};
+
+
+function rewardSteps(){
+  return [...cards.map(c=>({...c,kind:'Cromo'})),...state.cosmetics.map(c=>({...c,at:c.required_xp,kind:'Cosmético'}))].sort((a,b)=>a.at-b.at||a.name.localeCompare(b.name));
+}
+const originalAvatarSVG=avatarSVG;
+avatarSVG=function(n){
+  let svg=decodeURIComponent(originalAvatarSVG(n).split(',')[1]);
+  const style=profile?.cosmetics||{};
+  if(style.background==='violet-grid')svg=svg.replace('fill="#1c1c30"','fill="#3b224d"');
+  if(style.background==='night-sky')svg=svg.replace('fill="#1c1c30"','fill="#102c49"').replace('<path d="M0 96','<path d="M14 14h3v3h-3zM106 19h3v3h-3zM14 84h3v3h-3zM111 82h3v3h-3z" fill="#e1c6ff"/><path d="M0 96');
+  let overlay='';const y=n===4?28:50;
+  if(style.glasses){const color=style.glasses==='pink-glasses'?'#ff83d3':'#83e7ff';overlay+='<g stroke="'+color+'" stroke-width="4" fill="#283461" fill-opacity=".5"><rect x="30" y="'+y+'" width="25" height="21" rx="4"/><rect x="73" y="'+y+'" width="25" height="21" rx="4"/><path d="M55 '+(y+9)+'H73" fill="none"/></g>';}
+  if(style.hat==='retro-cap')overlay+='<path d="M29 34L35 16 65 10 90 17 97 35 55 37Z" fill="#984a76"/><path d="M23 34L97 34 107 43 43 43Z" fill="#2845c5"/><path d="M60 16H69V29H60Z" fill="#f4d4eb"/>';
+  if(style.hat==='gold-crown')overlay+='<path d="M32 35L26 12 47 23 64 7 80 23 102 12 96 35Z" fill="#e7bd63"/><path d="M32 35H96V42H32Z" fill="#a77b31"/><path d="M59 24L64 18 69 24 64 31Z" fill="#984a76"/>';
+  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg.replace('</svg>',overlay+'</svg>'));
+};
+window.openWardrobe=async function(){
+  await ready;if(!profile){await enterPlayer(true);return;}mode='player';renderWardrobe();base.go('wardrobe');
+};
+function renderWardrobe(){
+  if(!profile)return;
+  $('wardrobePreview').innerHTML=avatarHTML(profile);
+  $('wardrobeItems').replaceChildren();
+  for(const item of state.cosmetics){
+    const owned=profile.xp>=item.required_xp,selected=profile.cosmetics[item.slot]===item.id;
+    const box=document.createElement('div');box.className='panel cosmetic-item';
+    const label=document.createElement('strong');label.textContent=item.name;
+    const detail=document.createElement('p');detail.className='muted';detail.textContent=item.required_xp+' XP · '+(owned?'Desbloqueado':'Te faltan '+(item.required_xp-profile.xp)+' XP');
+    const button=document.createElement('button');button.className='secondary';button.disabled=!owned||state.cosmeticBusy;button.setAttribute('aria-pressed',String(selected));button.textContent=selected?'QUITAR':owned?'EQUIPAR':'BLOQUEADO';button.onclick=()=>equipCosmetic(item.slot,selected?null:item.id);
+    box.append(label,detail,button);$('wardrobeItems').appendChild(box);
+  }
+}
+async function equipCosmetic(slot,id){
+  if(state.cosmeticBusy||!profile)return;state.cosmeticBusy=true;renderWardrobe();const version=state.version;
+  try{const {data,error}=await client.rpc('arcade_equip_cosmetic',{p_slot:slot,p_item:id});if(error)throw error;if(version===state.version){adopt(data);message('Estilo guardado en tu jugador.');}}
+  catch(e){message(publicError(e));}
+  finally{state.cosmeticBusy=false;renderWardrobe();}
+}
+renderRewards=function(){
+ const xp=profile?.xp||0,steps=rewardSteps(),next=steps.find(x=>x.at>xp);
+ $('rewardProgress').textContent=xp+' XP · '+(next?'Próximo desbloqueo: '+next.name+' ('+(next.at-xp)+' XP restantes)':'Completaste las recompensas actuales.');
+ $('rewardTrack').replaceChildren();
+ for(const step of steps){const row=document.createElement('div');row.className='milestone '+(xp>=step.at?'earned':'');const title=document.createElement('strong');title.textContent=step.at+' XP · '+step.name;const detail=document.createElement('small');detail.textContent=step.kind+' · '+(xp>=step.at?'✓ Desbloqueado':'Pendiente');row.append(title,detail);$('rewardTrack').appendChild(row);}
 };

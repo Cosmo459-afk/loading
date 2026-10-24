@@ -1,0 +1,182 @@
+[
+  {
+    "id": "633ba30a-ad42-5a66-89be-42caed06af3e",
+    "category": "ps1",
+    "difficulty": "medium",
+    "prompt": "¿Qué estudio desarrolló Crash Bandicoot para PlayStation 1?",
+    "choices": [
+      "Naughty Dog",
+      "Capcom",
+      "Namco",
+      "Square"
+    ],
+    "correct_index": 0,
+    "explanation": "Crash Bandicoot fue desarrollado por Naughty Dog.",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation.dat",
+    "source_record": "Crash Bandicoot (USA)",
+    "source_field": "developer",
+    "source_value": "Naughty Dog, Inc"
+  },
+  {
+    "id": "c0a964d6-cf1d-5a3f-9242-a087065dbd0b",
+    "category": "ps1",
+    "difficulty": "medium",
+    "prompt": "¿Qué estudio desarrolló Final Fantasy VII para PlayStation 1?",
+    "choices": [
+      "Capcom",
+      "Square",
+      "Naughty Dog",
+      "Namco"
+    ],
+    "correct_index": 1,
+    "explanation": "Final Fantasy VII fue desarrollado por Square.",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation.dat",
+    "source_record": "Final Fantasy VII (USA) (Disc 1 of 3)",
+    "source_field": "developer",
+    "source_value": "Squaresoft"
+  },
+  {
+    "id": "b93f20dd-6b2b-50f7-8293-ae87cf2708a0",
+    "category": "ps1",
+    "difficulty": "medium",
+    "prompt": "¿Qué estudio desarrolló Spyro the Dragon para PlayStation 1?",
+    "choices": [
+      "Capcom",
+      "Naughty Dog",
+      "Insomniac Games",
+      "Namco"
+    ],
+    "correct_index": 2,
+    "explanation": "Spyro the Dragon fue desarrollado por Insomniac Games.",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation.dat",
+    "source_record": "Spyro the Dragon (USA)",
+    "source_field": "developer",
+    "source_value": "Insomniac Games"
+  },
+  {
+    "id": "865e398e-2c36-5908-8301-f8c380bad4ee",
+    "category": "ps1",
+    "difficulty": "medium",
+    "prompt": "¿Qué estudio desarrolló Tekken 3 para PlayStation 1?",
+    "choices": [
+      "Capcom",
+      "Naughty Dog",
+      "Square",
+      "Namco"
+    ],
+    "correct_index": 3,
+    "explanation": "Tekken 3 fue desarrollado por Namco.",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation.dat",
+    "source_record": "Tekken 3 (USA)",
+    "source_field": "developer",
+    "source_value": "Namco"
+  },
+  {
+    "id": "bea793c2-c3ae-5319-bc0e-fb4fb812a090",
+    "category": "ps1",
+    "difficulty": "medium",
+    "prompt": "¿Qué estudio desarrolló Tomb Raider para PlayStation 1?",
+    "choices": [
+      "Core Design",
+      "Capcom",
+      "Naughty Dog",
+      "Namco"
+    ],
+    "correct_index": 0,
+    "explanation": "Tomb Raider fue desarrollado por Core Design.",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation.dat",
+    "source_record": "Tomb Raider (USA)",
+    "source_field": "developer",
+    "source_value": "Core Design"
+  },
+  {
+    "id": "5b87b490-c04d-5ebf-9b2f-b1f8122d84db",
+    "category": "ps2",
+    "difficulty": "medium",
+    "prompt": "¿Qué estudio desarrolló Devil May Cry para PlayStation 2?",
+    "choices": [
+      "Naughty Dog",
+      "Capcom",
+      "Namco",
+      "Square"
+    ],
+    "correct_index": 1,
+    "explanation": "Devil May Cry fue desarrollado por Capcom.",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation%202.dat",
+    "source_record": "Devil May Cry (USA)",
+    "source_field": "developer",
+    "source_value": "Capcom Co., Ltd"
+  },
+  {
+    "id": "e011aa3a-a4fa-5e8d-8b3f-bd43cb570afa",
+    "category": "ps2",
+    "difficulty": "medium",
+    "prompt": "¿Qué estudio desarrolló God of War para PlayStation 2?",
+    "choices": [
+      "Capcom",
+      "Naughty Dog",
+      "Santa Monica Studio",
+      "Namco"
+    ],
+    "correct_index": 2,
+    "explanation": "God of War fue desarrollado por Santa Monica Studio.",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation%202.dat",
+    "source_record": "God of War (USA)",
+    "source_field": "developer",
+    "source_value": "SCE Studio Santa Monica"
+  },
+  {
+    "id": "21561b8f-6d2d-5f02-902e-9a9e1e6d0786",
+    "category": "ps2",
+    "difficulty": "medium",
+    "prompt": "¿Qué estudio desarrolló Okami para PlayStation 2?",
+    "choices": [
+      "Capcom",
+      "Naughty Dog",
+      "Namco",
+      "Clover Studio"
+    ],
+    "correct_index": 3,
+    "explanation": "Okami fue desarrollado por Clover Studio.",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation%202.dat",
+    "source_record": "Okami (USA)",
+    "source_field": "developer",
+    "source_value": "Clover Studio"
+  },
+  {
+    "id": "ebe0fd75-230f-55d1-84ff-d97e2eff8604",
+    "category": "ps2",
+    "difficulty": "medium",
+    "prompt": "¿Qué estudio desarrolló Ratchet & Clank para PlayStation 2?",
+    "choices": [
+      "Insomniac Games",
+      "Capcom",
+      "Naughty Dog",
+      "Namco"
+    ],
+    "correct_index": 0,
+    "explanation": "Ratchet & Clank fue desarrollado por Insomniac Games.",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation%202.dat",
+    "source_record": "Ratchet & Clank (USA)",
+    "source_field": "developer",
+    "source_value": "Insomniac Games"
+  },
+  {
+    "id": "0a99315f-0ef8-5d8c-8296-71eb9dc7b747",
+    "category": "ps2",
+    "difficulty": "medium",
+    "prompt": "¿Qué estudio desarrolló Sly Cooper and the Thievius Raccoonus para PlayStation 2?",
+    "choices": [
+      "Capcom",
+      "Sucker Punch Productions",
+      "Naughty Dog",
+      "Namco"
+    ],
+    "correct_index": 1,
+    "explanation": "Sly Cooper and the Thievius Raccoonus fue desarrollado por Sucker Punch Productions.",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation%202.dat",
+    "source_record": "Sly Cooper and the Thievius Raccoonus (USA)",
+    "source_field": "developer",
+    "source_value": "Sucker Punch Productions"
+  }
+]

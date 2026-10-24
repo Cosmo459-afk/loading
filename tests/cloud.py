@@ -63,7 +63,7 @@ with sync_playwright() as p:
     page.wait_for_function("document.getElementById('quizProgress').textContent.includes('0 de 1')")
     assert page.locator('#difficultyOverview button').count()==3
     page.locator('#difficulty').select_option('medium');assert page.locator('#beginBtn').is_disabled()
-    assert 'Próximamente' in page.locator('#quizProgress').inner_text()
+    assert 'Bloqueado' in page.locator('#quizProgress').inner_text()
     page.locator('#difficulty').select_option('easy')
     page.screenshot(path='/tmp/arcade-catalog-mobile.png',full_page=True)
     assert page.locator('#playerStats .avatar-photo').count()==1
@@ -81,6 +81,12 @@ with sync_playwright() as p:
     page.locator('#recoverGame').click();page.wait_for_selector('#result:not(.hidden)')
     assert page.locator('#scoreTitle').inner_text()=='400 PUNTOS'
     assert '1 de 1' in page.locator('#triviaResultProgress').inner_text()
+    page.evaluate("mode='player';go('menu')")
+    page.wait_for_function("document.getElementById('quizProgress').textContent.includes('1 de 1')")
+    page.locator('#difficulty').select_option('medium');assert not page.locator('#beginBtn').is_disabled()
+    page.locator('#difficulty').select_option('hard');assert page.locator('#beginBtn').is_disabled()
+    page.locator('#category').select_option('ps1');page.locator('#difficulty').select_option('medium');assert page.locator('#beginBtn').is_disabled()
+    page.locator('#category').select_option('ps2');page.locator('#difficulty').select_option('easy')
     assert page.locator('#resultReview .review-item').count()==5
     assert page.evaluate('profile.xp')==400 and page.evaluate('profile.games')==1
     assert page.evaluate('JSON.parse(localStorage.getItem("loading_arcade_profile")).xp')==8000
@@ -178,6 +184,36 @@ with sync_playwright() as p:
     assert 'SinCorreo' in page.locator('#homeAccount').inner_text()
     assert page.locator('#accountProtection').is_hidden()
     assert page.locator('#homeAccount').get_by_text('Vincular un correo').count()==0
+    ctx.close()
+    # Exercise earned cosmetic rendering and server persistence with an explicit fixture XP grant.
+    fixture('/_test/control',{'grantXP':2000,'ageStarts':True})
+    ctx,page=context('alice')
+    page.wait_for_function("document.getElementById('homeAccount').textContent.includes('Alice')")
+    page.locator('#homeAccount').get_by_text('SEGUIR JUGANDO').click();page.wait_for_selector('#menu:not(.hidden)')
+    page.locator('#playerStats').get_by_text('EDITAR PERFIL').click();page.wait_for_selector('#profile:not(.hidden)')
+    page.locator('#removePhoto').click();page.get_by_text('CONTINUAR').click();page.wait_for_selector('#menu:not(.hidden)')
+    page.locator('#playerStats').get_by_text('VESTUARIO').click();page.wait_for_selector('#wardrobe:not(.hidden)')
+    assert page.locator('.cosmetic-item').count()==6
+    for name,key,value in [('Gafas neón','glasses','pink-glasses'),('Gorra arcade','hat','retro-cap'),('Fondo violeta','background','violet-grid')]:
+        page.locator('.cosmetic-item').filter(has=page.get_by_text(name,exact=True)).get_by_text('EQUIPAR',exact=True).click()
+        page.wait_for_function('(args)=>profile.cosmetics[args[0]]===args[1]',arg=[key,value])
+    src=page.locator('#wardrobePreview img').get_attribute('src')
+    from urllib.parse import unquote
+    assert '#ff83d3' in unquote(src) and '#3b224d' in unquote(src)
+    assert page.locator('.cosmetic-item').filter(has=page.get_by_text('Corona del arcade',exact=True)).get_by_text('BLOQUEADO',exact=True).is_disabled()
+    for width in [320,390,768,1280]:
+        page.set_viewport_size({'width':width,'height':844})
+        assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+    page.set_viewport_size({'width':390,'height':844});page.screenshot(path='/tmp/arcade-wardrobe-v07.png',full_page=True)
+    page.reload();page.wait_for_function("document.getElementById('homeAccount').textContent.includes('Alice')")
+    assert page.evaluate("profile.cosmetics.hat")=='retro-cap'
+    page.locator('#homeAccount').get_by_text('SEGUIR JUGANDO').click();page.wait_for_selector('#menu:not(.hidden)')
+    page.locator('#difficulty').select_option('medium');page.locator('#beginBtn').click();page.wait_for_selector('#quiz:not(.hidden)')
+    for i in range(5):page.locator('.choice').nth(0).click();page.locator('#nextBtn').click()
+    page.wait_for_selector('#result:not(.hidden)')
+    page.evaluate("go('menu')");page.wait_for_function("!document.getElementById('quizProgress').textContent.includes('Cargando')")
+    page.locator('#difficulty').select_option('hard');assert not page.locator('#beginBtn').is_disabled()
+    page.locator('#category').select_option('ps1');assert page.locator('#beginBtn').is_disabled()
     ctx.close();assert not errors,errors
     browser.close()
-    print('PASS: real bundled SDK + local PostgreSQL RPCs; OTP request and PKCE callback (simulated Auth, no email), guest quiz, private cloud profile/photo, server questions/scoring, committed-response retry/reload without duplicate XP, featured cards/history, separate-browser persistence, logout isolation, standalone HTML, 32 responsive screens. Home session summary, direct play/profile/collection, reload persistence and load-failure retry verified. Anonymous onboarding, no upfront email, persistent reminder deferral and same-identity email linking verified with fixture. Console/difficulty catalog, empty medium tier and per-account completed quiz counters verified. Real Supabase email/session NOT tested.')
+    print('PASS: real bundled SDK + local PostgreSQL RPCs; OTP request and PKCE callback (simulated Auth, no email), guest quiz, private cloud profile/photo, server questions/scoring, committed-response retry/reload without duplicate XP, featured cards/history, separate-browser persistence, logout isolation, standalone HTML, 32 responsive screens. Home session summary, direct play/profile/collection, reload persistence and load-failure retry verified. Anonymous onboarding, no upfront email, persistent reminder deferral and same-identity email linking verified with fixture. Console/difficulty catalog, locked medium tier and per-account completed quiz counters verified. v0.7: independent-console locks, medium/hard progression, cosmetic equip/render/persistence and wardrobe mobile overflow verified. Real Supabase email/session NOT tested.')

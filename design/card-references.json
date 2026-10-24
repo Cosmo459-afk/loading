@@ -1,0 +1,62 @@
+{
+  "status": "artwork_pending_review",
+  "items": [
+    {
+      "id": "key",
+      "name": "Llave insignia",
+      "game": "Resident Evil 4",
+      "name_confirmed_by": "user",
+      "game_confirmed_by": "user",
+      "description": null,
+      "function": null,
+      "rarity_status": "arcade_design_not_game_fact",
+      "kind": "object",
+      "rarity": "common"
+    },
+    {
+      "id": "herb",
+      "game": "Resident Evil",
+      "exact_edition": null,
+      "reference": "green herb in small round pot supplied by user"
+    },
+    {
+      "id": "spray",
+      "game": "Resident Evil",
+      "exact_edition": null,
+      "reference": "silver green spray supplied by user"
+    },
+    {
+      "id": "mask",
+      "name": "Aku Aku",
+      "game": "Crash Bandicoot",
+      "collection_status": "proposed_new_card",
+      "reward": null,
+      "kind": "character",
+      "rarity": "legendary"
+    },
+    {
+      "id": "ammo",
+      "name": null,
+      "game": null,
+      "requires_confirmation": true
+    },
+    {
+      "id": "box-reference",
+      "exact_item_name": null,
+      "game": null,
+      "requires_confirmation": true
+    },
+    {
+      "id": "jetpack-reference",
+      "exact_item_name": null,
+      "game": null,
+      "requires_confirmation": true
+    }
+  ],
+  "rarity_rules": {
+    "object": "common",
+    "weapon": "epic",
+    "character": "legendary",
+    "rare": "reserved"
+  }
+}

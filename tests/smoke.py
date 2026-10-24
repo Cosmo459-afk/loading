@@ -8,7 +8,7 @@ with sync_playwright() as p:
     page.goto(os.environ.get('ARCADE_URL','http://127.0.0.1:8080'))
     page.wait_for_function("!document.getElementById('sessionStatus').textContent.includes('Conectando')")
     for cat in ['ps1','ps2','mix']:
-        for difficulty in ['easy','hard']:
+        for difficulty in ['easy']:
             page.evaluate("startMode('guest')")
             page.locator('#category').select_option(cat);page.locator('#difficulty').select_option(difficulty)
             page.locator('#beginBtn').click()
@@ -17,6 +17,7 @@ with sync_playwright() as p:
             assert page.locator('#scoreTitle').inner_text()=='700 PUNTOS'
             assert page.evaluate("localStorage.getItem('loading_arcade_profile')") is None
     page.evaluate("startMode('guest')");page.locator('#difficulty').select_option('medium');assert page.locator('#beginBtn').is_disabled()
+    page.locator('#difficulty').select_option('hard');assert page.locator('#beginBtn').is_disabled()
     page.evaluate("go('home')");page.get_by_text('YA TENGO CUENTA').click();page.wait_for_selector('#auth:not(.hidden)')
     assert page.locator('#loginEmail').get_attribute('type')=='email'
     for width in [320,390,768,1280]:
@@ -25,4 +26,4 @@ with sync_playwright() as p:
             page.evaluate('(id)=>go(id)',screen)
             assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),(width,screen)
     assert not errors,errors;b.close()
-    print('PASS: all six guest category/difficulty combinations, auth screen, no local XP writes, 16 responsive screens, no JS errors. No email sent.')
+    print('PASS: all three guest easy categories, medium/hard locked for guests, auth screen, no local XP writes, 16 responsive screens, no JS errors. No email sent.')

@@ -53,3 +53,13 @@ Para un proyecto ya configurado, ejecutar una sola vez `upgrade-v06.sql`, no `se
 Para una instalación nueva aplicar: `setup.sql` y después `upgrade-v06.sql`. No ejecutar las migraciones individuales además de esos archivos, pues contienen los mismos cambios. La prueba de integración arranca una base nueva y aplica ambos.
 
 Agregar contenido futuro en lotes con identificadores nuevos y estables de trivia. Las dificultades del catálogo son easy/medium/hard; el campo histórico de preguntas/partidas sigue usando normal/expert para no romper clientes 0.4/0.5. En 0.6 el nivel real de una trivia lo define el catálogo. Publicar solo tras revisar sus cinco preguntas y clasificación. El material que aporte el propietario podrá transformarse en nuevos lotes sin editar pregunta por pregunta.
+
+## Actualización 0.7
+
+Para una base existente con 0.6, ejecutar `upgrade-v07.sql` una sola vez. Para una base nueva, ejecutar `setup.sql`, `upgrade-v06.sql` y `upgrade-v07.sql` en ese orden. No ejecutar además los archivos individuales de migrations: son los mismos cambios.
+
+La nueva tabla privada tier_unlocks registra desbloqueos permanentes por usuario y consola. El listado y los endpoints de inicio verifican esos permisos, y cada resultado finalizado los actualiza. No se exige nota mínima: completar todas las trivias del nivel anterior basta. El modo libre experto tampoco puede usarse para saltar el bloqueo. Las preguntas viejas y sus puntuaciones no se reescriben.
+
+arcade_cosmetics es catálogo de lectura para usuarios autenticados; arcade_profiles.cosmetics contiene la selección. Solo arcade_equip_cosmetic puede modificarla, valida slot, artículo y XP en servidor. arcade_cards incorpora kind y rarity según la clasificación del propietario; no existe RNG ni porcentajes de aparición.
+
+La migración incluye diez preguntas de desarrolladores y sus dos packs medios. La fuente literal por pregunta se conserva en content/question-batch-v07.json. No se atribuye procedencia primaria a esos datos; las limitaciones de la investigación están documentadas.

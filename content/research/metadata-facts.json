@@ -1,0 +1,82 @@
+[
+  {
+    "game": "Crash Bandicoot",
+    "console": "ps1",
+    "developer": "Naughty Dog",
+    "source_record": "Crash Bandicoot (USA)",
+    "source_value": "Naughty Dog, Inc",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation.dat"
+  },
+  {
+    "game": "Final Fantasy VII",
+    "console": "ps1",
+    "developer": "Square",
+    "source_record": "Final Fantasy VII (USA) (Disc 1 of 3)",
+    "source_value": "Squaresoft",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation.dat"
+  },
+  {
+    "game": "Spyro the Dragon",
+    "console": "ps1",
+    "developer": "Insomniac Games",
+    "source_record": "Spyro the Dragon (USA)",
+    "source_value": "Insomniac Games",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation.dat"
+  },
+  {
+    "game": "Tekken 3",
+    "console": "ps1",
+    "developer": "Namco",
+    "source_record": "Tekken 3 (USA)",
+    "source_value": "Namco",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation.dat"
+  },
+  {
+    "game": "Tomb Raider",
+    "console": "ps1",
+    "developer": "Core Design",
+    "source_record": "Tomb Raider (USA)",
+    "source_value": "Core Design",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation.dat"
+  },
+  {
+    "game": "Devil May Cry",
+    "console": "ps2",
+    "developer": "Capcom",
+    "source_record": "Devil May Cry (USA)",
+    "source_value": "Capcom Co., Ltd",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation%202.dat"
+  },
+  {
+    "game": "God of War",
+    "console": "ps2",
+    "developer": "Santa Monica Studio",
+    "source_record": "God of War (USA)",
+    "source_value": "SCE Studio Santa Monica",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation%202.dat"
+  },
+  {
+    "game": "Okami",
+    "console": "ps2",
+    "developer": "Clover Studio",
+    "source_record": "Okami (USA)",
+    "source_value": "Clover Studio",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation%202.dat"
+  },
+  {
+    "game": "Ratchet & Clank",
+    "console": "ps2",
+    "developer": "Insomniac Games",
+    "source_record": "Ratchet & Clank (USA)",
+    "source_value": "Insomniac Games",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation%202.dat"
+  },
+  {
+    "game": "Sly Cooper and the Thievius Raccoonus",
+    "console": "ps2",
+    "developer": "Sucker Punch Productions",
+    "source_record": "Sly Cooper and the Thievius Raccoonus (USA)",
+    "source_value": "Sucker Punch Productions",
+    "source_url": "https://raw.githubusercontent.com/libretro/libretro-database/master/metadat/developer/Sony%20-%20PlayStation%202.dat"
+  }
+]
