@@ -1,4 +1,4 @@
-"""v0.9 browser integration with real local SQL and mocked Auth. No production writes."""
+"""v0.10 browser integration with real local SQL and mocked Auth. No production writes."""
 import json,os,urllib.request
 from playwright.sync_api import sync_playwright
 BASE=os.environ.get('ARCADE_URL','http://127.0.0.1:8080').rstrip('/')
@@ -63,6 +63,14 @@ with sync_playwright() as p:
     assert page.locator('#album .pending-art').count()==0
     decoded=page.locator('#album svg image').evaluate_all('''els=>Promise.all(els.map(async el=>{const i=new Image();i.src=el.getAttribute('href');await i.decode();return [i.naturalWidth,i.naturalHeight];}))''')
     assert len(decoded)==14 and all(w>0 and h>0 for w,h in decoded)
+    assert page.locator('#album .card-brand').count()==14
+    assert page.locator('#album .card-footer').count()==14
+    assert page.locator('#album .card-serial').first.inner_text()=='01/14'
+    assert page.locator('#album .card-serial').last.inner_text()=='14/14'
+    assert page.locator('#album .card-locked .card-art').first.evaluate('(e)=>getComputedStyle(e).filter')=='none'
+    assert len(set(page.locator('#album svg image').evaluate_all('els=>els.map(e=>e.getAttribute("href"))')))==4
+    page.evaluate('document.fonts.ready')
+    assert page.evaluate("document.fonts.check('700 14px LoadingPixel')")
     assert 'PREVISUALIZACIÓN' not in page.locator('body').inner_text()
     assert page.locator('#album .rarity-common').count()==8
     assert page.locator('#album .rarity-epic').count()==4
@@ -100,6 +108,12 @@ with sync_playwright() as p:
     page.screenshot(path='/tmp/loading-re4-album-preview.png',full_page=True)
     page.set_viewport_size({'width':1280,'height':1100})
     page.locator('#album').screenshot(path='/tmp/re4-gallery-desktop.png')
+    page.evaluate("""()=>{
+      const preview=document.createElement('div');preview.id='designShowcase';preview.style.cssText='width:1100px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;padding:28px;background:#08080a;';
+      const cards=document.querySelectorAll('#album .game-card');for(const i of [0,11,13])preview.appendChild(cards[i].cloneNode(true));document.body.appendChild(preview);
+    }""")
+    page.locator('#designShowcase').screenshot(path='/tmp/re4-v10-showcase.png')
+    page.evaluate('document.getElementById("designShowcase").remove()')
     for width in [320,390,768,1280]:
         page.set_viewport_size({'width':width,'height':844})
         for screen in ['home','menu','rewards','wardrobe','result','profile','collection','chests','chestOpening']:
@@ -109,4 +123,4 @@ with sync_playwright() as p:
     page.set_viewport_size({'width':390,'height':844});page.evaluate("go('rewards')");page.screenshot(path='/tmp/loading-v08-rewards.png',full_page=True)
     assert not errors,errors
     ctx.close();browser.close()
-print('PASS v0.9 browser: mascot-only profile; failure hides solutions; retry and interrupted-save recovery; single 900 XP grant; completion blocked; independent tiers; persisted badge acknowledgement; level toast; wardrobe; standalone HTML; 36 responsive screens; RE4 8/4/2, progress, featured, animated chest and committed-open recovery, stored prize replay and modal preview; no JS errors.')
+print('PASS v0.10 browser: mascot-only profile; failure hides solutions; retry and interrupted-save recovery; single 900 XP grant; completion blocked; independent tiers; persisted badge acknowledgement; level toast; wardrobe; standalone HTML; 36 responsive screens; RE4 8/4/2, progress, featured, animated chest and committed-open recovery, stored prize replay and modal preview; no JS errors.')

@@ -1,5 +1,8 @@
 import {createClient} from '@supabase/supabase-js';
 import config from './config.js';
+import cardStyles from './cards.css';
+import cardFont from '../assets/fonts/Silkscreen-Bold.ttf';
+const frameStyles=document.createElement('style');frameStyles.textContent='@font-face{font-family:LoadingPixel;src:url('+cardFont+') format("truetype");font-style:normal;font-weight:700;font-display:swap}'+cardStyles;document.head.appendChild(frameStyles);
 import {collectionDefinitions,collectionCards} from './collections.js';
 // Replace the provisional catalog with the confirmed RE4 collection.
 cards.splice(0,cards.length,...collectionCards);
@@ -552,7 +555,7 @@ function cardMarkup(c,locked=false){
   const [w,h]=c.referenceSize,box=c.crop||[0,0,w,h];
   artwork='<svg class="card-image" viewBox="'+box.join(' ')+'" role="img" aria-label="'+esc(c.name)+'"><defs><clipPath id="crop-'+c.id+'"><rect x="'+box[0]+'" y="'+box[1]+'" width="'+box[2]+'" height="'+box[3]+'"/></clipPath></defs><image clip-path="url(#crop-'+c.id+')" href="'+c.image+'" width="'+w+'" height="'+h+'" preserveAspectRatio="none"/></svg>';
  }else artwork='<span class="pending-art">Imagen original pendiente</span>';
- return '<article class="game-card rarity-'+rarity+(locked?' card-locked':'')+'"><h3>'+esc(c.name)+'</h3><div class="card-art">'+artwork+'</div><div class="card-caption"><span class="rarity-label">'+esc(c.rarity)+(locked?' · 🔒':'')+'</span><p>'+esc(c.description||c.game)+'</p></div></article>';
+ return '<article class="game-card rarity-'+rarity+(locked?' card-locked':'')+'"><div class="card-top"><span class="card-brand">LOADING<small>ARCHIVO RETRO</small></span><span class="card-number">'+String(c.ordinal||0).padStart(3,'0')+'</span></div><div class="card-art">'+artwork+'</div><div class="card-caption"><h3>'+esc(c.name)+'</h3><span class="card-game">'+esc(c.game)+'</span><p>'+esc(c.description||c.game)+'</p></div><div class="card-footer"><span class="rarity-label">'+esc(c.rarity)+(locked?' 🔒':'')+'</span><span class="card-serial">'+String(c.ordinal||0).padStart(2,'0')+'/14</span></div></article>';
 }
 cardHTML=function(c,equipped=false,locked=false){return '<div class="featured-card'+(equipped?' equipped':'')+'">'+cardMarkup(c,locked)+'</div>';};
 window.selectCollection=function(id){if(collectionDefinitions.some(c=>c.id===id)){selectedCollection=id;renderAlbum();}};

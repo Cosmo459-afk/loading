@@ -11,12 +11,19 @@
       "description": "Una llave de metal con una elaborada insignia.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "key.webp",
+      "imageFile": "art-v10/common-a.png",
       "referenceSize": [
-        1440,
-        1440
+        1254,
+        1254
       ],
-      "crop": null
+      "crop": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "originalImageFile": "key.webp",
+      "artDirection": "LOADING · Archivo Retro — v0.10"
     },
     {
       "id": "re4-pearl-pendant",
@@ -26,12 +33,19 @@
       "description": "Un collar de cuentas con un colgante ovalado.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-pearl-pendant.webp",
+      "imageFile": "art-v10/common-a.png",
       "referenceSize": [
-        609,
-        569
+        1254,
+        1254
       ],
-      "crop": null
+      "crop": [
+        627,
+        0,
+        627,
+        627
+      ],
+      "originalImageFile": "re4-pearl-pendant.webp",
+      "artDirection": "LOADING · Archivo Retro — v0.10"
     },
     {
       "id": "re4-red-hawk",
@@ -41,17 +55,19 @@
       "description": "Munición de 9 mm para las pistolas de Leon.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-red-hawk.webp",
+      "imageFile": "art-v10/common-a.png",
       "referenceSize": [
-        468,
-        263
+        1254,
+        1254
       ],
       "crop": [
-        182,
-        57,
-        103,
-        65
-      ]
+        0,
+        627,
+        627,
+        627
+      ],
+      "originalImageFile": "re4-red-hawk.webp",
+      "artDirection": "LOADING · Archivo Retro — v0.10"
     },
     {
       "id": "re4-beerstein",
@@ -61,17 +77,19 @@
       "description": "Una jarra decorativa que puede combinarse con gemas.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-beerstein.webp",
+      "imageFile": "art-v10/common-a.png",
       "referenceSize": [
-        360,
-        195
+        1254,
+        1254
       ],
       "crop": [
-        119,
-        5,
-        129,
-        177
-      ]
+        627,
+        627,
+        627,
+        627
+      ],
+      "originalImageFile": "re4-beerstein.webp",
+      "artDirection": "LOADING · Archivo Retro — v0.10"
     },
     {
       "id": "re4-blue-medallion",
@@ -81,17 +99,19 @@
       "description": "Un medallón azul del encargo del Buhonero.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-blue-medallion.jpg",
+      "imageFile": "art-v10/common-b.png",
       "referenceSize": [
-        3840,
-        2160
+        1254,
+        1254
       ],
       "crop": [
-        1630,
-        960,
-        375,
-        370
-      ]
+        0,
+        0,
+        627,
+        627
+      ],
+      "originalImageFile": "re4-blue-medallion.jpg",
+      "artDirection": "LOADING · Archivo Retro — v0.10"
     },
     {
       "id": "re4-spinel",
@@ -101,12 +121,19 @@
       "description": "Una pequeña gema de color rosado para vender al Buhonero.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-spinel.png",
+      "imageFile": "art-v10/common-b.png",
       "referenceSize": [
-        450,
-        360
+        1254,
+        1254
       ],
-      "crop": null
+      "crop": [
+        627,
+        0,
+        627,
+        627
+      ],
+      "originalImageFile": "re4-spinel.png",
+      "artDirection": "LOADING · Archivo Retro — v0.10"
     },
     {
       "id": "re4-velvet-blue",
@@ -116,12 +143,19 @@
       "description": "Un tesoro cristalino que se puede vender al Buhonero.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-velvet-blue.png",
+      "imageFile": "art-v10/common-b.png",
       "referenceSize": [
-        450,
-        360
+        1254,
+        1254
       ],
-      "crop": null
+      "crop": [
+        0,
+        627,
+        627,
+        627
+      ],
+      "originalImageFile": "re4-velvet-blue.png",
+      "artDirection": "LOADING · Archivo Retro — v0.10"
     },
     {
       "id": "re4-heavyfield",
@@ -131,17 +165,19 @@
       "description": "Cartuchos del calibre 12 para las escopetas de Leon.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-heavyfield.webp",
+      "imageFile": "art-v10/common-b.png",
       "referenceSize": [
-        468,
-        263
+        1254,
+        1254
       ],
       "crop": [
-        181,
-        54,
-        111,
-        80
-      ]
+        627,
+        627,
+        627,
+        627
+      ],
+      "originalImageFile": "re4-heavyfield.webp",
+      "artDirection": "LOADING · Archivo Retro — v0.10"
     },
     {
       "id": "re4-prl-412",
@@ -151,17 +187,19 @@
       "description": "Un arma especial capaz de lanzar una potente descarga de energía.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-prl-412.webp",
+      "imageFile": "art-v10/epic.png",
       "referenceSize": [
-        380,
-        182
+        1254,
+        1254
       ],
       "crop": [
-        6,
-        58,
-        289,
-        91
-      ]
+        0,
+        0,
+        627,
+        627
+      ],
+      "originalImageFile": "re4-prl-412.webp",
+      "artDirection": "LOADING · Archivo Retro — v0.10"
     },
     {
       "id": "re4-chicago",
@@ -171,17 +209,19 @@
       "description": "Un arma automática de aspecto clásico y munición infinita.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-chicago.jpg",
+      "imageFile": "art-v10/epic.png",
       "referenceSize": [
-        492,
-        246
+        1254,
+        1254
       ],
       "crop": [
-        8,
-        63,
-        480,
-        143
-      ]
+        627,
+        0,
+        627,
+        627
+      ],
+      "originalImageFile": "re4-chicago.jpg",
+      "artDirection": "LOADING · Archivo Retro — v0.10"
     },
     {
       "id": "re4-typewriter",
@@ -191,17 +231,19 @@
       "description": "Un lugar para guardar la partida y tomar un respiro.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-typewriter.jpg",
+      "imageFile": "art-v10/epic.png",
       "referenceSize": [
-        596,
-        335
+        1254,
+        1254
       ],
       "crop": [
-        219,
-        63,
-        201,
-        198
-      ]
+        0,
+        627,
+        627,
+        627
+      ],
+      "originalImageFile": "re4-typewriter.jpg",
+      "artDirection": "LOADING · Archivo Retro — v0.10"
     },
     {
       "id": "re4-matilda",
@@ -211,17 +253,19 @@
       "description": "Pistola de 9 mm con capacidad de disparo en ráfagas.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-matilda.webp",
+      "imageFile": "art-v10/epic.png",
       "referenceSize": [
-        1200,
-        675
+        1254,
+        1254
       ],
       "crop": [
-        300,
-        81,
-        624,
-        270
-      ]
+        627,
+        627,
+        627,
+        627
+      ],
+      "originalImageFile": "re4-matilda.webp",
+      "artDirection": "LOADING · Archivo Retro — v0.10"
     },
     {
       "id": "re4-merchant",
@@ -231,12 +275,19 @@
       "description": "El misterioso comerciante que vende y mejora tus armas.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-merchant.jpg",
+      "imageFile": "art-v10/legendary.png",
       "referenceSize": [
-        352,
-        568
+        1536,
+        1024
       ],
-      "crop": null
+      "crop": [
+        0,
+        0,
+        768,
+        768
+      ],
+      "originalImageFile": "re4-merchant.jpg",
+      "artDirection": "LOADING · Archivo Retro — v0.10"
     },
     {
       "id": "re4-leon",
@@ -246,12 +297,19 @@
       "description": "El agente enviado a rescatar a la hija del presidente.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-leon.jpg",
+      "imageFile": "art-v10/legendary.png",
       "referenceSize": [
-        250,
-        500
+        1536,
+        1024
       ],
-      "crop": null
+      "crop": [
+        768,
+        0,
+        768,
+        768
+      ],
+      "originalImageFile": "re4-leon.jpg",
+      "artDirection": "LOADING · Archivo Retro — v0.10"
     }
   ]
 }

@@ -6,10 +6,12 @@ El propietario pidió retomar la identidad de la primera propuesta gráfica: `cr
 
 Carta vertical, proporción cercana a 59:86, con jerarquía reconocible de un juego de cartas coleccionables. Referencia de formato: Yu-Gi-Oh; identidad, marco y composición propios de LOADING. No inventar estadísticas, estrellas, ATK/DEF ni reglas de combate.
 
-1. Nombre en placa superior legible.
+1. Encabezado pequeño «LOADING · Archivo Retro» y número de carta.
 2. Ventana central de arte, protagonista de la carta.
-3. Panel inferior con descripción breve.
-4. Identificación pequeña del juego, marca LOADING, rareza y número en la colección.
+3. Panel inferior con nombre grande, juego y descripción breve.
+4. Pie con rareza y número en la colección.
+
+Esta distribución sigue la referencia que el propietario volvió a adjuntar y confirmar; reemplaza la variante explorada con nombre en placa superior.
 
 Misma silueta, bordes, tipografía y posiciones en las 14 cartas. El color de rareza cambia el acabado, no la plantilla: comunes azules; épicas violetas con rosa; legendarias doradas. Marco metálico con bisel, doble borde fino, detalles discretos, fondo oscuro y textura de carta impresa. Evitar sobrecarga de ornamentos.
 
@@ -21,7 +23,7 @@ Las fotos aportadas son referencias del sujeto, no el arte final para pegar sin 
 - Personajes: fondos ambientales relacionados con su juego. Para Leon, aldea rural y ambiente de Resident Evil 4, manteniendo chaqueta y apariencia de la referencia original.
 - No inventar procedencia, nombres, funciones o datos históricos. Mantener metadatos confirmados separados de las imágenes generadas.
 
-Muestra inicial: Espinela (común), Matilda (épica), Leon S. Kennedy (legendaria). Es una propuesta gráfica para revisar el lenguaje común antes de producir el resto. No se ha cambiado la web ni el paquete 0.9 con esta exploración.
+La primera muestra fue Espinela, Matilda y Leon. Después, el propietario confirmó el formato «Archivo Retro» original y aclaró expresamente que las fotos son referencias para generar nuevas composiciones, incluso cambiando postura y ángulo de los sujetos. Se trabaja sobre los 14 artes para incorporar este diseño en la versión 0.10 sin cambiar reglas ni reiniciar progreso.
 
 ## Implementación posterior
 

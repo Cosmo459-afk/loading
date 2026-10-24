@@ -1,0 +1,47 @@
+{
+  "method": "Image generation/editing from owner-provided reference images and owner-approved Archivo Retro visual direction. References inform subject identity; newly composed and relit art is intentionally not an exact copy.",
+  "sourceManifest": "re4-image-provenance.json",
+  "metadata": "Names, descriptions, rarities and card IDs unchanged. No generated text/lore is used as a factual source.",
+  "boards": [
+    {
+      "id": "common-a",
+      "file": "art-v10/common-a.png",
+      "generatedOriginal": "/workspace/generated_images/exec-ef003d9f-c3fe-40d7-bf79-92ae87f3d57c.png",
+      "sha256": "50df6d95ce669a23b64a5948c7bfd3812048302c04f958a60f226abb2225f59e",
+      "dimensions": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "id": "common-b",
+      "file": "art-v10/common-b.png",
+      "generatedOriginal": "/workspace/generated_images/exec-56c13636-b6ca-4d62-b0c5-dff654f2d5b0.png",
+      "sha256": "bb7272aafa72263529a2220fac3297f5a8e5d9a4e682199ca5db7ffd6876011b",
+      "dimensions": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "id": "epic",
+      "file": "art-v10/epic.png",
+      "generatedOriginal": "/workspace/generated_images/exec-8d5098dd-c0c2-466d-8d1d-7b6ae4b0a1ca.png",
+      "sha256": "65198321d01404688198db72a8d7bb427f687dec4feb272a17dbf06f803ccdd1",
+      "dimensions": [
+        1254,
+        1254
+      ]
+    },
+    {
+      "id": "legendary",
+      "file": "art-v10/legendary.png",
+      "generatedOriginal": "/workspace/generated_images/exec-8445608c-5718-4d59-9412-ff9e50a9bdc9.png",
+      "sha256": "9272dec29f2861638387f9e96a3ea2ef4827b97b7a7db5980d7f08be70b8e593",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    }
+  ]
+}
