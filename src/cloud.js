@@ -30,6 +30,7 @@ window.snoozeAccountReminder=function(){
 };
 function accountUI(){
   protectionUI();
+  rewardInboxUI();
   const loggedIn=!!state.uid;
   $('sessionStatus').textContent=loggedIn?(profile?(isTemporary()?'Jugador temporal · ':'Sesión iniciada · ')+profile.name:'Sesión iniciada · tu cuenta está conectada'):'Invitado · sin sesión';
   $('logoutBtn').hidden=!loggedIn;
@@ -73,6 +74,8 @@ function publicError(error){
   if(/already.*registered|already.*exists|email.*exists/i.test(text))return 'Ese correo ya tiene una cuenta. No podemos fusionar sus progresos automáticamente. Conservá esta sesión mientras decidimos cómo recuperar tu cuenta anterior.';
   if(/rate|seconds|too many/i.test(text))return 'Esperá unos segundos antes de volver a intentarlo.';
   if(/expired|jwt|refresh token/i.test(text))return 'Tu sesión o enlace venció. Volvé a ingresar con tu correo.';
+  if(/Quiz already completed/i.test(text))return 'Ya aprobaste esta trivia. Elegí una nueva para seguir avanzando.';
+  if(/Finish active quiz/i.test(text))return 'Tenés una trivia en curso. Seleccioná la que dice «en curso» para retomarla.';
   if(/Difficulty locked/i.test(text))return 'Esta dificultad está bloqueada. Completá primero el nivel anterior de esa misma consola.';
   if(/Cosmetic locked/i.test(text))return 'Todavía no alcanzaste los XP necesarios para ese cosmético.';
   if(/not enough/i.test(text))return 'Todavía no hay suficientes preguntas para ese reto. Elegí otra categoría.';
@@ -83,7 +86,7 @@ function unpack(row){return Array.isArray(row)?row[0]:row;}
 function adopt(row){
   row=unpack(row);
   if(!row){profile=null;accountUI();return;}
-  profile={name:row.nickname,avatar:row.avatar,photo:row.photo,xp:Number(row.xp),games:row.games,featured:row.featured||[],unlocked:[],cosmetics:row.cosmetics||{}};
+  profile={name:row.nickname,avatar:row.avatar,photo:null,rewardsSeenXP:Number(row.rewards_seen_xp||0),xp:Number(row.xp),games:row.games,featured:row.featured||[],unlocked:[],cosmetics:row.cosmetics||{}};
   syncUnlocks();accountUI();
 }
 async function loadProfile(uid,version){
@@ -242,7 +245,7 @@ saveProfile=async function(){
   const version=state.version;
   state.profileBusy=true;
   try{
-    const {data,error}=await client.rpc('arcade_save_profile',{p_nickname:name,p_avatar:selectedAvatar,p_photo:uploadedPhoto});
+    const {data,error}=await client.rpc('arcade_save_profile',{p_nickname:name,p_avatar:selectedAvatar,p_photo:null});
     if(error)throw error;
     if(version!==state.version)return;
     adopt(data);mode='player';message('Perfil guardado en tu cuenta.');base.go('menu');
@@ -298,19 +301,19 @@ function renderQuizCatalog(){
   const locked=!mix&&rows.length>0&&rows.every(q=>q.unlocked===false);
   const mixLocked=mix&&level!=='easy'&&(guest||!['ps1','ps2'].every(c=>groupQuizzes(c,level).length>0&&groupQuizzes(c,level).every(q=>q.unlocked)));
   const chosen=$('quizSelect').value;$('quizSelect').replaceChildren();
-  for(const q of rows){const option=document.createElement('option');option.value=q.id;option.disabled=q.unlocked===false;option.textContent=(q.completed?'✓ ':'')+q.title+(q.completed?' · completada':'');$('quizSelect').appendChild(option);}
-  if(rows.some(q=>q.id===chosen))$('quizSelect').value=chosen;
+  for(const q of rows){const option=document.createElement('option');option.value=q.id;option.disabled=q.unlocked===false||q.completed;option.textContent=(q.completed?'✓ ':'')+q.title+(q.completed?' · completada':q.in_progress?' · en curso':'');$('quizSelect').appendChild(option);}
+  if(rows.some(q=>q.id===chosen&&!q.completed))$('quizSelect').value=chosen;
   else if(rows.some(q=>!q.completed))$('quizSelect').value=rows.find(q=>!q.completed).id;
   if(mix&&mixLocked){progress.textContent='Mix avanzado bloqueado: completá los niveles anteriores de las consolas incluidas.';}
-  else if(mix){progress.textContent='Modo libre: partida aleatoria que no modifica el contador de trivias por consola.';}
+  else if(mix){progress.textContent='Práctica libre: no entrega XP ni recompensas y no modifica tu progreso.';}
   else if(state.catalogLoading){progress.textContent='Cargando trivias y progreso…';}
   else if(state.catalogError){progress.textContent='No pudimos cargar el catálogo. Volvé al inicio y reintentá; tu progreso está conservado.';}
   else if(!rows.length){progress.textContent='Todavía no hay trivias publicadas en '+tierNames[level]+'. Próximamente.';}
   else if(locked){progress.textContent='Bloqueado: completá todas las trivias '+(level==='medium'?'fáciles':'medias')+' de esta consola para abrir '+tierNames[level]+'.';}
   else if(guest){progress.textContent=rows.length+' '+(rows.length===1?'trivia disponible':'trivias disponibles')+'. La partida rápida es aleatoria; creá un jugador para completar el catálogo y guardar tu progreso.';}
-  else{progress.textContent=done+' de '+rows.length+' trivias completadas · '+(cat==='ps1'?'PlayStation 1':'PlayStation 2')+' · '+tierNames[level]+'. Repetir una trivia no aumenta este contador.';}
-  $('beginBtn').disabled=state.busy||locked||mixLocked||(guest?level!=='easy':mix?false:state.catalogLoading||state.catalogError||!rows.length);
-  $('beginBtn').textContent=guest||mix?'EMPEZAR PARTIDA LIBRE →':'JUGAR TRIVIA →';
+  else{progress.textContent=done+' de '+rows.length+' trivias completadas · '+(cat==='ps1'?'PlayStation 1':'PlayStation 2')+' · '+tierNames[level]+'. Aprobá con 3 de 5. Podés reintentar sin soluciones hasta aprobar; después queda cerrada.';}
+  $('beginBtn').disabled=state.busy||locked||mixLocked||(guest?level!=='easy':mix?false:state.catalogLoading||state.catalogError||!rows.length||!rows.some(q=>!q.completed));
+  $('beginBtn').textContent=!guest&&!mix&&rows.length&&rows.every(q=>q.completed)?'NIVEL COMPLETADO ✓':guest||mix?'EMPEZAR PARTIDA LIBRE →':'JUGAR TRIVIA →';
 }
 window.updateQuizSelection=renderQuizCatalog;
 async function refreshQuizzes(){
@@ -344,6 +347,7 @@ beginQuiz=async function(){
     const mix=cat==='mix';
     const selected=(state.catalog||[]).find(q=>q.id===$('quizSelect').value&&q.category===cat&&q.difficulty===level);
     if(!mix&&!selected)throw new Error('Quiz unavailable');
+    if(selected?.completed)throw new Error('Quiz already completed');
     if(selected?.unlocked===false)throw new Error('Difficulty locked');
     const {data,error}=mix?await client.rpc('arcade_start_game',{p_category:cat,p_difficulty:level==='hard'?'expert':'normal'}):await client.rpc('arcade_start_quiz',{p_quiz_id:selected.id});
     if(error)throw error;
@@ -359,7 +363,7 @@ answer=function(i){
   if(answered||!state.game||!Number.isInteger(i)||i<0||i>3)return;
   answered=true;state.answers[idx]=i;
   document.querySelectorAll('.choice').forEach((button,n)=>{button.disabled=true;if(n===i)button.classList.add('selected-answer');});
-  $('feedback').textContent='Respuesta elegida. Al terminar verás los aciertos y las explicaciones.';
+  $('feedback').textContent='Respuesta elegida. Necesitás 3 de 5 para aprobar. Las soluciones se muestran al aprobar.';
   $('nextBtn').classList.remove('hidden');
   $('nextBtn').textContent=idx===questions.length-1?'GUARDAR Y VER RESULTADO →':'SIGUIENTE →';
 };
@@ -406,14 +410,15 @@ async function submitPending(){
     const completed=(state.catalog||[]).find(q=>q.id===pending.quizId);
     if(completed){const group=groupQuizzes(completed.category,completed.difficulty);$('triviaResultProgress').textContent=group.filter(q=>q.completed).length+' de '+group.length+' trivias completadas · '+completed.category.toUpperCase()+' · '+tierNames[completed.difficulty];}
     correct=data.correct;
-    $('scoreTitle').textContent=data.score+' PUNTOS';
+    $('scoreTitle').textContent=pending.quizId?(data.passed?'¡TRIVIA APROBADA!':'VOLVÉ A INTENTARLO'): 'PRÁCTICA FINALIZADA';
     $('scoreSummary').textContent=data.correct+' de 5 respuestas correctas';
     $('xpSummary').textContent='+'+data.score+' XP · Total: '+profile.xp+' XP · Guardado en tu cuenta';
-    $('resultDetail').textContent='100 puntos por acierto y 200 extra por partida perfecta. Revisá tus nuevos cromos desde tu perfil.';
+    $('resultDetail').textContent=!pending.quizId?'La práctica no entrega XP ni recompensas.':data.passed?'Ganaste 200 XP por aprobar, 100 por acierto y 200 extra si fue perfecta. Esta trivia ya no se puede repetir.':'Necesitás al menos 3 respuestas correctas. No se revelan las soluciones y este intento no entrega XP. Podés volver a intentarlo.';
     const earned=rewardSteps().filter(r=>r.at>oldXP&&r.at<=profile.xp);
     if(earned.length)$('resultDetail').textContent+=' ¡Desbloqueaste: '+earned.map(r=>r.name).join(', ')+'!';
     $('progress').style.width='100%';
-    renderReview(data.review,pending.questions);
+    if(data.review?.length)renderReview(data.review,pending.questions);else $('resultReview').replaceChildren();
+    celebrateProgress(oldXP);
     forgetPending();state.game=null;state.answers=[];mode='player';message('Partida guardada en Supabase.');base.go('result');
   }catch(e){
     if(version===state.version){message(publicError(e)+' Tu partida sigue pendiente: tocá REINTENTAR GUARDADO.');$('recoverGame').hidden=false;}
@@ -486,7 +491,35 @@ async function equipCosmetic(slot,id){
 }
 renderRewards=function(){
  const xp=profile?.xp||0,steps=rewardSteps(),next=steps.find(x=>x.at>xp);
+ if(profile)void acknowledgeRewards(xp);
  $('rewardProgress').textContent=xp+' XP · '+(next?'Próximo desbloqueo: '+next.name+' ('+(next.at-xp)+' XP restantes)':'Completaste las recompensas actuales.');
  $('rewardTrack').replaceChildren();
  for(const step of steps){const row=document.createElement('div');row.className='milestone '+(xp>=step.at?'earned':'');const title=document.createElement('strong');title.textContent=step.at+' XP · '+step.name;const detail=document.createElement('small');detail.textContent=step.kind+' · '+(xp>=step.at?'✓ Desbloqueado':'Pendiente');row.append(title,detail);$('rewardTrack').appendChild(row);}
 };
+
+function rewardInboxUI(){
+ const show=!!(state.uid&&profile);
+ $('rewardInbox').hidden=!show;
+ const seen=profile?.rewardsSeenXP||0,xp=profile?.xp||0;
+ $('rewardBadge').hidden=!(show&&(Math.floor(xp/1000)>Math.floor(seen/1000)||rewardSteps().some(r=>r.at>seen&&r.at<=xp)));
+ if(!show)$('levelToast').hidden=true;
+}
+let toastTimer;
+function celebrateProgress(oldXP){
+ const xp=profile.xp,level=Math.floor(xp/1000)+1;
+ const gained=rewardSteps().filter(r=>r.at>oldXP&&r.at<=xp);
+ if(Math.floor(oldXP/1000)<Math.floor(xp/1000)||gained.length){
+  $('levelToast').textContent=(Math.floor(oldXP/1000)<Math.floor(xp/1000)?'¡Subiste al nivel '+level+'! ':'¡Nueva recompensa! ')+(gained.length?gained.map(r=>r.name).join(' · ')+'. ':'')+'Revisá tus recompensas.';
+  $('levelToast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{$('levelToast').hidden=true;},6500);
+ }
+ rewardInboxUI();
+}
+async function acknowledgeRewards(xp){
+ if(!state.uid||xp<=(profile?.rewardsSeenXP||0))return;
+ const version=state.version;
+ const {data,error}=await client.rpc('arcade_ack_rewards',{p_xp:xp});
+ if(version!==state.version)return;
+ if(error){message('No pudimos marcar las recompensas como vistas. Podés seguir jugando.');return;}
+ // Do not overwrite a newer XP total returned by another request.
+ profile.rewardsSeenXP=Number(unpack(data).rewards_seen_xp);rewardInboxUI();
+}

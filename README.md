@@ -1,76 +1,55 @@
-# LOADING ARCADE 0.7 — progresión y vestuario
+# LOADING ARCADE 0.8 — aprobación y avisos de progreso
 
-Entrega de desarrollo, **sin publicar en Cloudflare ni aplicar SQL al proyecto remoto**. Las versiones anteriores se conservan en sus ZIP. La versión 0.4 fue probada por el propietario con registro y una partida real guardada; los flujos nuevos de esta entrega necesitan su comprobación real después de instalarla.
+Entrega para revisión. No aplica SQL remoto ni publica en Cloudflare automáticamente. Las cartas nuevas, cofres, monedas, descuentos y ranking semanal todavía no están implementados.
 
-## Qué cambia
+## Cambios
 
-- PS1 y PS2 están disponibles desde el inicio. **Dentro de cada consola**, completar todas las fáciles abre Medio y completar todas las medias abre Difícil. No es necesario avanzar una consola para jugar la otra. El servidor exige los bloqueos, incluido el endpoint libre antiguo. Los niveles ganados se conservan cuando se agrega contenido nuevo.
-- Diez preguntas nuevas sobre estudios desarrolladores, con referencias por pregunta en `content/question-batch-v07.json`. Tras la actualización habrá 30 preguntas y seis trivias: una fácil, media y difícil por consola.
-- Vestuario con seis cosméticos guardados en la cuenta: gafas neón (500 XP), fondo violeta (1.000), gafas hielo (1.500), gorra arcade (2.000), fondo noche (3.500), corona de avatar (5.000). Solo cambian las mascotas; no dan ventajas, puntos ni respuestas. Las fotos mantienen su aspecto.
-- Camino de recompensas con cromos y cosméticos, siguiente hito en el inicio y aviso al conseguirlos. El balance es inicial y revisable con partidas reales; los umbrales anteriores de cromos se conservan.
-- Clasificación acordada: **objetos comunes, armas épicas, personajes legendarios**. «Rara» queda reservada hasta definir un criterio distinto. La Llave insignia pertenece a Resident Evil 4, confirmado por el propietario; no se inventó su función.
+- Trivias del recorrido: aprobación con 3/5. Se puede reintentar hasta aprobar; los intentos fallidos no muestran soluciones ni dan XP. Al aprobar, se cierra la trivia y se muestran las explicaciones.
+- Recompensa única: 200 XP por aprobar + 100 por acierto + 200 si son cinco aciertos. Totales: 500, 600 o 900 XP. El servidor impide repetir trivias aprobadas y otorgar puntos dos veces, incluso ante reintentos de red. El contador de partidas incluye intentos fallidos; el de trivias completadas solo aprobadas.
+- Práctica Mix: sin XP ni progreso. Evita conseguir recompensas repitiendo partidas libres. Invitados pueden probar las partidas fáciles sin guardar progreso.
+- PS1/PS2 independientes; aprobar todas las fáciles de una consola abre sus medias, y aprobar todas las medias abre sus difíciles. Los niveles ganados se conservan al agregar contenido.
+- Aviso de nivel/recompensa durante 6,5 segundos, accesible mediante `role=status`. Botón global con insignia persistente hasta revisar Recompensas. La marca de lectura se guarda en Supabase por jugador y funciona entre dispositivos.
+- Solo mascotas y cosméticos: se retira la foto del flujo y las fotos antiguas dejan de mostrarse. No se borran archivos/datos históricos; guardar el perfil usa `photo=null`. Se conservan apodo, avatar elegido, XP y cosméticos.
+- Trivias en curso se pueden retomar seleccionando la opción «en curso». Una sola trivia de catálogo activa por jugador, con vencimiento de 24 horas. Las respuestas se envían al final; al retomar antes de enviarlas se vuelve a la primera pregunta del mismo intento.
+- Carga por lotes sin cambios de código: ver [content/batches/README.md](content/batches/README.md). Validador offline con fuentes y generación de SQL transaccional. No es todavía un panel administrativo.
 
-Se conservan perfiles, mascotas, foto opcional, tres cromos destacados, historial, puntuación en servidor, contadores de trivias únicas y recuperación del guardado sin duplicar XP. Terminar una trivia cuenta incluso con cero aciertos; repetirla no aumenta el contador de completadas. Mix retro es libre, no completa el catálogo por consola, y sus niveles avanzados requieren haberlos ganado para las consolas que mezcla. Invitados sin identidad pueden probar partidas fáciles; para guardar progreso y abrir niveles, crear un jugador sin correo o entrar con una cuenta existente.
+## Actualizar desde 0.7
 
-## Arte y cofres: estado real
+1. Ejecutar **`supabase/upgrade-v08.sql` una sola vez** en SQL Editor de Supabase. No repetir setup ni upgrades anteriores. SQL y `migrations/202610240003_approval_notifications.sql` contienen lo mismo: usar solo uno.
+2. Las partidas anteriores de catálogo ya terminadas siguen completadas, cualquiera fuera su resultado. No se quitan XP, cosméticos ni dificultades ganadas. Las notificaciones iniciales parten del XP actual, sin marcar todas las recompensas históricas como nuevas.
+3. El resultado muestra las seis filas actuales por consola/dificultad. Si hay error, compartirlo antes de repetir fragmentos.
+4. Descargar `loading-arcade-v08.zip`, descomprimir y cargar **solo su `index.html`** en Cloudflare → Workers & Pages → loading-arcade → New deployment → Deploy. Ese HTML es `dist/index.html`; no usar el fuente raíz.
+5. Confirmar «Versión 0.8» en el pie. Probar una trivia pendiente: fallar, reintentar, aprobar y comprobar el bloqueo; verificar aviso/insignia y vestuario.
 
-El formato de cartas está en exploración y **todavía no reemplaza las ilustraciones del álbum**. Ver `design/cromos.md` y `design/card-references.json`: distinguen datos confirmados de pendientes. No usar el primer mockup que atribuía la llave a Kingdom Hearts; fue un error corregido con la información del propietario. No inventar nombres, funciones, versiones o procedencias por parecido visual.
+Base nueva: `setup.sql` → `upgrade-v06.sql` → `upgrade-v07.sql` → `upgrade-v08.sql`. No aplicar también las migraciones individuales.
 
-La propuesta de comunes aseguradas y tiradas gratuitas para cartas superiores está documentada, pero **no hay cofres, RNG, tickets, monedas, duplicados ni porcentajes implementados**. Las recompensas actuales siguen siendo deterministas por XP. No hay pagos, ranking global, descuentos ni Google OAuth.
+Mantener Anonymous Sign-ins habilitado y Confirm email para vinculación opcional. Site URL/Redirect URL: `https://loading-arcade.tienda-somosloading.workers.dev/`. Configuración pública en `src/config.js`. No usar service_role ni contraseñas en el navegador.
 
-## Instalación en Supabase antes de publicar
+## Desarrollo y pruebas
 
-Para un proyecto que ya tiene 0.6:
-
-1. No volver a ejecutar `setup.sql` ni `upgrade-v06.sql`.
-2. En **SQL Editor → New query**, ejecutar **`supabase/upgrade-v07.sql` una sola vez**. Agrega desbloqueos, cosméticos, selección del avatar, clasificación de cromos y las diez preguntas nuevas. Conserva cuentas, XP, partidas y colecciones. Si aparece un error, compartirlo antes de repetir fragmentos.
-3. El resultado final debe mostrar seis filas, una trivia por consola/dificultad. Los niveles reales se identifican con easy/medium/hard.
-4. En **Authentication → Sign In / Providers → User Signups**, mantener **Allow anonymous sign-ins** habilitado. Dejar **Confirm email** activado para la vinculación opcional. Una identidad anónima tiene sus propios datos privados; no equivale a dar acceso público a los perfiles.
-
-Para una base nueva: ejecutar `setup.sql`, después `upgrade-v06.sql` y después `upgrade-v07.sql`. No ejecutar además los archivos individuales de `migrations`, pues contienen los mismos cambios.
-
-La URL y la clave publicable están en `src/config.js`; no se necesita contraseña ni service_role en el navegador. RLS y funciones restringen datos y operaciones. Las preguntas y soluciones están en un esquema privado; el servidor selecciona el pack, valida las respuestas y calcula puntos. Los cosméticos se validan por slot y XP. Las fotos pequeñas se guardan comprimidas en el perfil privado, sin bucket público.
-
-## Acceso sin correo y recuperación
-
-La partida rápida no crea identidad ni guarda XP. CREAR MI JUGADOR crea una identidad anónima de Supabase sin pedir correo. Después de tres partidas o un día, aparece un recordatorio opcional para vincularlo; se puede posponer 24 horas. No bloquea ni programa el borrado del progreso.
-
-Sin vincular, cerrar sesión, borrar datos del navegador o cambiar de dispositivo puede dejar al jugador sin acceso a su identidad, aunque los registros sigan en Supabase. Vincular un correo mediante enlace conserva el UID, XP y partidas; abrir ese enlace en el mismo navegador. Las cuentas antiguas siguen entrando por YA TENGO CUENTA. No se fusionan dos cuentas existentes automáticamente. Antes de abrir altas anónimas a gran escala, integrar CAPTCHA y revisar límites de Auth/correo. Para muchos destinatarios, revisar SMTP propio y límites vigentes de Supabase.
-
-## Desarrollo
-
-Node >=22, npm y Python 3. Utilizar el checkout existente `/workspace/loading`; las tareas de nube ya están aisladas, no crear worktrees salvo pedido explícito.
+Node >=22, npm, Python y Playwright/Chromium del sistema. Checkout `/workspace/loading`.
 
 ```sh
 npm ci
+npm ci --prefix supabase
 npm run build
+npm run test:database
 python -m http.server 8080 --bind 0.0.0.0
 ```
 
-El `index.html` raíz es fuente y carga `assets/cloud.bundle.js`. **`dist/index.html` es el HTML completo para desplegar**, con SDK incluido y sin CDN. No probar Auth con file://. `loading-arcade-v07.zip` contiene ese HTML, estas instrucciones y las licencias.
+En otra terminal iniciar `npm run test:fixture`, y luego `npm run test:browser`. `ARCADE_URL` permite cambiar el puerto. La fixture usa PostgreSQL local (PGlite) y Auth simulado: nunca desplegarla. Las pruebas interceptan las solicitudes al Supabase remoto; no envían correos ni modifican datos reales. `python tests/smoke.py` comprueba invitado y tamaños de pantalla.
 
-## Validación
+`index.html` raíz carga el bundle de `assets/`; `dist/index.html` incluye el SDK y es independiente de CDN. El ZIP solo contiene el HTML desplegable, README y licencias; nunca subir JSON de preguntas, SQL ni fixture al Worker público.
 
-Con el servidor local iniciado y Playwright para Python/Chromium del sistema disponibles:
+Se comprueban: preservación de datos previos; RLS y aislamiento; aprobación y ocultación de soluciones al fallar; XP una sola vez; bloqueo de repetición; reanudación del intento activo; notificaciones; cosméticos; importación atómica y validación de lotes. Navegador: guardado interrumpido y recuperación sin duplicar XP, marcas persistentes, aviso de nivel, vestuario, HTML independiente y 24 combinaciones de pantalla/ancho. Auth real, entrega de correo y aplicación de migración remota requieren comprobación posterior por el propietario.
 
-```sh
-python tests/smoke.py
-npm ci --prefix supabase
-npm run test:database
-```
+## Próximas etapas acordadas
 
-Para integración completa, iniciar en otra terminal `npm run test:fixture` y luego ejecutar `npm run test:browser`. La fixture usa PostgreSQL local (PGlite), usuarios ficticios y Auth simulado; nunca desplegarla. Las solicitudes al proyecto se interceptan; no envía correo ni escribe en la base remota. `ARCADE_URL` permite cambiar el puerto de pruebas.
+- Desafío semanal temático de un juego original, aproximadamente 20 preguntas, un intento puntuable, ranking por aciertos y tiempo. Definir manejo de desconexiones y cierre antes de publicar. No utilizar el XP del recorrido como ranking competitivo.
+- Carta exclusiva para cada participante con perfect score durante la semana, fuera de colecciones habituales y sin otra vía de obtención.
+- Encuesta de cuatro juegos en Instagram; enlace desde la app. No publicar ni enviar mensajes automáticamente.
+- Cofres en subidas de nivel; cosméticos entre niveles. Probabilidades propuestas 70% común, 15% monedas, 10% épica, 5% legendaria, pendientes de balance, utilidad de monedas, duplicados y garantía.
+- Beneficio de compra accesible por progreso; falta definir porcentaje, condiciones, emisión y validación. No se anuncia un descuento que aún no existe.
+- Colecciones iniciales: Resident Evil 4 PS2, Metal Gear Solid PS1, Silent Hill 2 PS2 y Parasite Eve 2 PS1, todos originales. Inicio propuesto por juego: ocho comunes, cuatro épicas y dos legendarias. Arte y referencias pendientes; no inventar metadata. El álbum actual conserva los cromos provisionales.
 
-Se probaron los bloqueos independientes por consola y el rechazo del salto directo por API; preservación de XP y desbloqueos; diez preguntas nuevas; equipar/quitar cosméticos, límites de XP y slot, persistencia y aislamiento. También solicitudes/callbacks PKCE simulados, invitado, progreso de usuario, fotos, historial, reintento tras un resultado ya guardado sin duplicar XP, HTML de un solo archivo y tamaños móviles. El informe de fuentes y sus límites está en `content/research/README.md`; no se afirma haber verificado fuentes oficiales que la red bloqueó.
-
-Estas pruebas no sustituyen la comprobación de correo, registro anónimo y partidas en el proyecto Supabase real después de aplicar la actualización.
-
-## Actualizar Cloudflare tras aprobar la publicación
-
-1. Guardar el despliegue anterior para poder volver atrás y aplicar primero la actualización SQL.
-2. En **Workers & Pages → loading-arcade → New deployment**, cargar únicamente el `index.html` del ZIP (es `dist/index.html`), en la raíz. No subir el ZIP entero, tests, SQL, fixture ni node_modules.
-3. **Deploy** actualiza la web pública. Conservar Worker, dominio y configuración existentes.
-4. Confirmar **Versión 0.7** en el pie. Comprobar el inicio con la cuenta existente y, en una ventana privada, el jugador sin correo.
-5. Verificar PS1 y PS2 abiertas; completar PS2 Fácil y comprobar que abre solo PS2 Medio; completar PS2 Medio y comprobar que abre PS2 Difícil. Probar vestuario al alcanzar sus XP, recargar y comprobar los cambios. Revisar perfil y partidas en Supabase y recuperar la cuenta vinculada en otro dispositivo.
-
-Mantener Site URL y Redirect URLs de Supabase en `https://loading-arcade.tienda-somosloading.workers.dev/`. Para pruebas locales agregar solo el origen exacto utilizado, sin comodines amplios. Nada de este repositorio publica o ejecuta SQL automáticamente.
+Los datos del recorrido actual pueden consultarse con la clave pública bajo RLS; las respuestas correctas y fuentes nuevas se guardan en esquema privado. El futuro ranking necesita su propia política competitiva y banco de preguntas, sin reutilizar preguntas expuestas en el modo invitado.
