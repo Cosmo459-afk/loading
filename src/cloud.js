@@ -550,7 +550,7 @@ function cardMarkup(c,locked=false){
  let artwork;
  if(c.image){
   const [w,h]=c.referenceSize,box=c.crop||[0,0,w,h];
-  artwork='<svg class="card-image" viewBox="'+box.join(' ')+'" role="img" aria-label="'+esc(c.name)+'"><image href="'+c.image+'" width="'+w+'" height="'+h+'" preserveAspectRatio="none"/></svg>';
+  artwork='<svg class="card-image" viewBox="'+box.join(' ')+'" role="img" aria-label="'+esc(c.name)+'"><defs><clipPath id="crop-'+c.id+'"><rect x="'+box[0]+'" y="'+box[1]+'" width="'+box[2]+'" height="'+box[3]+'"/></clipPath></defs><image clip-path="url(#crop-'+c.id+')" href="'+c.image+'" width="'+w+'" height="'+h+'" preserveAspectRatio="none"/></svg>';
  }else artwork='<span class="pending-art">Imagen original pendiente</span>';
  return '<article class="game-card rarity-'+rarity+(locked?' card-locked':'')+'"><h3>'+esc(c.name)+'</h3><div class="card-art">'+artwork+'</div><div class="card-caption"><span class="rarity-label">'+esc(c.rarity)+(locked?' · 🔒':'')+'</span><p>'+esc(c.description||c.game)+'</p></div></article>';
 }
@@ -574,8 +574,8 @@ renderAlbum=function(){
   const owned=profile.unlocked.includes(c.id),featured=profile.featured.includes(c.id),box=document.createElement('div');box.className='album-entry';box.innerHTML=cardMarkup(c,!owned);
   const detail=document.createElement('small');detail.className='card-ownership';detail.textContent=owned?(featured?'✓ En tu perfil':'✓ Conseguida'):'Se consigue en cofres';
   const preview=document.createElement('button');preview.className='secondary mini';preview.textContent='VER CARTA';preview.onclick=()=>showCollectible(c.id);
-  box.append(detail,preview);
-  if(owned){const button=document.createElement('button');button.className='secondary mini';button.textContent=featured?'QUITAR DEL PERFIL':'EXHIBIR';button.disabled=state.featureBusy;button.setAttribute('aria-pressed',String(featured));button.onclick=()=>toggleFeatured(c.id);box.appendChild(button);}
+  const controls=document.createElement('div');controls.className='card-controls';controls.appendChild(preview);box.append(detail,controls);
+  if(owned){const button=document.createElement('button');button.className='secondary mini';button.textContent=featured?'QUITAR DEL PERFIL':'EXHIBIR';button.disabled=state.featureBusy;button.setAttribute('aria-pressed',String(featured));button.onclick=()=>toggleFeatured(c.id);controls.appendChild(button);}
   list.appendChild(box);
  }
 };

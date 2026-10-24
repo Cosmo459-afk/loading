@@ -1,0 +1,107 @@
+{
+  "archive": "resident evil 4.zip",
+  "source": "Imágenes seleccionadas y aportadas por el propietario en el chat. Se conservan los bytes originales.",
+  "images": [
+    {
+      "id": "key",
+      "archivePath": "resident evil 4/comunes/CAP-RE405-Front-White_9375443f-4398-4a78-a199-1f5a81f2366c.webp",
+      "file": "key.webp",
+      "sha256": "fd910a46cc809573f5eeea226d4bc0c7ac1c1fb4c21a674f0799197314d43303",
+      "bytes": 46452
+    },
+    {
+      "id": "re4-pearl-pendant",
+      "archivePath": "resident evil 4/comunes/Colgante_de_perlas.webp",
+      "file": "re4-pearl-pendant.webp",
+      "sha256": "ea8e367bc1c970ed7f0d1091600f5e79d5f666b3531234016e0b0aa8d792c5ea",
+      "bytes": 45596
+    },
+    {
+      "id": "re4-red-hawk",
+      "archivePath": "resident evil 4/comunes/Handgunammo.webp",
+      "file": "re4-red-hawk.webp",
+      "sha256": "761b93d90c21e8ab56d0ff0510493e14ac225b2255288b6bd218bfe60b898a79",
+      "bytes": 14310
+    },
+    {
+      "id": "re4-beerstein",
+      "archivePath": "resident evil 4/comunes/Jarra_de_cerveza.webp",
+      "file": "re4-beerstein.webp",
+      "sha256": "e1e218c3399f8e4d7225b95975d751375e61900edff9c4ea3174c39933b0d629",
+      "bytes": 4250
+    },
+    {
+      "id": "re4-blue-medallion",
+      "archivePath": "resident evil 4/comunes/UYFZ5MWDXVD5BBNHIWDXDWON6E.jpg",
+      "file": "re4-blue-medallion.jpg",
+      "sha256": "2d0c7a43ccd88fcf7c448beea302734da4109489db335bf27d2d54301e250226",
+      "bytes": 3058835
+    },
+    {
+      "id": "re4-spinel",
+      "archivePath": "resident evil 4/comunes/spinel.png",
+      "file": "re4-spinel.png",
+      "sha256": "a9dec9f405c1a13bdbbdcbd9d28ae5544b0469c5c4106bc65325581b09f51eb4",
+      "bytes": 67392
+    },
+    {
+      "id": "re4-velvet-blue",
+      "archivePath": "resident evil 4/comunes/velvet-blue.png",
+      "file": "re4-velvet-blue.png",
+      "sha256": "d5ae6a119aaa415c549c410f5274610e6202b73895be3497fa6a34f655c015bd",
+      "bytes": 82626
+    },
+    {
+      "id": "re4-heavyfield",
+      "archivePath": "resident evil 4/comunes/Shotgunshells.webp",
+      "file": "re4-heavyfield.webp",
+      "sha256": "709163df7f5f87a59d22bd2318c22cfad8dccae2c308638486d78c45a0d63475",
+      "bytes": 16386
+    },
+    {
+      "id": "re4-prl-412",
+      "archivePath": "resident evil 4/epicas/600px-RE4semiright.webp",
+      "file": "re4-prl-412.webp",
+      "sha256": "9cadbba8d96f7d1f70dca4f2a4f087a784b1fba9e6f0712bb081f2ed9842c323",
+      "bytes": 10336
+    },
+    {
+      "id": "re4-chicago",
+      "archivePath": "resident evil 4/epicas/images.jpg",
+      "file": "re4-chicago.jpg",
+      "sha256": "3f428fac4ad4285398b12125a00f72b03648c24aaa1cfe57cb68a9169cfb190b",
+      "bytes": 16893
+    },
+    {
+      "id": "re4-typewriter",
+      "archivePath": "resident evil 4/epicas/maquina de escribir.jfif",
+      "file": "re4-typewriter.jpg",
+      "sha256": "619eacc82843e0ba4e8ac0ca201bd96c73d44a4e09c8523eb36fca4d05ee4dd4",
+      "bytes": 24818
+    },
+    {
+      "id": "re4-matilda",
+      "archivePath": "resident evil 4/epicas/RE4Matilda.webp",
+      "file": "re4-matilda.webp",
+      "sha256": "da0330d236409c606f128a73a2023a0ad0848eb17560c60ba2372761505bf97b",
+      "bytes": 73038
+    },
+    {
+      "id": "re4-merchant",
+      "archivePath": "resident evil 4/legendarias/images.jpg",
+      "file": "re4-merchant.jpg",
+      "sha256": "49a37c19fae6a4ef7b69a951daa837ab654c49ab02d6db997c0df45452b71158",
+      "bytes": 23117
+    },
+    {
+      "id": "re4-leon",
+      "archivePath": "resident evil 4/legendarias/leon.jfif",
+      "file": "re4-leon.jpg",
+      "sha256": "9f5c9562dfe4764a7b8e655b76c8214e7851ee686c3a2cca1df373923a9ae1b3",
+      "bytes": 14826
+    }
+  ],
+  "notes": {
+    "re4-blue-medallion": "Captura del remake seleccionada por el propietario y expresamente aceptada para esta primera entrega; no atribuir esta imagen a la edición original."
+  }
+}

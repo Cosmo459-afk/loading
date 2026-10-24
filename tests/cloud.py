@@ -1,4 +1,4 @@
-"""v0.8 browser integration with real local SQL and mocked Auth. No production writes."""
+"""v0.9 browser integration with real local SQL and mocked Auth. No production writes."""
 import json,os,urllib.request
 from playwright.sync_api import sync_playwright
 BASE=os.environ.get('ARCADE_URL','http://127.0.0.1:8080').rstrip('/')
@@ -59,6 +59,11 @@ with sync_playwright() as p:
     page.locator('#wardrobeItems .cosmetic-item').filter(has_text='Gafas neón').get_by_role('button').click();page.wait_for_function('profile.cosmetics.glasses==="pink-glasses"')
     page.evaluate("go('collection')");page.wait_for_selector('#album .game-card')
     assert page.locator('#album .game-card').count()==14
+    assert page.locator('#album svg image').count()==14
+    assert page.locator('#album .pending-art').count()==0
+    decoded=page.locator('#album svg image').evaluate_all('''els=>Promise.all(els.map(async el=>{const i=new Image();i.src=el.getAttribute('href');await i.decode();return [i.naturalWidth,i.naturalHeight];}))''')
+    assert len(decoded)==14 and all(w>0 and h>0 for w,h in decoded)
+    assert 'PREVISUALIZACIÓN' not in page.locator('body').inner_text()
     assert page.locator('#album .rarity-common').count()==8
     assert page.locator('#album .rarity-epic').count()==4
     assert page.locator('#album .rarity-legendary').count()==2
@@ -93,6 +98,8 @@ with sync_playwright() as p:
     assert page.locator('#cardDetail .rarity-legendary').count()==1
     page.locator('#cardDetail').get_by_role('button',name='Cerrar detalle').click()
     page.screenshot(path='/tmp/loading-re4-album-preview.png',full_page=True)
+    page.set_viewport_size({'width':1280,'height':1100})
+    page.locator('#album').screenshot(path='/tmp/re4-gallery-desktop.png')
     for width in [320,390,768,1280]:
         page.set_viewport_size({'width':width,'height':844})
         for screen in ['home','menu','rewards','wardrobe','result','profile','collection','chests','chestOpening']:

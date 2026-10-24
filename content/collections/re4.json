@@ -11,7 +11,7 @@
       "description": "Una llave de metal con una elaborada insignia.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "key.jpg",
+      "imageFile": "key.webp",
       "referenceSize": [
         1440,
         1440
@@ -26,7 +26,7 @@
       "description": "Un collar de cuentas con un colgante ovalado.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-pearl-pendant.jpg",
+      "imageFile": "re4-pearl-pendant.webp",
       "referenceSize": [
         609,
         569
@@ -41,7 +41,7 @@
       "description": "Munición de 9 mm para las pistolas de Leon.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-red-hawk.jpg",
+      "imageFile": "re4-red-hawk.webp",
       "referenceSize": [
         468,
         263
@@ -61,12 +61,17 @@
       "description": "Una jarra decorativa que puede combinarse con gemas.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-beerstein.jpg",
+      "imageFile": "re4-beerstein.webp",
       "referenceSize": [
         360,
         195
       ],
-      "crop": null
+      "crop": [
+        119,
+        5,
+        129,
+        177
+      ]
     },
     {
       "id": "re4-blue-medallion",
@@ -78,14 +83,14 @@
       "collection": "re4",
       "imageFile": "re4-blue-medallion.jpg",
       "referenceSize": [
-        390,
-        352
+        3840,
+        2160
       ],
       "crop": [
-        100,
-        0,
-        96,
-        312
+        1630,
+        960,
+        375,
+        370
       ]
     },
     {
@@ -96,9 +101,9 @@
       "description": "Una pequeña gema de color rosado para vender al Buhonero.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-spinel.jpg",
+      "imageFile": "re4-spinel.png",
       "referenceSize": [
-        480,
+        450,
         360
       ],
       "crop": null
@@ -111,9 +116,9 @@
       "description": "Un tesoro cristalino que se puede vender al Buhonero.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-velvet-blue.jpg",
+      "imageFile": "re4-velvet-blue.png",
       "referenceSize": [
-        480,
+        450,
         360
       ],
       "crop": null
@@ -126,7 +131,7 @@
       "description": "Cartuchos del calibre 12 para las escopetas de Leon.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-heavyfield.jpg",
+      "imageFile": "re4-heavyfield.webp",
       "referenceSize": [
         468,
         263
@@ -146,7 +151,7 @@
       "description": "Un arma especial capaz de lanzar una potente descarga de energía.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-prl-412.jpg",
+      "imageFile": "re4-prl-412.webp",
       "referenceSize": [
         380,
         182
@@ -206,7 +211,7 @@
       "description": "Pistola de 9 mm con capacidad de disparo en ráfagas.",
       "game": "Resident Evil 4",
       "collection": "re4",
-      "imageFile": "re4-matilda.jpg",
+      "imageFile": "re4-matilda.webp",
       "referenceSize": [
         1200,
         675
@@ -244,7 +249,7 @@
       "imageFile": "re4-leon.jpg",
       "referenceSize": [
         250,
-        563
+        500
       ],
       "crop": null
     }
