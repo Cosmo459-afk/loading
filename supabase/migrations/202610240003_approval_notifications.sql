@@ -1,5 +1,7 @@
 -- Apply once after v0.7. Existing XP, completions and earned tiers are preserved.
 begin;
+alter table public.arcade_games drop constraint arcade_games_score_check;
+alter table public.arcade_games add constraint arcade_games_score_check check(score between 0 and 900);
 alter table public.arcade_games add column passed boolean not null default false;
 update public.arcade_games set passed=true where finished_at is not null and quiz_id is not null;
 alter table public.arcade_profiles add column rewards_seen_xp bigint not null default 0;

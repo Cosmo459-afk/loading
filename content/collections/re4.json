@@ -1,0 +1,252 @@
+{
+  "id": "re4",
+  "title": "Resident Evil 4",
+  "edition": "Original · PlayStation 2",
+  "cards": [
+    {
+      "id": "key",
+      "name": "Llave insignia",
+      "rarity": "common",
+      "kind": "object",
+      "description": "Una llave de metal con una elaborada insignia.",
+      "game": "Resident Evil 4",
+      "collection": "re4",
+      "imageFile": "key.jpg",
+      "referenceSize": [
+        1440,
+        1440
+      ],
+      "crop": null
+    },
+    {
+      "id": "re4-pearl-pendant",
+      "name": "Colgante de perlas",
+      "rarity": "common",
+      "kind": "object",
+      "description": "Un collar de cuentas con un colgante ovalado.",
+      "game": "Resident Evil 4",
+      "collection": "re4",
+      "imageFile": "re4-pearl-pendant.jpg",
+      "referenceSize": [
+        609,
+        569
+      ],
+      "crop": null
+    },
+    {
+      "id": "re4-red-hawk",
+      "name": "Balas Red Hawk",
+      "rarity": "common",
+      "kind": "object",
+      "description": "Munición de 9 mm para las pistolas de Leon.",
+      "game": "Resident Evil 4",
+      "collection": "re4",
+      "imageFile": "re4-red-hawk.jpg",
+      "referenceSize": [
+        468,
+        263
+      ],
+      "crop": [
+        182,
+        57,
+        103,
+        65
+      ]
+    },
+    {
+      "id": "re4-beerstein",
+      "name": "Jarra de cerveza",
+      "rarity": "common",
+      "kind": "object",
+      "description": "Una jarra decorativa que puede combinarse con gemas.",
+      "game": "Resident Evil 4",
+      "collection": "re4",
+      "imageFile": "re4-beerstein.jpg",
+      "referenceSize": [
+        360,
+        195
+      ],
+      "crop": null
+    },
+    {
+      "id": "re4-blue-medallion",
+      "name": "Medallón azul",
+      "rarity": "common",
+      "kind": "object",
+      "description": "Un medallón azul del encargo del Buhonero.",
+      "game": "Resident Evil 4",
+      "collection": "re4",
+      "imageFile": "re4-blue-medallion.jpg",
+      "referenceSize": [
+        390,
+        352
+      ],
+      "crop": [
+        100,
+        0,
+        96,
+        312
+      ]
+    },
+    {
+      "id": "re4-spinel",
+      "name": "Espinela",
+      "rarity": "common",
+      "kind": "object",
+      "description": "Una pequeña gema de color rosado para vender al Buhonero.",
+      "game": "Resident Evil 4",
+      "collection": "re4",
+      "imageFile": "re4-spinel.jpg",
+      "referenceSize": [
+        480,
+        360
+      ],
+      "crop": null
+    },
+    {
+      "id": "re4-velvet-blue",
+      "name": "Terciopelo azul",
+      "rarity": "common",
+      "kind": "object",
+      "description": "Un tesoro cristalino que se puede vender al Buhonero.",
+      "game": "Resident Evil 4",
+      "collection": "re4",
+      "imageFile": "re4-velvet-blue.jpg",
+      "referenceSize": [
+        480,
+        360
+      ],
+      "crop": null
+    },
+    {
+      "id": "re4-heavyfield",
+      "name": "Cartuchos de escopeta — Heavyfield",
+      "rarity": "common",
+      "kind": "object",
+      "description": "Cartuchos del calibre 12 para las escopetas de Leon.",
+      "game": "Resident Evil 4",
+      "collection": "re4",
+      "imageFile": "re4-heavyfield.jpg",
+      "referenceSize": [
+        468,
+        263
+      ],
+      "crop": [
+        181,
+        54,
+        111,
+        80
+      ]
+    },
+    {
+      "id": "re4-prl-412",
+      "name": "P.R.L. 412",
+      "rarity": "epic",
+      "kind": "weapon",
+      "description": "Un arma especial capaz de lanzar una potente descarga de energía.",
+      "game": "Resident Evil 4",
+      "collection": "re4",
+      "imageFile": "re4-prl-412.jpg",
+      "referenceSize": [
+        380,
+        182
+      ],
+      "crop": [
+        6,
+        58,
+        289,
+        91
+      ]
+    },
+    {
+      "id": "re4-chicago",
+      "name": "Chicago Typewriter",
+      "rarity": "epic",
+      "kind": "weapon",
+      "description": "Un arma automática de aspecto clásico y munición infinita.",
+      "game": "Resident Evil 4",
+      "collection": "re4",
+      "imageFile": "re4-chicago.jpg",
+      "referenceSize": [
+        492,
+        246
+      ],
+      "crop": [
+        8,
+        63,
+        480,
+        143
+      ]
+    },
+    {
+      "id": "re4-typewriter",
+      "name": "Máquina de escribir",
+      "rarity": "epic",
+      "kind": "object",
+      "description": "Un lugar para guardar la partida y tomar un respiro.",
+      "game": "Resident Evil 4",
+      "collection": "re4",
+      "imageFile": "re4-typewriter.jpg",
+      "referenceSize": [
+        596,
+        335
+      ],
+      "crop": [
+        219,
+        63,
+        201,
+        198
+      ]
+    },
+    {
+      "id": "re4-matilda",
+      "name": "Matilda",
+      "rarity": "epic",
+      "kind": "weapon",
+      "description": "Pistola de 9 mm con capacidad de disparo en ráfagas.",
+      "game": "Resident Evil 4",
+      "collection": "re4",
+      "imageFile": "re4-matilda.jpg",
+      "referenceSize": [
+        1200,
+        675
+      ],
+      "crop": [
+        300,
+        81,
+        624,
+        270
+      ]
+    },
+    {
+      "id": "re4-merchant",
+      "name": "El Buhonero",
+      "rarity": "legendary",
+      "kind": "character",
+      "description": "El misterioso comerciante que vende y mejora tus armas.",
+      "game": "Resident Evil 4",
+      "collection": "re4",
+      "imageFile": "re4-merchant.jpg",
+      "referenceSize": [
+        352,
+        568
+      ],
+      "crop": null
+    },
+    {
+      "id": "re4-leon",
+      "name": "Leon S. Kennedy",
+      "rarity": "legendary",
+      "kind": "character",
+      "description": "El agente enviado a rescatar a la hija del presidente.",
+      "game": "Resident Evil 4",
+      "collection": "re4",
+      "imageFile": "re4-leon.jpg",
+      "referenceSize": [
+        250,
+        563
+      ],
+      "crop": null
+    }
+  ]
+}

@@ -1,6 +1,8 @@
 import {createClient} from '@supabase/supabase-js';
 import config from './config.js';
-
+import {collectionDefinitions,collectionCards} from './collections.js';
+// Replace the provisional catalog with the confirmed RE4 collection.
+cards.splice(0,cards.length,...collectionCards);
 // Existing v0.3 UI remains responsible for mascot art, album and guest quizzes.
 const base={go,showProfile,renderMenu,beginQuiz,renderQuestion,answer,nextQuestion,finish};
 const $=id=>document.getElementById(id);
@@ -8,7 +10,7 @@ const returning=new URLSearchParams(location.search).has('code');
 const client=createClient(config.url,config.publishableKey,{
   auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
 });
-const state={session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false};
+const state={session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false,owned:[],chests:[],chestBusy:false};
 profile=null; // Never turn a local profile into a verified cloud account.
 
 function message(text){$('cloudNotice').textContent=text;$('cloudNotice').hidden=!text;}
@@ -51,23 +53,27 @@ function accountUI(){
     panel.innerHTML='<div class="eyebrow">YA ESTÁS DENTRO</div><h2>Completá tu jugador</h2><p>Tu cuenta ya está creada. Solo falta elegir un apodo y tu compañero.</p><button onclick="showProfile()">ELEGIR APODO Y AVATAR →</button>';
     return;
   }
-  const xp=profile.xp,level=Math.floor(xp/1000)+1;
+  const xp=profile.xp,level=Math.floor(xp/1800)+1;
   const sorted=rewardSteps();
   const next=sorted.find(c=>c.at>xp);
-  const previous=[...sorted].reverse().find(c=>c.at<=xp)?.at||0;
-  const percent=next?Math.min(100,Math.max(0,(xp-previous)/(next.at-previous)*100)):100;
+  const percent=(xp%1800)/18;
   panel.innerHTML='<div class="profile-top">'+avatarHTML(profile)+
     '<div><div class="eyebrow">QUÉ BUENO VERTE DE NUEVO</div><h2>'+esc(profile.name)+
     '</h2><p>Nivel '+level+' · '+(isTemporary()?'Acceso temporal en este navegador':'Sesión iniciada')+'</p></div></div>'+
     '<div class="home-numbers"><div class="home-number"><strong>'+xp+'</strong><small>XP acumulados</small></div>'+
     '<div class="home-number"><strong>'+profile.games+'</strong><small>Partidas</small></div>'+
-    '<div class="home-number"><strong>'+profile.unlocked.length+'/'+cards.length+'</strong><small>Cromos</small></div></div>'+
+    '<div class="home-number"><strong>'+profile.unlocked.filter(id=>cards.find(c=>c.id===id)?.collection==='re4').length+'/14'+'</strong><small>Resident Evil 4</small></div></div>'+
     '<p class="home-reward">'+(next?'Próxima recompensa: <strong>'+esc(next.name)+'</strong> · te faltan '+(next.at-xp)+' XP.':'¡Completaste la colección actual!')+'</p>'+
-    '<div class="bar" role="progressbar" aria-label="Progreso hacia la próxima recompensa" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.round(percent)+'"><div class="fill" style="width:'+percent+'%"></div></div>'+
+    '<div class="bar" role="progressbar" aria-label="Progreso al siguiente nivel" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.round(percent)+'"><div class="fill" style="width:'+percent+'%"></div></div>'+
+    '<p class="muted">'+(xp%1800)+'/1800 XP · Cofre al alcanzar el nivel '+(level+1)+'</p>'+
     (isTemporary()?'<p class="muted">Tu progreso se guarda. <button class="text-button" onclick="openLinkAccount()">Vincular un correo para recuperarlo</button></p>':'')+
-    '<div class="actions"><button onclick="openPlayer()">SEGUIR JUGANDO →</button><button class="secondary" onclick="showProfile()">EDITAR PERFIL</button><button class="secondary" onclick="showHistory()">MIS PARTIDAS</button><button class="secondary" onclick="openAccountPage(\'collection\')">MIS CROMOS</button></div>';
+    '<p class="muted">'+state.chests.filter(c=>!c.opened_at).length+' cofres por abrir</p>'+
+    '<div class="actions"><button onclick="openChests()">MIS COFRES</button><button onclick="openPlayer()">SEGUIR JUGANDO →</button><button class="secondary" onclick="showProfile()">EDITAR PERFIL</button><button class="secondary" onclick="showHistory()">MIS PARTIDAS</button><button class="secondary" onclick="openAccountPage(\'collection\')">MI ÁLBUM</button></div>';
 }
 function publicError(error){
+  if(/Collection complete/i.test(String(error?.message||'')))return 'Ya completaste las cartas disponibles. Tu cofre sigue guardado para futuras colecciones.';
+  if(/Chest not found/i.test(String(error?.message||'')))return 'Este cofre no está disponible para tu jugador.';
+  if(/Game not found/i.test(String(error?.message||'')))return 'La partida ya no existe; puede pertenecer a la prueba anterior del prototipo.';
   if(error?.code==='PGRST202')return 'Falta actualizar el catálogo de trivias en la base de datos. La cuenta y el progreso están conservados.';
   const text=String(error?.message||'');
   if(/anonymous.*disabled|anonymous.*not.*allowed|anonymous.*not.*enabled/i.test(text))return 'La creación sin correo todavía no está habilitada. Mientras tanto podés jugar una partida rápida o entrar con tu cuenta actual.';
@@ -92,16 +98,20 @@ function adopt(row){
 async function loadProfile(uid,version){
   state.profileLoading=true;state.profileError=false;accountUI();
   try{
-    const [player,catalog,cosmetics]=await Promise.all([
+    const [player,catalog,cosmetics,owned,chests]=await Promise.all([
       client.from('arcade_profiles').select('*').eq('id',uid).maybeSingle(),
-      client.from('arcade_cards').select('id,name,required_xp,kind,rarity'),
-      client.from('arcade_cosmetics').select('id,slot,name,required_xp')
+      client.from('arcade_cards').select('id,name,kind,rarity,collection_id,description'),
+      client.from('arcade_cosmetics').select('id,slot,name,required_xp'),
+      client.from('arcade_owned_cards').select('card_id'),
+      client.from('arcade_chests').select('id,level,opened_at,prize_kind,card_id').order('level',{ascending:false})
     ]);
     if(version!==state.version)return;
     if(player.error)throw player.error;
     if(catalog.error)throw catalog.error;
-    if(cosmetics.error)throw cosmetics.error;state.cosmetics=cosmetics.data;
-    for(const c of catalog.data){const local=cards.find(x=>x.id===c.id);if(local){local.at=c.required_xp;local.name=c.name;local.kind=c.kind;local.rarity=({common:'Común',rare:'Rara',epic:'Épica',legendary:'Legendaria'})[c.rarity]||'Por definir';}}
+    if(cosmetics.error)throw cosmetics.error;
+    if(owned.error)throw owned.error;if(chests.error)throw chests.error;
+    state.cosmetics=cosmetics.data;state.owned=owned.data.map(x=>x.card_id);state.chests=chests.data;
+    for(const c of catalog.data){const local=cards.find(x=>x.id===c.id);if(local){local.name=c.name;local.kind=c.kind;local.collection=c.collection_id;local.description=c.description;local.rarityKey=c.rarity;local.rarity=({common:'Común',rare:'Rara',epic:'Épica',legendary:'Legendaria'})[c.rarity]||'Por definir';}}
     adopt(player.data);
   }catch(e){if(version===state.version)state.profileError=true;throw e;}
   finally{if(version===state.version){state.profileLoading=false;accountUI();}}
@@ -120,10 +130,11 @@ async function useSession(session){
   state.session=session;
   if(uid===state.uid)return;
   const version=++state.version;
-  state.cosmetics=[];state.catalog=null;state.catalogLoading=false;state.catalogError=false;state.catalogPromise=null;
+  state.cosmetics=[];state.owned=[];state.chests=[];state.chestBusy=false;state.catalog=null;state.catalogLoading=false;state.catalogError=false;state.catalogPromise=null;
   state.uid=uid;state.profileLoading=!!uid;state.profileError=false;state.game=null;state.answers=[];state.pending=null;profile=null;mode='guest';
   $('recoverGame').hidden=true;
-  $('historyList').replaceChildren();$('resultReview').replaceChildren();
+  if($('cardDetail').open)$('cardDetail').close();
+  $('historyList').replaceChildren();$('resultReview').replaceChildren();$('chestList').replaceChildren();$('chestPrize').replaceChildren();
   for(const id of ['playerStats','album','albumStatus','rewardTrack','rewardProgress','profilePreview','scoreTitle','scoreSummary','xpSummary','resultDetail','triviaResultProgress','wardrobeItems','wardrobePreview'])$(id).replaceChildren();
   $('nickname').value='';$('photoInput').value='';$('linkEmail').value='';$('linkMessage').textContent='';uploadedPhoto=null;selectedAvatar=0;
   accountUI();
@@ -270,13 +281,13 @@ toggleFeatured=async function(id){
   if(state.featureBusy||!state.uid||!profile?.unlocked?.includes(id))return;
   let ids=profile.featured||[];
   if(ids.includes(id))ids=ids.filter(x=>x!==id);
-  else if(ids.length>=3){alert('Podés exhibir hasta 3 cromos. Quitá uno antes de agregar otro.');return;}
+  else if(ids.length>=3){alert('Podés exhibir hasta 3 coleccionables. Quitá uno antes de agregar otro.');return;}
   else ids=[...ids,id];
   const version=state.version;state.featureBusy=true;
   try{
     const {data,error}=await client.rpc('arcade_feature_cards',{p_ids:ids});
     if(error)throw error;
-    if(version===state.version){adopt(data);renderAlbum();message('Cromos destacados guardados.');}
+    if(version===state.version){adopt(data);renderAlbum();message('Coleccionables destacados guardados.');}
   }catch(e){message(publicError(e));}
   finally{state.featureBusy=false;}
 };
@@ -421,7 +432,7 @@ async function submitPending(){
     celebrateProgress(oldXP);
     forgetPending();state.game=null;state.answers=[];mode='player';message('Partida guardada en Supabase.');base.go('result');
   }catch(e){
-    if(version===state.version){message(publicError(e)+' Tu partida sigue pendiente: tocá REINTENTAR GUARDADO.');$('recoverGame').hidden=false;}
+    if(version===state.version){if(/Game not found/i.test(String(e?.message||''))){forgetPending();state.game=null;state.answers=[];message(publicError(e)+' Elegí una nueva trivia.');base.go('menu');}else{message(publicError(e)+' Tu partida sigue pendiente: tocá REINTENTAR GUARDADO.');$('recoverGame').hidden=false;}}
   }finally{state.busy=false;$('nextBtn').disabled=false;$('recoverGame').disabled=false;}
 }
 window.retryCloudGame=async function(){await ready;await submitPending();};
@@ -453,8 +464,15 @@ shareScore=async function(){
 
 
 function rewardSteps(){
-  return [...cards.map(c=>({...c,kind:'Cromo'})),...state.cosmetics.map(c=>({...c,at:c.required_xp,kind:'Cosmético'}))].sort((a,b)=>a.at-b.at||a.name.localeCompare(b.name));
+ const levels=Math.max(Math.floor((profile?.xp||0)/1800)+2,Math.ceil(Math.max(0,...state.cosmetics.map(c=>c.required_xp))/1800));
+ return [...state.cosmetics.map(c=>({...c,at:c.required_xp,kind:'Cosmético'})),...Array.from({length:levels},(_,i)=>({id:'chest-level-'+(i+2),at:(i+1)*1800,name:'Cofre · Nivel '+(i+2),kind:'Cofre'}))].sort((a,b)=>a.at-b.at||a.name.localeCompare(b.name));
 }
+// Inventory is authoritative: XP never unlocks cards directly.
+syncUnlocks=function(){
+ if(!profile)return;
+ profile.unlocked=[...state.owned];
+ profile.featured=(profile.featured||[]).filter((id,i,a)=>state.owned.includes(id)&&a.indexOf(id)===i).slice(0,3);
+};
 const originalAvatarSVG=avatarSVG;
 avatarSVG=function(n){
   let svg=decodeURIComponent(originalAvatarSVG(n).split(',')[1]);
@@ -492,7 +510,7 @@ async function equipCosmetic(slot,id){
 renderRewards=function(){
  const xp=profile?.xp||0,steps=rewardSteps(),next=steps.find(x=>x.at>xp);
  if(profile)void acknowledgeRewards(xp);
- $('rewardProgress').textContent=xp+' XP · '+(next?'Próximo desbloqueo: '+next.name+' ('+(next.at-xp)+' XP restantes)':'Completaste las recompensas actuales.');
+ $('rewardProgress').textContent='Nivel '+(Math.floor(xp/1800)+1)+' · '+(xp%1800)+'/1800 XP · '+state.chests.filter(c=>!c.opened_at).length+' cofres disponibles. '+(next?'Próximo desbloqueo: '+next.name+' ('+(next.at-xp)+' XP restantes)':'Completaste las recompensas actuales.');
  $('rewardTrack').replaceChildren();
  for(const step of steps){const row=document.createElement('div');row.className='milestone '+(xp>=step.at?'earned':'');const title=document.createElement('strong');title.textContent=step.at+' XP · '+step.name;const detail=document.createElement('small');detail.textContent=step.kind+' · '+(xp>=step.at?'✓ Desbloqueado':'Pendiente');row.append(title,detail);$('rewardTrack').appendChild(row);}
 };
@@ -501,15 +519,17 @@ function rewardInboxUI(){
  const show=!!(state.uid&&profile);
  $('rewardInbox').hidden=!show;
  const seen=profile?.rewardsSeenXP||0,xp=profile?.xp||0;
- $('rewardBadge').hidden=!(show&&(Math.floor(xp/1000)>Math.floor(seen/1000)||rewardSteps().some(r=>r.at>seen&&r.at<=xp)));
+ const unopened=state.chests.filter(c=>!c.opened_at).length;
+ $('rewardBadge').textContent=unopened?'● '+unopened+' '+(unopened===1?'COFRE':'COFRES'):'● NUEVAS';
+ $('rewardBadge').hidden=!(show&&(unopened||Math.floor(xp/1800)>Math.floor(seen/1800)||rewardSteps().some(r=>r.at>seen&&r.at<=xp)));
  if(!show)$('levelToast').hidden=true;
 }
 let toastTimer;
 function celebrateProgress(oldXP){
- const xp=profile.xp,level=Math.floor(xp/1000)+1;
+ const xp=profile.xp,level=Math.floor(xp/1800)+1;
  const gained=rewardSteps().filter(r=>r.at>oldXP&&r.at<=xp);
- if(Math.floor(oldXP/1000)<Math.floor(xp/1000)||gained.length){
-  $('levelToast').textContent=(Math.floor(oldXP/1000)<Math.floor(xp/1000)?'¡Subiste al nivel '+level+'! ':'¡Nueva recompensa! ')+(gained.length?gained.map(r=>r.name).join(' · ')+'. ':'')+'Revisá tus recompensas.';
+ if(Math.floor(oldXP/1800)<Math.floor(xp/1800)||gained.length){
+  $('levelToast').textContent=(Math.floor(oldXP/1800)<Math.floor(xp/1800)?'¡Subiste al nivel '+level+'! ':'¡Nueva recompensa! ')+(gained.length?gained.map(r=>r.name).join(' · ')+'. ':'')+'Revisá tus recompensas y cofres.';
   $('levelToast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{$('levelToast').hidden=true;},6500);
  }
  rewardInboxUI();
@@ -523,3 +543,84 @@ async function acknowledgeRewards(xp){
  // Do not overwrite a newer XP total returned by another request.
  profile.rewardsSeenXP=Number(unpack(data).rewards_seen_xp);rewardInboxUI();
 }
+
+let selectedCollection='re4';
+function cardMarkup(c,locked=false){
+ const rarity=c.rarityKey||({Común:'common','Épica':'epic','Legendaria':'legendary'})[c.rarity]||'common';
+ let artwork;
+ if(c.image){
+  const [w,h]=c.referenceSize,box=c.crop||[0,0,w,h];
+  artwork='<svg class="card-image" viewBox="'+box.join(' ')+'" role="img" aria-label="'+esc(c.name)+'"><image href="'+c.image+'" width="'+w+'" height="'+h+'" preserveAspectRatio="none"/></svg>';
+ }else artwork='<span class="pending-art">Imagen original pendiente</span>';
+ return '<article class="game-card rarity-'+rarity+(locked?' card-locked':'')+'"><h3>'+esc(c.name)+'</h3><div class="card-art">'+artwork+'</div><div class="card-caption"><span class="rarity-label">'+esc(c.rarity)+(locked?' · 🔒':'')+'</span><p>'+esc(c.description||c.game)+'</p></div></article>';
+}
+cardHTML=function(c,equipped=false,locked=false){return '<div class="featured-card'+(equipped?' equipped':'')+'">'+cardMarkup(c,locked)+'</div>';};
+window.selectCollection=function(id){if(collectionDefinitions.some(c=>c.id===id)){selectedCollection=id;renderAlbum();}};
+renderAlbum=function(){
+ const list=$('album');list.replaceChildren();$('collectionOverview').replaceChildren();
+ if(!profile){$('albumStatus').textContent='Creá tu jugador para guardar coleccionables.';return;}
+ syncUnlocks();
+ for(const collection of collectionDefinitions){
+  const items=cards.filter(c=>c.collection===collection.id),owned=items.filter(c=>profile.unlocked.includes(c.id));
+  const button=document.createElement('button');button.className='collection-summary secondary';button.setAttribute('aria-pressed',String(selectedCollection===collection.id));
+  const title=document.createElement('strong');title.textContent=collection.title+' · '+owned.length+'/'+items.length;
+  const detail=document.createElement('small');detail.textContent=collection.edition+' · Te faltan '+(items.length-owned.length);
+  const breakdown=document.createElement('small');breakdown.textContent=[['common','Comunes'],['epic','Épicas'],['legendary','Legendarias']].map(([key,name])=>name+' '+owned.filter(c=>c.rarityKey===key).length+'/'+items.filter(c=>c.rarityKey===key).length).join(' · ');
+  button.append(title,detail,breakdown);button.onclick=()=>selectCollection(collection.id);$('collectionOverview').appendChild(button);
+ }
+ $('albumStatus').textContent=(profile.featured||[]).length+' de 3 destacados · Resident Evil 4';
+ const items=cards.filter(c=>c.collection===selectedCollection);
+ for(const c of items){
+  const owned=profile.unlocked.includes(c.id),featured=profile.featured.includes(c.id),box=document.createElement('div');box.className='album-entry';box.innerHTML=cardMarkup(c,!owned);
+  const detail=document.createElement('small');detail.className='card-ownership';detail.textContent=owned?(featured?'✓ En tu perfil':'✓ Conseguida'):'Se consigue en cofres';
+  const preview=document.createElement('button');preview.className='secondary mini';preview.textContent='VER CARTA';preview.onclick=()=>showCollectible(c.id);
+  box.append(detail,preview);
+  if(owned){const button=document.createElement('button');button.className='secondary mini';button.textContent=featured?'QUITAR DEL PERFIL':'EXHIBIR';button.disabled=state.featureBusy;button.setAttribute('aria-pressed',String(featured));button.onclick=()=>toggleFeatured(c.id);box.appendChild(button);}
+  list.appendChild(box);
+ }
+};
+window.showCollectible=function(id){
+ const c=cards.find(c=>c.id===id);if(!c||!profile)return;
+ $('cardDetailArt').innerHTML=cardMarkup(c,!profile.unlocked.includes(id));$('cardDetail').showModal();
+};
+
+window.openChests=async function(){
+ await ready;if(!state.uid||!profile){await enterPlayer(true);return;}
+ const version=state.version;mode='player';
+ try{await loadProfile(state.uid,version);if(version!==state.version)return;renderChests();base.go('chests');}
+ catch(e){message(publicError(e));}
+};
+function renderChests(){
+ $('chestBalance').textContent=state.chests.filter(c=>!c.opened_at).length+' cofres por abrir';
+ $('chestList').replaceChildren();
+ if(!state.chests.length){$('chestList').textContent='Tu primer cofre llega al nivel 2: necesitás 1800 XP, equivalentes a dos trivias perfectas.';return;}
+ for(const chest of state.chests){
+  const box=document.createElement('div');box.className='panel chest-row';
+  const title=document.createElement('strong');title.textContent='Cofre del nivel '+chest.level;
+  const button=document.createElement('button');button.disabled=state.chestBusy||(!chest.opened_at&&state.owned.length>=cards.length);button.textContent=chest.opened_at?'VER PREMIO':state.owned.length>=cards.length?'COLECCIÓN COMPLETA':'ABRIR COFRE';button.onclick=()=>chest.opened_at?revealChest(chest):openChest(chest.id);
+  box.append(title,button);$('chestList').appendChild(box);
+ }
+}
+function revealChest(result,isNew=false){
+ const box=$('chestPrize');box.replaceChildren();$('chestStage').className='chest-stage revealed';
+ $('chestOpeningTitle').textContent=isNew?'¡Nuevo coleccionable!':'Tu coleccionable';
+ $('chestStage').dataset.rarity=result.prize_kind;
+ const card=cards.find(c=>c.id===result.card_id);
+ if(card)box.innerHTML=cardMarkup(card);
+ $('chestOpeningStatus').textContent=isNew&&card?'Se agregó a tu colección de '+card.game+'.':'Conseguido en el cofre del nivel '+result.level+'.';
+ $('chestReturn').hidden=false;$('chestRetry').hidden=true;mode='player';base.go('chestOpening');
+}
+window.openChest=async function(id){
+ if(state.chestBusy||!state.uid||!profile)return;
+ state.chestBusy=true;const version=state.version;
+ $('chestStage').className='chest-stage opening';delete $('chestStage').dataset.rarity;$('chestPrize').replaceChildren();$('chestOpeningTitle').textContent='Abriendo tu cofre…';$('chestOpeningStatus').textContent='¿Qué habrá adentro?';$('chestReturn').hidden=true;$('chestRetry').hidden=true;base.go('chestOpening');
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ try{
+  const [response]=await Promise.all([client.rpc('arcade_open_chest',{p_chest_id:id}),new Promise(resolve=>setTimeout(resolve,reduced?0:1500))]);
+  if(version!==state.version)return;if(response.error)throw response.error;
+  revealChest(response.data,true);
+  try{await loadProfile(state.uid,version);}catch(e){if(version===state.version)message('Tu premio está guardado. Volvé a Mis cofres para actualizar tus cofres y la colección.');}
+ }catch(e){
+  if(version===state.version){$('chestStage').className='chest-stage';$('chestOpeningTitle').textContent='Tu cofre está guardado';$('chestOpeningStatus').textContent=publicError(e)+' Reintentá para ver el premio confirmado, sin gastar otro cofre.';$('chestRetry').hidden=false;$('chestRetry').onclick=()=>openChest(id);$('chestReturn').hidden=false;}
+ }finally{if(version===state.version)state.chestBusy=false;}
+};

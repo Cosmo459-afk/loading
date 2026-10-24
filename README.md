@@ -1,55 +1,62 @@
-# LOADING ARCADE 0.8 — aprobación y avisos de progreso
+# LOADING ARCADE 0.9 — coleccionables y cofres
 
-Entrega para revisión. No aplica SQL remoto ni publica en Cloudflare automáticamente. Las cartas nuevas, cofres, monedas, descuentos y ranking semanal todavía no están implementados.
+**Entrega en preparación: faltan los 14 archivos de imagen originales.** Las referencias se ven en el chat, pero esos adjuntos inline no aparecen como archivos accesibles en este entorno. No publicar la previsualización. No se ha aplicado SQL remoto ni desplegado Cloudflare.
 
-## Cambios
+## Reglas implementadas
 
-- Trivias del recorrido: aprobación con 3/5. Se puede reintentar hasta aprobar; los intentos fallidos no muestran soluciones ni dan XP. Al aprobar, se cierra la trivia y se muestran las explicaciones.
-- Recompensa única: 200 XP por aprobar + 100 por acierto + 200 si son cinco aciertos. Totales: 500, 600 o 900 XP. El servidor impide repetir trivias aprobadas y otorgar puntos dos veces, incluso ante reintentos de red. El contador de partidas incluye intentos fallidos; el de trivias completadas solo aprobadas.
-- Práctica Mix: sin XP ni progreso. Evita conseguir recompensas repitiendo partidas libres. Invitados pueden probar las partidas fáciles sin guardar progreso.
-- PS1/PS2 independientes; aprobar todas las fáciles de una consola abre sus medias, y aprobar todas las medias abre sus difíciles. Los niveles ganados se conservan al agregar contenido.
-- Aviso de nivel/recompensa durante 6,5 segundos, accesible mediante `role=status`. Botón global con insignia persistente hasta revisar Recompensas. La marca de lectura se guarda en Supabase por jugador y funciona entre dispositivos.
-- Solo mascotas y cosméticos: se retira la foto del flujo y las fotos antiguas dejan de mostrarse. No se borran archivos/datos históricos; guardar el perfil usa `photo=null`. Se conservan apodo, avatar elegido, XP y cosméticos.
-- Trivias en curso se pueden retomar seleccionando la opción «en curso». Una sola trivia de catálogo activa por jugador, con vencimiento de 24 horas. Las respuestas se envían al final; al retomar antes de enviarlas se vuelve a la primera pregunta del mismo intento.
-- Carga por lotes sin cambios de código: ver [content/batches/README.md](content/batches/README.md). Validador offline con fuentes y generación de SQL transaccional. No es todavía un panel administrativo.
+- Resident Evil 4 original: 14 coleccionables confirmados por el propietario, ocho comunes azules, cuatro épicos violetas/rosas y dos legendarios dorados. Título → imagen → descripción breve. Progreso por colección y rareza, detalle ampliado y tres destacados en el perfil.
+- **Las cartas solo se obtienen abriendo cofres**, nunca por XP directamente. Un cofre al subir cada nivel; **1.800 XP por nivel**. Una trivia perfecta entrega 900 XP: dos perfectas suben un nivel. El jugador comienza en nivel 1 y su primer cofre corresponde al nivel 2.
+- Probabilidades iniciales **85% común, 10% épica y 5% legendaria**. Se reasignó a comunes el 15% de monedas descartado por el propietario. **Sin monedas y sin repetidas**. Al agotar una rareza se elimina del sorteo y se normalizan proporcionalmente los pesos restantes. Con la colección completa, los cofres pendientes permanecen cerrados para futuras incorporaciones.
+- Sorteo en servidor; premio e inventario guardados en la misma transacción. Doble clic, recarga, corte de red y otro dispositivo devuelven el mismo resultado ya guardado. No hay pagos ni compra de cofres.
+- Evento de apertura: cofre que se agita, tapa que se abre, brillo y revelación de la carta; respeta movimiento reducido. El premio queda consultable desde Mis cofres. Las probabilidades y la regla de no repetición se muestran antes de abrir.
+- Cosméticos entre niveles: gafas neón 500 XP, fondo violeta 1.000, gafas hielo 1.500, gorra 2.000, fondo noche 3.500, corona 5.000. Se guardan al equiparlos; son únicamente visuales.
+- Trivias por consola: aprobar con 3/5; reintentar hasta aprobar, sin mostrar soluciones al fallar. Recompensa única: 200 XP por aprobar + 100 por acierto + 200 por perfecta; totales 500/600/900. Una aprobada no se repite. Mix e invitado son práctica sin progreso guardado. PS1 y PS2 independientes; fáciles → medias → difíciles.
+- Aviso de nivel y recompensas, botón con insignia persistente y contador de cofres sin abrir. Perfil solo con mascotas y cosméticos, sin foto.
+- Carga de trivias por lotes sin actualizar HTML: ver `content/batches/README.md`. Las preguntas/soluciones/fuentes se guardan en esquema privado. Todavía no es un panel administrativo.
 
-## Actualizar desde 0.7
+## Reinicio autorizado de las pruebas
 
-1. Ejecutar **`supabase/upgrade-v08.sql` una sola vez** en SQL Editor de Supabase. No repetir setup ni upgrades anteriores. SQL y `migrations/202610240003_approval_notifications.sql` contienen lo mismo: usar solo uno.
-2. Las partidas anteriores de catálogo ya terminadas siguen completadas, cualquiera fuera su resultado. No se quitan XP, cosméticos ni dificultades ganadas. Las notificaciones iniciales parten del XP actual, sin marcar todas las recompensas históricas como nuevas.
-3. El resultado muestra las seis filas actuales por consola/dificultad. Si hay error, compartirlo antes de repetir fragmentos.
-4. Descargar `loading-arcade-v08.zip`, descomprimir y cargar **solo su `index.html`** en Cloudflare → Workers & Pages → loading-arcade → New deployment → Deploy. Ese HTML es `dist/index.html`; no usar el fuente raíz.
-5. Confirmar «Versión 0.8» en el pie. Probar una trivia pendiente: fallar, reintentar, aprobar y comprobar el bloqueo; verificar aviso/insignia y vestuario.
+El propietario pidió eliminar todo el catálogo anterior y permitió reiniciar la experiencia. **`supabase/upgrade-v09.sql` borra XP, historial de partidas, dificultades desbloqueadas, destacados, cosméticos equipados y cartas anteriores**. Conserva cuentas, apodos, avatar elegido, vinculación de correo y preguntas publicadas. Instala únicamente las 14 cartas nuevas, inicialmente sin propietarios ni cofres.
 
-Base nueva: `setup.sql` → `upgrade-v06.sql` → `upgrade-v07.sql` → `upgrade-v08.sql`. No aplicar también las migraciones individuales.
+No aplicar esta migración hasta contar con el paquete final con imágenes. Requiere 0.8. Los archivos de `migrations` duplican los upgrades: ejecutar solo una copia, una vez.
 
-Mantener Anonymous Sign-ins habilitado y Confirm email para vinculación opcional. Site URL/Redirect URL: `https://loading-arcade.tienda-somosloading.workers.dev/`. Configuración pública en `src/config.js`. No usar service_role ni contraseñas en el navegador.
+La corrección del límite SQL de puntuación a 900 está en `upgrade-v08.sql` y también en 0.9 para proyectos que ya habían aplicado la revisión previa de 0.8.
 
-## Desarrollo y pruebas
+## Estado de las imágenes y entrega
 
-Node >=22, npm, Python y Playwright/Chromium del sistema. Checkout `/workspace/loading`.
+Catálogo en `content/collections/re4.json`; originales pendientes en `assets/cards/re4`. El usuario puede adjuntar un ZIP sin renombrar archivos; el mapeo y la revisión visual se hacen en desarrollo. No reemplazar sus referencias por otras ediciones, imágenes inventadas ni sustitutos de internet.
+
+El build incorpora los originales en el HTML, sin servidor de imágenes externo. Las capturas se encuadran mediante SVG sin modificar los archivos originales ni borrar créditos. Los encuadres necesitan revisión con los archivos reales.
+
+- `npm run build:preview`: previsualización marcada «Imágenes pendientes · No publicar».
+- `npm run build`: rechaza la entrega si falta un original. No crear un ZIP de producción a partir de una previsualización.
+- No existe todavía `loading-arcade-v09.zip`. Los ZIP anteriores se conservan como entregas históricas.
+
+Al recibir las imágenes: verificar las 14, revisar encuadres/legibilidad, ejecutar build y pruebas, preparar ZIP final y dar instrucciones de SQL + Cloudflare. Desplegar solo el `index.html` independiente de `dist` al Worker existente `loading-arcade`; nunca los JSON con respuestas, SQL, tests, fixture ni node_modules.
+
+## Desarrollo y validación
+
+Node >=22, npm, Python, Playwright y Chromium del sistema. Checkout `/workspace/loading`.
 
 ```sh
 npm ci
 npm ci --prefix supabase
-npm run build
+npm run build:preview
 npm run test:database
 python -m http.server 8080 --bind 0.0.0.0
 ```
 
-En otra terminal iniciar `npm run test:fixture`, y luego `npm run test:browser`. `ARCADE_URL` permite cambiar el puerto. La fixture usa PostgreSQL local (PGlite) y Auth simulado: nunca desplegarla. Las pruebas interceptan las solicitudes al Supabase remoto; no envían correos ni modifican datos reales. `python tests/smoke.py` comprueba invitado y tamaños de pantalla.
+En otra terminal: `npm run test:fixture`. Luego `npm run test:browser` y `python tests/smoke.py`. `ARCADE_URL` cambia el puerto. La fixture usa PGlite y Auth simulado; las solicitudes de integración se interceptan y no escriben en Supabase remoto ni envían correos. Nunca desplegar la fixture.
 
-`index.html` raíz carga el bundle de `assets/`; `dist/index.html` incluye el SDK y es independiente de CDN. El ZIP solo contiene el HTML desplegable, README y licencias; nunca subir JSON de preguntas, SQL ni fixture al Worker público.
+Pruebas de servidor: reinicio autorizado conserva identidades; catálogo 8/4/2; dos perfectas entregan 1.800 XP y un solo cofre; XP sin cartas; partición exacta de probabilidades 85/10/5; normalización de rarezas agotadas; 14 premios únicos; colección completa no consume cofres; reintentos idempotentes, aislamiento por usuario y rechazo de escrituras/invocaciones privadas.
 
-Se comprueban: preservación de datos previos; RLS y aislamiento; aprobación y ocultación de soluciones al fallar; XP una sola vez; bloqueo de repetición; reanudación del intento activo; notificaciones; cosméticos; importación atómica y validación de lotes. Navegador: guardado interrumpido y recuperación sin duplicar XP, marcas persistentes, aviso de nivel, vestuario, HTML independiente y 24 combinaciones de pantalla/ancho. Auth real, entrega de correo y aplicación de migración remota requieren comprobación posterior por el propietario.
+Pruebas de navegador: perfil, aprobación, recuperación de guardado interrumpido, avisos, dos perfectas/nivel, vestuario, álbum y contadores, apertura animada, recuperación tras abrir en servidor pero recibir error de red, consulta del mismo premio, destacados, detalle y 36 combinaciones de pantalla/ancho. El arte real no está validado porque aún faltan los archivos.
 
-## Próximas etapas acordadas
+Mantener Anonymous Sign-ins habilitado y Confirm email para vinculación opcional. Site URL/Redirect URL: `https://loading-arcade.tienda-somosloading.workers.dev/`. Configuración pública en `src/config.js`; no usar service_role ni contraseñas en el navegador. Correo real y despliegue remoto necesitan comprobación posterior.
 
-- Desafío semanal temático de un juego original, aproximadamente 20 preguntas, un intento puntuable, ranking por aciertos y tiempo. Definir manejo de desconexiones y cierre antes de publicar. No utilizar el XP del recorrido como ranking competitivo.
-- Carta exclusiva para cada participante con perfect score durante la semana, fuera de colecciones habituales y sin otra vía de obtención.
-- Encuesta de cuatro juegos en Instagram; enlace desde la app. No publicar ni enviar mensajes automáticamente.
-- Cofres en subidas de nivel; cosméticos entre niveles. Probabilidades propuestas 70% común, 15% monedas, 10% épica, 5% legendaria, pendientes de balance, utilidad de monedas, duplicados y garantía.
-- Beneficio de compra accesible por progreso; falta definir porcentaje, condiciones, emisión y validación. No se anuncia un descuento que aún no existe.
-- Colecciones iniciales: Resident Evil 4 PS2, Metal Gear Solid PS1, Silent Hill 2 PS2 y Parasite Eve 2 PS1, todos originales. Inicio propuesto por juego: ocho comunes, cuatro épicas y dos legendarias. Arte y referencias pendientes; no inventar metadata. El álbum actual conserva los cromos provisionales.
+## Pendientes posteriores
 
-Los datos del recorrido actual pueden consultarse con la clave pública bajo RLS; las respuestas correctas y fuentes nuevas se guardan en esquema privado. El futuro ranking necesita su propia política competitiva y banco de preguntas, sin reutilizar preguntas expuestas en el modo invitado.
+- Imágenes de las siguientes colecciones: Metal Gear Solid PS1, Silent Hill 2 PS2 y Parasite Eve 2 PS1, todos originales.
+- Más trivias: el catálogo actual tiene seis; todas perfectas permiten tres cofres. Para completar la colección harán falta nuevos desafíos, sin habilitar repetición de trivias aprobadas.
+- Desafío semanal temático de unas 20 preguntas, un intento, ranking por aciertos/tiempo y carta exclusiva por perfect score. Encuesta de cuatro juegos en Instagram con enlace desde la app.
+- Beneficio de compra accesible por progreso; porcentaje, condiciones y validación pendientes. No anunciar descuentos inexistentes.
