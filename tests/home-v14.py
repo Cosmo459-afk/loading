@@ -20,7 +20,7 @@ with sync_playwright() as p:
     ctx.add_init_script('if(!localStorage.getItem('+json.dumps(STORE)+'))localStorage.setItem('+json.dumps(STORE)+','+json.dumps(json.dumps(alice))+');')
     page=ctx.new_page();page.on('pageerror',lambda e:errors.append(str(e)));page.goto(BASE+'/dist/index.html');page.wait_for_function('profile?.xp===5400')
     assert page.locator('#homeCommunity').count()==0
-    page.get_by_role('button',name='COMUNIDAD',exact=True).click();page.wait_for_selector('.community-player');assert '2 jugadores' in page.locator('.community-count').inner_text()
+    page.locator('#navCommunity').click();page.wait_for_selector('#community:not(.hidden)');page.locator('#communityPlayersTab').click();page.wait_for_selector('.community-player');assert '2 jugadores' in page.locator('.community-count').inner_text()
     page.evaluate("go('home')");assert page.locator('#homeProgress .progress-route').is_visible()
     assert page.locator('#homeProgress .progress-stop').count()>31
     assert page.locator('#homeProgress .progress-route').evaluate('(e)=>e.scrollWidth>e.clientWidth')
@@ -30,7 +30,7 @@ with sync_playwright() as p:
     assert page.locator('.community-players li').count()==2
     assert 'Alice · Vos' in page.locator('.community-players li').first.inner_text()
     assert page.locator('.community-position').count()==0
-    page.evaluate('openCommunity()');page.wait_for_selector('.community-player')
+    page.evaluate('openDirectory()');page.wait_for_selector('#players:not(.hidden) .community-player')
     assert page.get_by_role('button',name='SUMARME A LA COMUNIDAD').count()==0
     assert page.get_by_role('button',name='OCULTAR MI JUGADOR').count()==0
     page.get_by_role('button',name='ACTUALIZAR',exact=True).click()
@@ -56,7 +56,7 @@ with sync_playwright() as p:
     assert page.locator('#wardrobePreview .avatar-shell').evaluate('(e)=>getComputedStyle(e).animationName')=='avatarPulse'
     page.emulate_media(reduced_motion='reduce');assert page.locator('#wardrobePreview .avatar-shell').evaluate('(e)=>getComputedStyle(e).animationName')=='none'
     page.reload();page.wait_for_function('profile?.cosmetics.theme==="ocean-theme"');assert page.evaluate('document.body.dataset.personalFont')=='pixel-font'
-    page.get_by_role('button',name='CONTINUAR RUTA').click();page.wait_for_selector('#menu:not(.hidden)')
+    page.locator('#navTrivia').click();page.wait_for_selector('#menu:not(.hidden)')
     assert page.locator('#quizSelect').count()==0 and page.locator('#difficulty').is_hidden()
     assert page.locator('#difficultyOverview button').count()==0
     for tier in ['easy','medium','hard']:
@@ -77,8 +77,8 @@ with sync_playwright() as p:
         for screen in ['home','menu','wardrobe','rewards']:
             page.evaluate('(id)=>go(id)',screen);page.wait_for_timeout(30)
             assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),(width,screen)
-    page.wait_for_selector('#levelToast[hidden]',state='attached');page.set_viewport_size({'width':390,'height':844});page.evaluate("go('home')");page.screenshot(path='/workspace/loading/design/inicio-v20-mobile.png',full_page=True)
-    page.set_viewport_size({'width':1280,'height':1000});page.screenshot(path='/workspace/loading/design/inicio-v20-desktop.png',full_page=True)
+    page.wait_for_selector('#levelToast[hidden]',state='attached');page.set_viewport_size({'width':390,'height':844});page.evaluate("go('home')");page.screenshot(path='/workspace/loading/design/inicio-v21-mobile.png',full_page=True)
+    page.set_viewport_size({'width':1280,'height':1000});page.screenshot(path='/workspace/loading/design/inicio-v21-desktop.png',full_page=True)
     page.evaluate('openWardrobe()');page.wait_for_selector('#wardrobe:not(.hidden)');page.screenshot(path='/tmp/loading-v14-cosmetics.png',full_page=True)
     assert not errors,errors;browser.close()
 print('PASS v0.18 home: embedded logo; horizontal milestones; separate alphabetical community, automatic inclusion, clickable profiles and refresh; 31 previews and seven cosmetic slots; XP locks; saved theme/font; reduced-motion frames; automatic easy→medium→hard with one-click next and no titles/selectors; readable questions; responsive home/route/wardrobe/progress.')

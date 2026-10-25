@@ -1,16 +1,27 @@
-# LOADING ARCADE 0.20
+# LOADING ARCADE 0.21
 
-Revisión móvil, imágenes bajo demanda y administración del dueño. Mantiene las trivias, rachas, likes, foro, colecciones, XP, cofres y cupones existentes.
+Navegación separada en **Trivia, Perfil y Comunidad**, publicaciones fáciles de encontrar y reparación de la carga del foro. Conserva jugadores, progreso, cartas, cupones, permisos y mensajes existentes.
 
-## Actualizar desde 0.19
+## Actualizar desde 0.20
 
-1. Ejecutar **todo** [`supabase/upgrade-v20.sql`](https://github.com/Cosmo459-afk/loading/blob/supabase-setup/supabase/upgrade-v20.sql) en **Supabase → SQL Editor → New query → Run**. No reinicia datos.
-2. Para habilitar administración: abrir [`supabase/grant-admin.sql`](https://github.com/Cosmo459-afk/loading/blob/supabase-setup/supabase/grant-admin.sql), copiarlo en una consulta nueva y reemplazar **CORREO_DEL_DUENO** por el correo personal elegido, **solo dentro de Supabase**. No se guarda el correo personal en el repositorio público. La cuenta debe existir y tener el correo confirmado; si no, el script rechaza la habilitación.
-3. Descargar `loading-arcade-v20.zip` y descomprimir. Dentro de `loading-arcade` está **sitio**, con `index.html`, `_headers` y la carpeta `assets`.
-4. En **Cloudflare → Workers & Pages → loading-arcade → New deployment**, subir **la carpeta sitio completa**, conservando `assets/media`. **Ya no alcanza con subir solo index.html.** No subir la carpeta exterior con documentación ni SQL.
-5. Confirmar «Versión 0.20». Entrar con el correo habilitado y recargar: aparece **ADMINISTRACIÓN**. Las demás cuentas no ven ese acceso y el servidor rechaza sus llamadas administrativas.
+1. En **Supabase → SQL Editor → New query**, pegar y ejecutar **todo** [`supabase/upgrade-v21.sql`](https://github.com/Cosmo459-afk/loading/blob/supabase-setup/supabase/upgrade-v21.sql). Incluye la reparación necesaria si se omitió la actualización de perfiles públicos de v18. No ejecutar reinicios ni repetir migraciones antiguas.
+2. Descargar **loading-arcade-v21.zip**, descomprimir y localizar `loading-arcade/sitio`.
+3. En **Cloudflare → Workers & Pages → loading-arcade → New deployment**, subir **la carpeta sitio completa**, incluidos `_headers` y `assets/media`. No alcanza con subir solamente el HTML.
+4. Recargar y confirmar **Versión 0.21**. Abrir Comunidad → Publicaciones y Mis publicaciones. Los temas existentes se conservan. Administración ahora está dentro de **Perfil**; no hace falta volver a habilitar al administrador.
 
-Si todavía jugás sin correo, vinculá y confirmá el correo desde **Guardar mi acceso** antes del paso 2; eso conserva el mismo jugador. Si el correo ya pertenece a otra cuenta, no hay fusión automática: entrar a esa cuenta por correo conserva cada jugador separado. El correo elegido para administración no se publica en Comunidad.
+## Navegación y publicaciones
+
+- **Trivia**: jugar y consultar el progreso compacto.
+- **Perfil**: identidad, personalización, colecciones, cofres, cupón y administración para la cuenta habilitada.
+- **Comunidad**: publicaciones de todos, mis publicaciones y directorio de jugadores. Ya no está dentro del perfil.
+
+El inicio de Comunidad muestra todos los espacios, con título, autor y extracto. Se puede filtrar por categoría. **Mis publicaciones** distingue los temas propios de las conversaciones donde respondiste; el acceso a tu respuesta abre su página correspondiente. Desde un perfil público se pueden consultar los temas y respuestas de ese jugador.
+
+Cada conversación tiene un enlace que se puede copiar, recargar y compartir. El navegador conserva la navegación entre secciones. Crear un tema y leerlo son operaciones separadas: si falla la lectura después de guardarlo, se explica que sigue guardado y se ofrece volver a Mis publicaciones para recuperarlo. Reintentar el envío conserva la protección contra duplicados.
+
+## Reparación incluida
+
+Se reprodujeron localmente los errores de Comunidad y de apertura de temas al instalar v19/v20 sin v18: faltaban el identificador público y una función de listado. El SQL v21 repone esos componentes y mantiene likes, rachas y permisos. No borra ni reconstruye los mensajes. La prueba de reparación conserva expresamente una publicación anterior, XP y administrador, incluso al volver a ejecutar el SQL.
 
 ## Qué cambia en la carga
 
@@ -24,7 +35,7 @@ Las exportaciones del cupón y de logros siguen generándose en el navegador con
 
 ## Revisión móvil
 
-Accesos de inicio en dos columnas en celulares pequeños, etiquetas legibles, controles de al menos 44–48 px, formularios de 16 px para evitar zoom automático al escribir, diálogos con desplazamiento propio y espacio reservado para imágenes. Se conserva el progreso compacto, las miniaturas, el detalle con acciones, el avance al tocar una respuesta y el uso con movimiento reducido. No se agrega música; siguen los efectos.
+Menú principal con tres secciones en celulares pequeños, etiquetas legibles, controles de al menos 44–48 px, formularios de 16 px para evitar zoom automático al escribir, diálogos con desplazamiento propio y espacio reservado para imágenes. Se conserva el progreso compacto, las miniaturas, el detalle con acciones, el avance al tocar una respuesta y el uso con movimiento reducido. No se agrega música; siguen los efectos.
 
 ## Administración
 
@@ -68,12 +79,12 @@ node scripts/package-release.mjs
 
 `dist` es el sitio completo; `assets/cloud.bundle.js` también permite desarrollo desde el HTML fuente y `assets/media` se genera localmente. `dist/asset-manifest.json` solo sirve para comprobaciones del build y no entra al ZIP. Los artes de fuente y su procedencia siguen en `assets` y `content/collections`.
 
-La fixture local se inicia con `npm run test:fixture`. Servir el repositorio en el puerto 8085 y abrir `/dist/index.html`. Las pruebas que reinician esa fixture deben correr **secuencialmente**. `tests/admin-speed-v20.py` verifica peticiones diferidas, exportación de cupón, autorización, formulario/revisión/publicación, canje, moderación segura y revocación. La suite SQL incluye `admin-v20.mjs` para permisos, validación, borradores e idempotencia. Ninguna prueba envía correos, mensajes o cambios al proyecto real.
+La fixture local se inicia con `npm run test:fixture`. Servir el repositorio en el puerto 8085 y abrir `/dist/index.html`. Las pruebas que reinician esa fixture deben correr **secuencialmente**. `tests/admin-speed-v20.py` verifica peticiones diferidas, exportación de cupón, autorización, formulario/revisión/publicación, canje, moderación segura y revocación. `tests/navigation-feed-v21.py` verifica las secciones, publicaciones propias y de otros, recuperación y enlaces. La suite SQL incluye `feed-v21.mjs`, `repair-v21.mjs` y `admin-v20.mjs` para permisos, validación, borradores e idempotencia. Ninguna prueba envía correos, mensajes o cambios al proyecto real.
 
 El paquete solo contiene el sitio público, estas instrucciones y licencias. No desplegar SQL, el banco JSON con soluciones, la fixture, tests, node_modules ni claves de servicio.
 
 ## Historial y pendientes
 
-El historial de instalación anterior está en `docs/releases-through-v19.md`. Sus instrucciones de subir un único HTML corresponden a versiones anteriores: **para 0.20 se sube sitio completo**. No ejecutar reinicios viejos.
+El historial anterior está en `docs/releases-through-v20.md` y `docs/releases-through-v19.md`. Para 0.21 se sube **sitio completo**. No ejecutar reinicios viejos.
 
 Siguen pendientes el desafío semanal real, su ranking y carta exclusiva; las imágenes de Metal Gear Solid, Silent Hill 2 y Parasite Eve II; y la automatización de canjes en Tienda Nube. Esta versión no agrega intercambios de cartas ni nuevos premios.

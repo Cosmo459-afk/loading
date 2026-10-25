@@ -25,7 +25,7 @@ with sync_playwright() as p:
     assert '1800 XP' in page.locator('#homeProgress').inner_text()
     assert page.locator('#homeWeekly .weekly-pending').inner_text()=='EN PREPARACIÓN'
     assert page.locator('#homeWeekly li').count()==0
-    page.get_by_role('button',name='CONTINUAR RUTA').click();page.wait_for_selector('#menu:not(.hidden)')
+    page.locator('#navTrivia').click();page.wait_for_selector('#menu:not(.hidden)')
     assert page.locator('#category option').count()==2
     page.wait_for_function("document.getElementById('quizProgress').textContent.includes('Trivia 1 de 1')")
     assert page.locator('#beginBtn').is_enabled();assert page.locator('#quizSelect').count()==0;assert page.locator('#difficulty').is_hidden()
@@ -64,7 +64,7 @@ with sync_playwright() as p:
     assert 'Nivel 2' in page.locator('#homeAccount').inner_text()
     assert '1800 XP' in page.locator('#homeProgress').inner_text()
     assert page.locator('#homeProgress .home-open-chest').count()==0
-    page.evaluate('showProfile()');page.wait_for_selector('#profile:not(.hidden)');assert page.locator('#profileInventory').get_by_role('button',name='MIS COFRES',exact=False).locator('.pending-dot').inner_text()=='1'
+    page.evaluate('openProfileHub()');page.wait_for_selector('#player:not(.hidden)');assert page.locator('#profileInventory').get_by_role('button',name='MIS COFRES',exact=False).locator('.pending-dot').inner_text()=='1'
     page.wait_for_selector('#levelToast[hidden]',state='attached')
     page.screenshot(path='/tmp/loading-v12-home-player.png',full_page=True)
     page.evaluate("go('menu')");page.locator('#category').select_option('ps1');assert page.locator('#difficulty').input_value()=='easy';page.wait_for_function('!document.getElementById("beginBtn").disabled')
@@ -108,7 +108,7 @@ with sync_playwright() as p:
     page.wait_for_function('profile.unlocked.length===1')
     assert page.locator('#chestPrize .game-card').count()==1
     awarded=page.locator('#chestPrize h3').inner_text()
-    page.locator('#chestReturn').click();page.wait_for_selector('#profile:not(.hidden)')
+    page.locator('#chestReturn').click();page.wait_for_selector('#player:not(.hidden)')
     assert page.locator('#profileInventory').get_by_role('button',name='MIS COFRES',exact=False).locator('.pending-dot').count()==0
     assert page.locator('#profileInventory').get_by_role('button',name='MI COLECCIÓN').locator('.pending-dot').inner_text()=='1'
     page.evaluate('openChests()');page.wait_for_selector('#chests:not(.hidden)');assert page.locator('#chestList .chest-row').count()==0
@@ -189,7 +189,7 @@ with sync_playwright() as p:
     session=page.evaluate('(key)=>JSON.parse(localStorage.getItem(key))',STORE)
     uid=session['user']['id'];assert session['user']['is_anonymous']
     assert fixture('/_test/control',{})['otpRequests']==[]
-    page.get_by_role('button',name='CONTINUAR RUTA').click();page.wait_for_selector('#menu:not(.hidden)')
+    page.locator('#navTrivia').click();page.wait_for_selector('#menu:not(.hidden)')
     for tier in ['easy','medium','hard']:
         assert page.locator('#difficulty').input_value()==tier;play(3)
         if tier!='hard':page.evaluate("go('menu')")
