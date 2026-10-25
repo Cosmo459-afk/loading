@@ -41,7 +41,7 @@ const rewardUI=installRewardUI({profile:()=>profile,coupon:()=>state.coupon,coup
 const sharing=installSharing({profile:()=>profile,avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),brand:brandLogo,siteArt,owned:id=>!!profile?.unlocked?.includes(id)||state.exclusives.some(e=>'weekly-'+e.challenge_id===id)});
 window.shareArcade=()=>sharing.shareSite();
 window.shareMyProfile=()=>sharing.shareProfile();
-const weekly=installWeekly({rpc:(name,args)=>client.rpc(name,args),identity:()=>state.uid,profile:()=>profile,go:id=>base.go(id),visit:id=>visitPlayer(id),onFinish:async()=>{const v=state.version,oldXP=profile?.xp||0,oldOwned=new Set(state.cosmetics.filter(c=>cosmeticOwned(c)).map(c=>c.id));await loadProfile(state.uid,v);if(v===state.version)celebrateProgress(oldXP,oldOwned);},share:result=>sharing.shareResult(result),art:adaArt});
+const weekly=installWeekly({rpc:(name,args)=>client.rpc(name,args),identity:()=>state.uid,profile:()=>profile,go:id=>base.go(id),visit:id=>visitPlayer(id),onFinish:async()=>{const v=state.version,oldXP=profile?.xp||0,oldOwned=new Set(state.cosmetics.filter(c=>cosmeticOwned(c)).map(c=>c.id));await loadProfile(state.uid,v);if(v===state.version)celebrateProgress(oldXP,oldOwned);},share:result=>sharing.shareResult(result),card:c=>cardMarkup(makeWeeklyCard(c.id,c.title)),preview:c=>{selectedCard=null;$('cardDetailArt').innerHTML=cardMarkup(makeWeeklyCard(c.id,c.title));$('cardDetailActions').replaceChildren();$('cardDetailStatus').textContent='Premio de esta edición: conseguí 20/20 para obtener esta Exclusiva.';if(!$('cardDetail').open)$('cardDetail').showModal();}});
 window.openWeekly=()=>weekly.open();
 const admin=installAdmin({rpc:(name,args)=>client.rpc(name,args),allowed:()=>state.isAdmin,go:id=>base.go(id),onDenied:()=>{state.isAdmin=false;$('adminEntry').hidden=true;}});
 window.openAdmin=async()=>{await ready;await admin.open();};
@@ -131,9 +131,9 @@ window.backFromPlayer=function(){base.go(state.visitReturn||'community');};
 window.visitPlayer=async function(id){
  await ready;
  const origin=[...document.querySelectorAll('main>section')].find(s=>!s.classList.contains('hidden'))?.id;
- if(origin!=='playerVisit')state.visitReturn=['community','players','forumCompose','forumThread'].includes(origin)?origin:'community';
+ if(origin!=='playerVisit')state.visitReturn=['home','weekly','community','players','forumCompose','forumThread'].includes(origin)?origin:'community';
  if(!profile)state.visitReturn='home';
- $('visitBack').textContent=!profile?'← VOLVER':state.visitReturn==='forumThread'?'← VOLVER A LA CONVERSACIÓN':state.visitReturn==='community'?'← VOLVER A PUBLICACIONES':'← VOLVER A COMUNIDAD';
+ $('visitBack').textContent=!profile?'← VOLVER':['home','weekly'].includes(state.visitReturn)?'← VOLVER':state.visitReturn==='forumThread'?'← VOLVER A LA CONVERSACIÓN':state.visitReturn==='community'?'← VOLVER A PUBLICACIONES':'← VOLVER A COMUNIDAD';
  const version=state.version,request=++state.visitRequest;state.visitTarget=id;state.visitData=null;state.visitBusy=true;state.visitError=false;base.go('playerVisit');renderVisitedPlayer();
  try{const {data,error}=await client.rpc(profile?'arcade_visit_player':'arcade_share_profile',{p_public_id:id});if(error)throw error;if(version===state.version&&request===state.visitRequest)state.visitData=data;}
  catch{if(version===state.version&&request===state.visitRequest)state.visitError=true;}
@@ -786,7 +786,9 @@ renderAlbum=function(){
   section.append(heading,counter,grid);list.appendChild(section);
  }
 };
-function exclusiveCard(id){const e=state.exclusives.find(x=>'weekly-'+x.challenge_id===id);return e?{id,name:'Ada Wong',rarity:'Exclusiva',rarityKey:'exclusive',collection:'weekly-exclusives',game:'Resident Evil 4 · Original',description:'Perfect Score · 20/20 en '+(e.edition||'el desafío semanal')+'. Solo obtenible en esa edición.',image:adaArt,referenceSize:[1254,1254],ordinal:0,exclusive:true,edition:e.edition}:null;}
+function makeWeeklyCard(challengeId,edition){return {id:'weekly-'+challengeId,name:'Ada Wong',rarity:'Exclusiva',rarityKey:'exclusive',collection:'weekly-exclusives',game:'Resident Evil 4 · Original',description:'Una espía enigmática que se cruza en el camino de Leon. Edición: '+(edition||'Desafío semanal')+'.',image:adaArt,referenceSize:[1254,1254],ordinal:0,exclusive:true,edition};}
+function exclusiveCard(id){const e=state.exclusives.find(x=>'weekly-'+x.challenge_id===id);return e?makeWeeklyCard(e.challenge_id,e.edition):null;}
+
 function renderCardActions(){
  const actions=$('cardDetailActions');actions.replaceChildren();$('cardDetailStatus').textContent='';
  const exclusive=exclusiveCard(selectedCard);if(exclusive){const share=document.createElement('button');share.textContent='COMPARTIR EXCLUSIVA';share.onclick=()=>{$('cardDetail').close();sharing.shareCard(exclusive);};actions.appendChild(share);$('cardDetailStatus').textContent='Exclusiva de Perfect Score · '+exclusive.edition;return;}

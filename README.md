@@ -1,27 +1,30 @@
-# LOADING ARCADE 0.25
+# LOADING ARCADE 0.26
 
-Avance sin mínimo de aciertos, primer desafío semanal administrable de Resident Evil 4 original, top 10 y carta Exclusiva de Ada Wong con marco esmeralda por 20/20. Incluye todas las opciones de compartir de v24 y nueva navegación Inicio / Trivia / Comunidad / Perfil.
+La recompensa semanal se presenta como una **carta completa de Ada Wong**, con exactamente el mismo marco reutilizable de las cartas de la colección y color esmeralda. El **top 10 completo aparece en Inicio**, con puesto, jugador, aciertos, puntos y tiempo.
 
-## Instalar directamente desde 0.23 (también sirve desde 0.24)
+## Actualizar desde 0.25
 
-1. Ejecutar **todo** [supabase/upgrade-v25.sql](https://github.com/Cosmo459-afk/loading/blob/supabase-setup/supabase/upgrade-v25.sql) en una consulta nueva de Supabase. Ya incorpora la función de compartir de v24; **no ejecutar v24 después**. No reinicia datos, XP ni permisos.
-2. Descargar **loading-arcade-v25.zip**, descomprimir y subir **loading-arcade/sitio completa** a Cloudflare, con `_headers` y `assets/media`.
-3. Recargar y comprobar **Versión 0.25**. Administración sigue dentro de Perfil y conserva la cuenta habilitada.
-4. Activar la primera semanal siguiendo los pasos de abajo. La instalación no publica una edición sin revisión del dueño.
+1. Descargar **loading-arcade-v26.zip** y descomprimir.
+2. Subir **loading-arcade/sitio completa** a una nueva implementación de Cloudflare, conservando `_headers` y `assets/media`.
+3. Recargar y comprobar **Versión 0.26**. El ranking está debajo del resumen del desafío en Inicio; la carta completa se ve al abrir el desafío y se puede ampliar tocándola.
 
-## Activar Resident Evil 4 · La misión de Leon
+**No ejecutar SQL ni reimportar o reactivar el banco.** La edición activa, sus fechas, intentos, resultados y premios se conservan. Si se parte de v23/v24, instalar primero el SQL v25 y seguir el historial de instalación.
 
-Dentro del ZIP hay dos carpetas: **sitio**, que se despliega, y **banco-semanal**, que contiene `re4-first-week.encrypted.json` para importar desde Administración. El banco tiene 20 preguntas basadas en el manual estadounidense del RE4 original de PS2, con referencias y evidencias para revisar.
+## Qué cambia
 
-1. Entrar con la cuenta administradora → **Perfil → Administración → Semanal**.
-2. En **Importar banco privado**, elegir `banco-semanal/re4-first-week.encrypted.json`. Introducir la clave de contenido entregada al dueño en el chat. La clave no viene dentro del sitio, el repositorio ni el ZIP.
-3. Pulsar **Guardar borrador** y después **Revisar**. Leer las 20 preguntas, opciones, respuestas marcadas y fuentes.
-4. Elegir inicio y cierre; los campos usan la zona horaria del navegador y se guardan como instantes UTC. La propuesta es siete días y 20 segundos por pregunta. Marcar la confirmación de revisión y pulsar **Activar / programar edición**.
-5. Volver a Inicio para ver el desafío. Si el inicio está en el futuro, queda programado; si ya llegó, admite nuevos intentos. Se puede cerrar anticipadamente desde Administración.
+- **Ada completa:** la vista previa ya no muestra únicamente la ilustración. Usa `cardMarkup`, igual que la carta conseguida en la colección: cabecera de Loading, título, arte, juego, descripción, sello Exclusiva y 20/20. Conserva el arte aprobado y los colores originales de las otras rarezas.
+- La vista ampliada del premio es de lectura: verla no entrega la carta ni permite exhibirla o compartirla como propia. Sigue siendo necesario conseguir 20/20 y tener la concesión del servidor para acceder a ella en la colección.
+- **Inicio:** muestra los diez resultados que devuelve el ranking, con enlaces a los perfiles. Mantiene la posición propia aunque quede fuera de esos diez, permite actualizar y muestra un estado vacío si nadie terminó todavía.
+- **Desafío:** conserva reglas, participación, premio y resultado propio, con un enlace para volver al ranking de Inicio. No duplica allí la tabla del top 10.
+- Al visitar un perfil desde el ranking, Volver regresa al Inicio.
 
-Una edición publicada no se puede editar ni reabrir. Para una nueva semana se prepara otro ID y otro banco. Solo puede haber una edición publicada vigente/programada. Los resultados anteriores quedan conservados; no usar el mismo banco como si fuera una edición nueva.
+La actualización usa las mismas funciones de servidor que v25 y no cambia puntuación, plazos, preguntas, posesión de cartas ni permisos.
 
-**La clave es del contenido de preguntas, no una contraseña de Supabase ni de administración.** No publicarla junto con el banco. El cifrado permite distribuir el archivo en el repositorio sin exponer la lista semanal completa; después de importar, las soluciones se guardan en el esquema privado y solo Administración puede leerlas. Los clientes reciben una pregunta por vez, nunca el banco completo.
+El ZIP incluye el banco revisado en `banco-semanal` como referencia para instalaciones nuevas. **Si tu desafío ya está activo, no lo vuelvas a importar.** Esa carpeta no se despliega en Cloudflare.
+
+## Validación
+
+`tests/weekly-v25.py` se amplió para verificar la carta completa antes de ganar, la vista previa sin acciones de posesión, la concesión por 20/20, la ausencia de tabla en el desafío, la tabla visible en Inicio y el regreso desde un perfil al Inicio. Conserva pruebas de temporizador real, vencimiento/reintento, administración y navegación en 320/390/768/1280 px. Capturas actualizadas en `design/*v26*`.
 
 ## Reglas de progreso normal
 
