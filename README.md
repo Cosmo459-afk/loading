@@ -1,13 +1,30 @@
-# LOADING ARCADE 0.21
+# LOADING ARCADE 0.22
 
-Navegación separada en **Trivia, Perfil y Comunidad**, publicaciones fáciles de encontrar y reparación de la carga del foro. Conserva jugadores, progreso, cartas, cupones, permisos y mensajes existentes.
+Pulido visual completo: títulos Space Grotesk, textos Inter, botones consistentes, superficies oscuras con acentos cian/rosa, transiciones breves y estados de carga/error con un estilo común.
 
-## Actualizar desde 0.20
+## Actualizar desde 0.21
 
-1. En **Supabase → SQL Editor → New query**, pegar y ejecutar **todo** [`supabase/upgrade-v21.sql`](https://github.com/Cosmo459-afk/loading/blob/supabase-setup/supabase/upgrade-v21.sql). Incluye la reparación necesaria si se omitió la actualización de perfiles públicos de v18. No ejecutar reinicios ni repetir migraciones antiguas.
-2. Descargar **loading-arcade-v21.zip**, descomprimir y localizar `loading-arcade/sitio`.
-3. En **Cloudflare → Workers & Pages → loading-arcade → New deployment**, subir **la carpeta sitio completa**, incluidos `_headers` y `assets/media`. No alcanza con subir solamente el HTML.
-4. Recargar y confirmar **Versión 0.21**. Abrir Comunidad → Publicaciones y Mis publicaciones. Los temas existentes se conservan. Administración ahora está dentro de **Perfil**; no hace falta volver a habilitar al administrador.
+**Esta versión no requiere SQL.** Conserva jugadores, XP, cartas, cofres, cupones, mensajes y permisos.
+
+1. Descargar **loading-arcade-v22.zip** y descomprimir.
+2. Subir la carpeta **loading-arcade/sitio completa** a una nueva implementación de Cloudflare Pages: `index.html`, `_headers` y `assets/media`.
+3. Recargar y confirmar **Versión 0.22**.
+
+Si todavía no se instaló v21, completar primero su [actualización SQL](https://github.com/Cosmo459-afk/loading/blob/supabase-setup/supabase/upgrade-v21.sql); v22 usa la misma base de datos. No ejecutar reinicios antiguos ni volver a habilitar al administrador.
+
+## Diseño, en el orden trabajado
+
+1. **Tipografía:** Inter para preguntas, publicaciones y controles; Space Grotesk para títulos. La fuente pixel se conserva en las cartas y las personalizaciones elegidas. Ambas fuentes nuevas se incluyen como WOFF2 con caracteres en español y pesos variables; no hacen solicitudes a servicios de fuentes externos. Licencias SIL OFL incluidas.
+2. **Botones:** tamaños y bordes comunes, acción principal rosa, secundarias más discretas y estados de selección, deshabilitado, teclado y pulsación. Las cuatro respuestas tienen identificador visual y avanzan al tocar, sin confirmación extra.
+3. **Jerarquía:** menú persistente, superficies más sobrias, espaciados uniformes y progreso compacto. El logo y los 14 diseños aprobados de RE4 se conservan. Temas y fuentes cosméticas siguen teniendo efecto.
+4. **Movimiento:** entradas de pantalla de 220 ms, diálogos de 180 ms, respuesta táctil y barra de progreso suave. No agregan demoras para jugar. Se conserva el evento de apertura de cofres y los efectos de sonido, sin música. La preferencia del sistema de reducir movimiento elimina las animaciones.
+5. **Acabados:** indicadores de carga y paneles de error/confirmación derivados de los mensajes reales, estados vacíos consistentes, campos legibles y foco de teclado visible. No se simulan porcentajes de carga. El contenido de las publicaciones no se interpreta como estado del sistema.
+
+El HTML sigue por debajo del límite de 750 KB y los seis archivos de imágenes mantienen la carga bajo demanda y la caché por hash. La carpeta completa sigue siendo necesaria para desplegar.
+
+## Validación
+
+`tests/polish-v22.py` comprueba fuentes incluidas, navegación y trivia a 320/390/768/1280 px sin desbordamientos, controles principales de al menos 44 px, foco de teclado, selección con avance directo y estados reales con movimiento reducido. Las capturas están en `design/*v22*`. Se ejecutaron también las pruebas de navegación/publicaciones, juego y administración/carga de imágenes contra la fixture local, sin modificar el proyecto real.
 
 ## Navegación y publicaciones
 
@@ -85,6 +102,6 @@ El paquete solo contiene el sitio público, estas instrucciones y licencias. No 
 
 ## Historial y pendientes
 
-El historial anterior está en `docs/releases-through-v20.md` y `docs/releases-through-v19.md`. Para 0.21 se sube **sitio completo**. No ejecutar reinicios viejos.
+El historial anterior está en `docs/releases-through-v21.md`, `docs/releases-through-v20.md` y `docs/releases-through-v19.md`. Para 0.22 se sube **sitio completo**. No ejecutar reinicios viejos.
 
 Siguen pendientes el desafío semanal real, su ranking y carta exclusiva; las imágenes de Metal Gear Solid, Silent Hill 2 y Parasite Eve II; y la automatización de canjes en Tienda Nube. Esta versión no agrega intercambios de cartas ni nuevos premios.

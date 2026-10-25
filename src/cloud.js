@@ -1,8 +1,14 @@
 import {createClient} from '@supabase/supabase-js';
 import config from './config.js';
 import cardStyles from './cards.css';
+import polishStyles from './polish.css';
+import sansFont from '../assets/fonts/LoadingSans.woff2';
+import displayFont from '../assets/fonts/LoadingDisplay.woff2';
+import {installPolish} from './polish.js';
 import cardFont from '../assets/fonts/Silkscreen-Bold.ttf';
 const frameStyles=document.createElement('style');frameStyles.textContent='@font-face{font-family:LoadingPixel;src:url('+cardFont+') format("truetype");font-style:normal;font-weight:700;font-display:swap}'+cardStyles;document.head.appendChild(frameStyles);
+const polish=document.createElement('style');polish.textContent='@font-face{font-family:LoadingSans;src:url('+sansFont+') format("woff2");font-weight:100 900;font-display:swap}@font-face{font-family:LoadingDisplay;src:url('+displayFont+') format("woff2");font-weight:300 700;font-display:swap}'+polishStyles;document.head.appendChild(polish);
+installPolish();
 import {collectionDefinitions,collectionCards} from './collections.js';
 import {installAudio} from './audio.js';
 import {decorateAvatar,badges,slotNames} from './cosmetics.js';

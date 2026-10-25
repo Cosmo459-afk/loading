@@ -30,7 +30,7 @@ const imagePlugin={name:'external-images',setup(b){
  });
  b.onLoad({filter:/\.png$/},async args=>({contents:'export default '+JSON.stringify(await publishAsset(args.path)),loader:'js'}));
 }};
-await build({loader:{'.ttf':'dataurl','.css':'text'},plugins:[imagePlugin],entryPoints:[path.join(root,'src/cloud.js')],outfile:path.join(root,'assets/cloud.bundle.js'),bundle:true,minify:true,format:'iife',platform:'browser',target:['es2020'],legalComments:'inline'});
+await build({loader:{'.ttf':'dataurl','.woff2':'dataurl','.css':'text'},plugins:[imagePlugin],entryPoints:[path.join(root,'src/cloud.js')],outfile:path.join(root,'assets/cloud.bundle.js'),bundle:true,minify:true,format:'iife',platform:'browser',target:['es2020'],legalComments:'inline'});
 const notices=await readFile(path.join(root,'THIRD_PARTY_NOTICES.txt'),'utf8');
 const html=(await readFile(path.join(root,'index.html'),'utf8')).replace('<!doctype html>','<!doctype html><!--\n'+notices.replace(/-->/g,'-- >')+'\n-->');
 const js=await readFile(path.join(root,'assets/cloud.bundle.js'),'utf8');

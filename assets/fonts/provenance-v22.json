@@ -1,0 +1,7 @@
+{
+  "source": "https://github.com/google/fonts/tree/main/ofl",
+  "license": "SIL Open Font License 1.1; included in THIRD_PARTY_NOTICES.txt",
+  "fonts": {"LoadingSans.woff2": "Inter[opsz,wght].ttf Latin subset", "LoadingDisplay.woff2": "SpaceGrotesk[wght].ttf Latin subset"},
+  "subset": "U+0000-00FF,U+0100-017F,U+2000-206F,U+20AC,U+2190-21FF; Inter also U+2713",
+  "tool": "fonttools pyftsubset with Brotli; variable weights preserved; no runtime third-party font request"
+}
