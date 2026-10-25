@@ -41,7 +41,7 @@ const rewardUI=installRewardUI({profile:()=>profile,coupon:()=>state.coupon,coup
 const sharing=installSharing({profile:()=>profile,avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),brand:brandLogo,siteArt,owned:id=>!!profile?.unlocked?.includes(id)||state.exclusives.some(e=>'weekly-'+e.challenge_id===id)});
 window.shareArcade=()=>sharing.shareSite();
 window.shareMyProfile=()=>sharing.shareProfile();
-const weekly=installWeekly({rpc:(name,args)=>client.rpc(name,args),identity:()=>state.uid,profile:()=>profile,go:id=>base.go(id),visit:id=>visitPlayer(id),onFinish:async()=>{const v=state.version,oldXP=profile?.xp||0,oldOwned=new Set(state.cosmetics.filter(c=>cosmeticOwned(c)).map(c=>c.id));await loadProfile(state.uid,v);if(v===state.version)celebrateProgress(oldXP,oldOwned);},share:result=>sharing.shareResult(result),card:c=>cardMarkup(makeWeeklyCard(c.id,c.title)),preview:c=>{selectedCard=null;$('cardDetailArt').innerHTML=cardMarkup(makeWeeklyCard(c.id,c.title));$('cardDetailActions').replaceChildren();$('cardDetailStatus').textContent='Premio de esta edición: conseguí 20/20 para obtener esta Exclusiva.';if(!$('cardDetail').open)$('cardDetail').showModal();}});
+const weekly=installWeekly({rpc:(name,args)=>client.rpc(name,args),identity:()=>state.uid,profile:()=>profile,go:id=>base.go(id),visit:id=>visitPlayer(id),onFinish:async()=>{const v=state.version,oldXP=profile?.xp||0,oldOwned=new Set(state.cosmetics.filter(c=>cosmeticOwned(c)).map(c=>c.id));await loadProfile(state.uid,v);if(v===state.version)celebrateProgress(oldXP,oldOwned);},share:result=>sharing.shareResult(result),enter:async()=>{pendingRoute='#semanal';await createPlayer();},card:c=>cardMarkup(makeWeeklyCard(c.id,c.title)),preview:c=>{selectedCard=null;$('cardDetailArt').innerHTML=cardMarkup(makeWeeklyCard(c.id,c.title));$('cardDetailActions').replaceChildren();$('cardDetailStatus').textContent='Premio de esta edición: conseguí 20/20 para obtener esta Exclusiva.';if(!$('cardDetail').open)$('cardDetail').showModal();}});
 window.openWeekly=()=>weekly.open();
 const admin=installAdmin({rpc:(name,args)=>client.rpc(name,args),allowed:()=>state.isAdmin,go:id=>base.go(id),onDenied:()=>{state.isAdmin=false;$('adminEntry').hidden=true;}});
 window.openAdmin=async()=>{await ready;await admin.open();};
@@ -345,7 +345,7 @@ let ready=(async()=>{
     await useSession(data.session);
     if(returning&&state.uid){if(profile){mode='player';base.go('home');}else base.showProfile();}
   }catch(e){message(publicError(e));if(returning){base.go('auth');authMessage('No pudimos abrir ese enlace. Pedí uno nuevo y abrilo en este mismo navegador.');}}
-  finally{$('createPlayerBtn').disabled=false;accountUI();}
+  finally{$('createPlayerBtn').disabled=false;accountUI();if(!profile)void weekly.refresh();}
 })();
 client.auth.onAuthStateChange((event,session)=>{
   // Avoid awaiting another Supabase operation inside the SDK's auth lock.
@@ -864,10 +864,10 @@ function sectionRoute(id){
  if(id==='collectionAlbum'&&selectedCollection)return '#perfil/coleccion/'+selectedCollection;
  return ({weekly:'#semanal',weeklyPlay:'#semanal/jugando',quiz:'#trivia/jugando',result:'#trivia/resultado',home:'#inicio',menu:'#trivia',player:'#perfil',profile:'#perfil/editar',players:'#comunidad/jugadores',forumCompose:'#comunidad/nuevo',collection:'#perfil/colecciones',wardrobe:'#perfil/estilo',benefits:'#perfil/cupon',history:'#perfil/partidas',chests:'#perfil/cofres',chestOpening:'#perfil/cofre/abriendo',rewards:'#trivia/progreso',admin:'#admin'})[id]||null;
 }
-base.go=function(id){const suppressHistory=restoringRoute;restoringRoute=false;rawGo(id);syncPrimaryNav();const route=sectionRoute(currentSection()||id);if(navigationReady&&profile&&!suppressHistory&&route&&location.hash!==route)history.pushState({arcade:true,depth:(history.state?.arcade?history.state.depth||0:0)+1},'',route);if(navigationReady&&profile&&id==='home')void weekly.refresh();};
+base.go=function(id){const suppressHistory=restoringRoute;restoringRoute=false;rawGo(id);syncPrimaryNav();const route=sectionRoute(currentSection()||id);if(navigationReady&&profile&&!suppressHistory&&route&&location.hash!==route)history.pushState({arcade:true,depth:(history.state?.arcade?history.state.depth||0:0)+1},'',route);if(navigationReady&&id==='home')void weekly.refresh();};
 go=base.go;
 async function restoreRoute(hash){
- if(!profile&&!hash.startsWith('#jugador/')){pendingRoute=hash;return;}
+ if(!profile&&!hash.startsWith('#jugador/')&&!hash.startsWith('#semanal')){pendingRoute=hash;return;}
  const [path,query='']=hash.replace(/^#/,'').split('?'),params=new URLSearchParams(query);restoringRoute=true;
  try{
   if(path.startsWith('semanal'))await weekly.open();
@@ -893,4 +893,4 @@ async function restoreRoute(hash){
 }
 async function restorePendingRoute(){const route=pendingRoute;pendingRoute='';if(route){history.replaceState(history.state?.arcade?history.state:{arcade:true,depth:0},'',route);await restoreRoute(route);}}
 window.addEventListener('popstate',()=>{void restoreRoute(location.hash);});
-ready.then(async()=>{navigationReady=true;if(pendingRoute&&(profile||pendingRoute.startsWith('#jugador/')))await restorePendingRoute();syncPrimaryNav();});
+ready.then(async()=>{navigationReady=true;if(pendingRoute&&(profile||pendingRoute.startsWith('#jugador/')||pendingRoute.startsWith('#semanal')))await restorePendingRoute();syncPrimaryNav();});

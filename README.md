@@ -1,14 +1,32 @@
-# LOADING ARCADE 0.26
+# LOADING ARCADE 0.27
 
-La recompensa semanal se presenta como una **carta completa de Ada Wong**, con exactamente el mismo marco reutilizable de las cartas de la colección y color esmeralda. El **top 10 completo aparece en Inicio**, con puesto, jugador, aciertos, puntos y tiempo.
+Corrección de la entrada al Arcade: el desafío activo y el top 10 se muestran antes de crear un personaje. Ya no se interpreta «sin perfil» o un error de conexión como «desafío en preparación».
 
-## Actualizar desde 0.25
+## Actualizar desde 0.26
 
-1. Descargar **loading-arcade-v26.zip** y descomprimir.
-2. Subir **loading-arcade/sitio completa** a una nueva implementación de Cloudflare, conservando `_headers` y `assets/media`.
-3. Recargar y comprobar **Versión 0.26**. El ranking está debajo del resumen del desafío en Inicio; la carta completa se ve al abrir el desafío y se puede ampliar tocándola.
+1. Ejecutar **todo** [supabase/upgrade-v27.sql](https://github.com/Cosmo459-afk/loading/blob/supabase-setup/supabase/upgrade-v27.sql) en una nueva consulta de Supabase SQL Editor. Solo agrega la consulta pública segura del anuncio/ranking: conserva edición activa, fechas, preguntas, intentos, puntajes, XP y premios.
+2. Descargar **loading-arcade-v27.zip**, descomprimir y subir **loading-arcade/sitio completa** a Cloudflare, con `_headers` y `assets/media`.
+3. Recargar y confirmar **Versión 0.27**. Probar el Inicio en una ventana sin sesión y en una cuenta que aún no eligió apodo/avatar.
 
-**No ejecutar SQL ni reimportar o reactivar el banco.** La edición activa, sus fechas, intentos, resultados y premios se conservan. Si se parte de v23/v24, instalar primero el SQL v25 y seguir el historial de instalación.
+**No volver a importar ni activar el banco. No ejecutar el reinicio de progreso.** Esta actualización no cambia la edición semanal existente.
+
+## Causa y solución
+
+La versión anterior cortaba la carga si no había un perfil, aunque ya existiera una sesión autenticada. Como el estado vacío usaba el texto «El próximo desafío se está preparando», alguien nuevo podía creer que no había una semanal activa.
+
+Ahora se consulta el anuncio y ranking públicos al entrar, independientemente de la cuenta o del personaje. Se distinguen carga pendiente, respuesta confirmada sin edición publicada y error de conexión. El estado de preparación solo aparece después de que el servidor confirme que no hay una edición publicada.
+
+Desde la vista pública se pueden consultar reglas, carta del premio y top 10. Para jugar se ofrece elegir apodo y avatar, y al guardar se vuelve al desafío. La visita no inicia un intento ni consume tiempo; el único intento comienza después de crear el personaje y confirmar Comenzar.
+
+## Datos públicos y permisos
+
+`arcade_weekly_public_hub()` devuelve únicamente los metadatos ya públicos de la edición y las diez posiciones del ranking. No devuelve preguntas, soluciones, correos, Auth IDs, inventario, intento personal o posición propia. No da acceso directo a tablas ni habilita jugar sin perfil. Los jugadores con perfil siguen usando el endpoint privado para obtener su propio puesto/intento.
+
+## Validación
+
+`supabase/tests/public-weekly-v27.mjs` prueba lectura anónima, privacidad de respuestas e intentos, ausencia de acceso anónimo al juego/tablas, conservación de la edición y sus resultados, y repetición segura del SQL.
+
+`tests/public-weekly-v27.py` reproduce la captura de sesión sin personaje, entrada sin sesión, error de red y reintento, estado vacío confirmado y creación de personaje con retorno al desafío, verificando que mirar no consume un intento. Pantallas revisadas a 320/390/768/1280 px. Todo se ejecuta contra fixture local.
 
 ## Qué cambia
 
@@ -18,7 +36,7 @@ La recompensa semanal se presenta como una **carta completa de Ada Wong**, con e
 - **Desafío:** conserva reglas, participación, premio y resultado propio, con un enlace para volver al ranking de Inicio. No duplica allí la tabla del top 10.
 - Al visitar un perfil desde el ranking, Volver regresa al Inicio.
 
-La actualización usa las mismas funciones de servidor que v25 y no cambia puntuación, plazos, preguntas, posesión de cartas ni permisos.
+La mecánica de juego conserva las funciones de v25. La v27 agrega únicamente la consulta pública del anuncio/ranking; no cambia puntuación, plazos, preguntas ni posesión de cartas.
 
 El ZIP incluye el banco revisado en `banco-semanal` como referencia para instalaciones nuevas. **Si tu desafío ya está activo, no lo vuelvas a importar.** Esa carpeta no se despliega en Cloudflare.
 
