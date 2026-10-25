@@ -1,27 +1,46 @@
-# LOADING ARCADE 0.23
+# LOADING ARCADE 0.24
 
-La publicación inicial se presenta como una sola pieza: categoría, título, autor y texto. Los comentarios se agrupan debajo con su contador y una marca «AUTOR» cuando responde el creador. Un pulgar arriba permite aprobar y quitar la aprobación de publicaciones y comentarios de otros jugadores.
+Compartir sitio, perfiles públicos, resultados confirmados y cartas obtenidas. Imágenes para publicaciones (1080 × 1350) e historias (1080 × 1920), texto preparado, enlaces limpios y alternativas cuando el navegador no admite compartir archivos.
 
-## Actualizar desde 0.22
+## Actualizar desde 0.23
 
-1. En **Supabase → SQL Editor → New query**, pegar y ejecutar **todo** [supabase/upgrade-v23.sql](https://github.com/Cosmo459-afk/loading/blob/supabase-setup/supabase/upgrade-v23.sql).
-2. Descargar **loading-arcade-v23.zip**, descomprimir y subir **loading-arcade/sitio completa** a una nueva implementación de Cloudflare Pages, conservando `_headers` y `assets/media`.
-3. Recargar y confirmar **Versión 0.23**. Abrir una conversación y probar el pulgar de un comentario ajeno; tocar otra vez lo retira. La elección persiste al recargar.
+1. Ejecutar **todo** [supabase/upgrade-v24.sql](https://github.com/Cosmo459-afk/loading/blob/supabase-setup/supabase/upgrade-v24.sql) en una nueva consulta de Supabase SQL Editor. Añade la lectura del perfil público por enlace sin exigir registro; no borra nada ni abre acceso directo a tablas.
+2. Descargar **loading-arcade-v24.zip**, descomprimir y subir **loading-arcade/sitio completa** a Cloudflare, incluidos `_headers` y `assets/media`.
+3. Recargar y confirmar **Versión 0.24**. Probar Compartir mi perfil desde Perfil y abrir su enlace en una ventana sin sesión.
 
-No borra publicaciones, XP, cartas, cupones ni permisos. No requiere volver a habilitar al administrador. Si todavía no se instaló v21, ejecutar primero su SQL de reparación; las versiones 22 y 23 usan esa base.
+Conserva progreso, cartas, cofres, cupones, mensajes y permisos. No requiere volver a habilitar al administrador.
 
-## Conversaciones y reacciones
+## Dónde compartir
 
-- La publicación inicial permanece arriba al recorrer páginas de comentarios. Un mensaje inicial retirado u oculto nunca se sustituye por la primera respuesta: se informa que fue retirado o no está disponible.
-- Los comentarios mantienen el orden de publicación; esta versión no agrega respuestas anidadas ni orden por popularidad.
-- Cada jugador puede dar una aprobación por mensaje ajeno y quitarla. No hay votos negativos ni autoaprobaciones. No otorga XP ni recompensas.
-- La tabla de reacciones es privada, con RLS y sin acceso directo para clientes. Las funciones devuelven solamente contador y la elección propia, no quiénes aprobaron. Reintentar el mismo estado no duplica ni alterna accidentalmente el voto.
-- Los mensajes ocultos, retirados o dentro de temas ocultos no admiten nuevas reacciones. Los textos ocultos siguen sin exponerse. Se conservan reportes, retirada propia, moderación y cierre de conversaciones.
-- El contador cambia después de la confirmación del servidor; un fallo permite reintentar. La selección se anuncia a lectores de pantalla sin insertar un panel grande por cada aprobación.
+- **Perfil → Compartir mi perfil**: apodo, avatar/cosméticos, nivel y mejor racha. El enlace lleva al perfil público por UUID público, nunca al identificador de Auth.
+- **Resultado → Compartir logro**, también desde **Perfil → Mis partidas** para trivias finalizadas: aciertos, consola, dificultad y XP del resultado confirmado. No incluye preguntas, soluciones, identificadores de partida ni cupones. La imagen es una presentación del resultado; no se crea un certificado verificable ni un ranking.
+- **Carta obtenida → Abrir carta → Compartir carta**: conserva el arte y color de rareza, con nombre, juego, descripción y jugador. No permite compartir una carta no conseguida desde la interfaz; compartir no la exhibe automáticamente. El enlace lleva al perfil del jugador, y solo aparecen allí las cartas elegidas para exhibición.
+- **Pie del sitio → Compartir el Arcade**: invitación general con la imagen de marca.
+- Los perfiles visitados también tienen **Compartir perfil**. Las conversaciones conservan su botón de copiar enlace.
 
-## Validación de esta versión
+El diálogo permite elegir publicación o historia, compartir imagen mediante el menú nativo del dispositivo, descargar PNG, compartir/copiar el enlace y copiar el texto. Si no hay soporte de archivos, se ofrece guardar imagen y copiar texto. Cancelar el menú nativo no inicia una descarga inesperada. Si falla el portapapeles, el texto queda seleccionado para copiar manualmente.
 
-`supabase/tests/forum-v23.mjs` verifica permisos, idempotencia, autoaprobación bloqueada, moderación, retirada, privacidad, paginación y repetición segura del SQL. `tests/forum-v23.py` verifica estructura, contador, selección persistente, retiro de aprobación, error/reintento y tamaños de 320/390/768/1280 px. También se mantienen las pruebas de publicaciones y acciones previas del foro. Todo se ejecuta contra una base local, sin modificar Supabase real.
+Las imágenes se generan bajo demanda en el navegador. No incluyen correo, tokens de sesión, códigos de cupón ni inventario completo. Los archivos temporales se liberan al cerrar o cambiar de cuenta y se descartan generaciones anteriores que terminen tarde.
+
+## Enlaces y vista previa en redes
+
+El HTML incluye description, Open Graph, tarjeta social grande, favicon y color de marca. La imagen general está publicada con URL HTTPS absoluta y nombre con hash. No se descarga al entrar normalmente: los rastreadores de redes la consultan y el diálogo del sitio la solicita cuando hace falta.
+
+**La vista previa automática de un enlace es general de Loading Arcade.** Los rastreadores no reciben una imagen personalizada por perfil o por resultado: los fragmentos `#jugador/...` los procesa el navegador. Las imágenes personalizadas se comparten como archivos. Para historias de Instagram, guardar/subir la imagen y agregar el enlace como sticker; no se publica automáticamente en ninguna cuenta. Las redes pueden conservar vistas previas en caché.
+
+La dirección pública configurada es `https://loading-arcade.tienda-somosloading.workers.dev/`. Si se cambia de dominio, actualizar PUBLIC_SITE en `src/sharing.js` y la metadata de `index.html` antes de construir.
+
+## Perfil público sin sesión
+
+El nuevo RPC `arcade_share_profile` permite leer un perfil concreto por su UUID público. Devuelve apodo, avatar, cosméticos, nivel, rachas, contador público de likes y cartas efectivamente poseídas que el jugador eligió exhibir. No lista jugadores anónimamente ni devuelve correo, Auth ID, historial, XP exactos, cartas privadas o cupones. Las tablas siguen protegidas. Para reaccionar o participar se invita a crear/abrir un jugador.
+
+## Pruebas de esta versión
+
+- `supabase/tests/sharing-v24.mjs`: lectura anónima segura, filtrado de exhibiciones no poseídas, UUID público, denegación de tablas, ausencia de datos privados y reejecución del SQL.
+- `tests/sharing-v24.py`: exportaciones de cuatro tipos, ambos tamaños, imagen real de carta con recorte, resultado confirmado, menú nativo simulado sin enviar nada, cancelación, descarga, portapapeles fallido, enlaces sin parámetros de sesión, metadata y visita sin sesión a 320/390/768/1280 px.
+- Pruebas de cupones/resultados, visitas y juego contra fixture local; la suite SQL completa incluye la nueva prueba.
+
+No se enviaron mensajes, correos ni publicaciones a redes durante las pruebas. La aceptación de archivos y la vista previa final dependen de cada navegador/red; requieren comprobación en teléfonos reales.
 
 ## Diseño, en el orden trabajado
 
@@ -31,7 +50,7 @@ No borra publicaciones, XP, cartas, cupones ni permisos. No requiere volver a ha
 4. **Movimiento:** entradas de pantalla de 220 ms, diálogos de 180 ms, respuesta táctil y barra de progreso suave. No agregan demoras para jugar. Se conserva el evento de apertura de cofres y los efectos de sonido, sin música. La preferencia del sistema de reducir movimiento elimina las animaciones.
 5. **Acabados:** indicadores de carga y paneles de error/confirmación derivados de los mensajes reales, estados vacíos consistentes, campos legibles y foco de teclado visible. No se simulan porcentajes de carga. El contenido de las publicaciones no se interpreta como estado del sistema.
 
-El HTML sigue por debajo del límite de 750 KB y los seis archivos de imágenes mantienen la carga bajo demanda y la caché por hash. La carpeta completa sigue siendo necesaria para desplegar.
+El HTML sigue por debajo del límite de 750 KB y los siete archivos de imágenes mantienen la carga bajo demanda y la caché por hash. La carpeta completa sigue siendo necesaria para desplegar.
 
 ## Validación
 
@@ -113,6 +132,6 @@ El paquete solo contiene el sitio público, estas instrucciones y licencias. No 
 
 ## Historial y pendientes
 
-El historial anterior está en `docs/releases-through-v22.md` y `docs/releases-through-v21.md`, `docs/releases-through-v20.md` y `docs/releases-through-v19.md`. Para 0.23 se sube **sitio completo**. No ejecutar reinicios viejos.
+El historial anterior está en `docs/releases-through-v22.md` y `docs/releases-through-v21.md`, `docs/releases-through-v20.md` y `docs/releases-through-v19.md`. Para 0.24 se sube **sitio completo**. No ejecutar reinicios viejos.
 
 Siguen pendientes el desafío semanal real, su ranking y carta exclusiva; las imágenes de Metal Gear Solid, Silent Hill 2 y Parasite Eve II; y la automatización de canjes en Tienda Nube. Esta versión no agrega intercambios de cartas ni nuevos premios.

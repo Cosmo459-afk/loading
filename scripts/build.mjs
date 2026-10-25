@@ -32,7 +32,8 @@ const imagePlugin={name:'external-images',setup(b){
 }};
 await build({loader:{'.ttf':'dataurl','.woff2':'dataurl','.css':'text'},plugins:[imagePlugin],entryPoints:[path.join(root,'src/cloud.js')],outfile:path.join(root,'assets/cloud.bundle.js'),bundle:true,minify:true,format:'iife',platform:'browser',target:['es2020'],legalComments:'inline'});
 const notices=await readFile(path.join(root,'THIRD_PARTY_NOTICES.txt'),'utf8');
-const html=(await readFile(path.join(root,'index.html'),'utf8')).replace('<!doctype html>','<!doctype html><!--\n'+notices.replace(/-->/g,'-- >')+'\n-->');
+const socialAsset=await publishAsset(path.join(root,'assets/social/preview-v24.png'));
+const html=(await readFile(path.join(root,'index.html'),'utf8')).replaceAll('__SOCIAL_ART__',socialAsset).replace('<!doctype html>','<!doctype html><!--\n'+notices.replace(/-->/g,'-- >')+'\n-->');
 const js=await readFile(path.join(root,'assets/cloud.bundle.js'),'utf8');
 await writeFile(path.join(root,'dist/index.html'),(preview?html.replace('<body>','<body><div role="status">PREVISUALIZACIÓN · No publicar</div>'):html).replace('<script src="assets/cloud.bundle.js"></script>',()=>'<script>'+js.replace(/<\/script/gi,'<\\/script')+'</script>'));
 await writeFile(path.join(root,'dist/_headers'),'/\n  Cache-Control: no-cache\n  X-Content-Type-Options: nosniff\n/index.html\n  Cache-Control: no-cache\n  X-Content-Type-Options: nosniff\n/assets/media/*\n  Cache-Control: public, max-age=31536000, immutable\n  X-Content-Type-Options: nosniff\n');

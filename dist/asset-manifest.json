@@ -1,5 +1,11 @@
 [
   {
+    "url": "assets/media/preview-v24-4f3b71a9b270807e.png",
+    "bytes": 1909949,
+    "sha256": "4f3b71a9b270807e9f0da88baa1718281f571cacdd023121f7bbced65fc4d07c",
+    "source": "assets/social/preview-v24.png"
+  },
+  {
     "url": "assets/media/loading-arcade-70e3c56a50eacc3a.png",
     "bytes": 1278596,
     "sha256": "70e3c56a50eacc3a676783eab3fcdb1ae79cfbfbe4727d631f7dc136f62a9cda",

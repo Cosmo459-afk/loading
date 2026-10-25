@@ -27,3 +27,8 @@ main>section:not(.hidden){animation:ui-arrive .22s ease-out both}dialog[open]{an
 @media(max-width:600px){.forum-original{padding:20px 18px;margin-top:18px}.forum-original h1{font-size:28px}.forum-opening .forum-body{font-size:15px}.forum-message-meta{gap:7px}.forum-message-meta>small{font-size:10px}.forum-comment .forum-body{font-size:14px}.forum-comments-heading{margin-top:25px}.forum-comments-heading h2{font-size:18px}}
 
 .sr-only{position:absolute!important;width:1px;height:1px;padding:0!important;margin:-1px!important;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0!important}
+
+/* v24 sharing: explicit previews, readable fallbacks, safe-area dialogs. */
+#shareDialog{width:min(94vw,560px);padding:22px;background:#131a28;border-color:#59617d}#shareDialog>form{text-align:right}#shareDialog #sharePreview{margin:20px auto;min-height:0;max-height:46vh;border:1px solid #394760;border-radius:10px}#shareDialog #sharePreview:not([src]){display:none}#shareFormats{display:grid;grid-template-columns:1fr 1fr}#shareFormats button{font-size:10px;padding:10px 5px}#shareFormats [aria-pressed=true]{border-color:#9cddf1;background:#293a50}#shareDialog textarea{width:100%;margin:8px 0 12px;resize:vertical}#shareDialog .actions{margin-bottom:18px}#shareDialog .actions button{flex:1;min-width:130px}#shareDialog label{display:block}.profile-share{margin-top:20px;width:100%}footer>button{margin-bottom:8px}footer>p{font-size:11px}#shareLink{font-size:16px}
+
+.history-share{display:block;margin-top:12px}

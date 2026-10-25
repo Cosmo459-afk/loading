@@ -15,6 +15,8 @@ import {decorateAvatar,badges,slotNames} from './cosmetics.js';
 import brandLogo from '../assets/brand/loading-arcade.png';
 import couponArt from '../assets/rewards/coupon-level5.png';
 import {installRewardUI} from './reward-ui.js';
+import {installSharing} from './sharing.js';
+import siteArt from '../assets/social/preview-v24.png';
 import {installForum} from './forum.js';
 import {streakBadge} from './streaks.js';
 import {installAdmin} from './admin.js';
@@ -34,6 +36,9 @@ const client=createClient(config.url,config.publishableKey,{
 const state={isAdmin:false,session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false,owned:[],chests:[],chestBusy:false,community:null,communityOffset:0,visitData:null,visitTarget:null,visitReturn:'community',visitRequest:0,visitBusy:false,visitError:false,likeBusy:false,communityBusy:false,communityError:false,visibilityBusy:false,coupon:null,couponError:false,ownedCosmetics:[],lastResult:null};
 profile=null; // Never turn a local profile into a verified cloud account.
 const rewardUI=installRewardUI({profile:()=>profile,coupon:()=>state.coupon,couponError:()=>state.couponError,uid:()=>state.uid,requestRedemption:async id=>{const {data,error}=await client.rpc('arcade_request_coupon_redemption',{p_coupon_id:id});if(!error&&data?.player_id===state.uid)state.coupon=data;},avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),brand:brandLogo,art:couponArt});
+const sharing=installSharing({profile:()=>profile,avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),brand:brandLogo,siteArt,owned:id=>!!profile?.unlocked?.includes(id)});
+window.shareArcade=()=>sharing.shareSite();
+window.shareMyProfile=()=>sharing.shareProfile();
 const admin=installAdmin({rpc:(name,args)=>client.rpc(name,args),allowed:()=>state.isAdmin,go:id=>base.go(id),onDenied:()=>{state.isAdmin=false;$('adminEntry').hidden=true;}});
 window.openAdmin=async()=>{await ready;await admin.open();};
 
@@ -120,12 +125,13 @@ function renderCommunity(){
 }
 window.backFromPlayer=function(){base.go(state.visitReturn||'community');};
 window.visitPlayer=async function(id){
- await ready;if(!profile)return;
+ await ready;
  const origin=[...document.querySelectorAll('main>section')].find(s=>!s.classList.contains('hidden'))?.id;
  if(origin!=='playerVisit')state.visitReturn=['community','players','forumCompose','forumThread'].includes(origin)?origin:'community';
- $('visitBack').textContent=state.visitReturn==='forumThread'?'← VOLVER A LA CONVERSACIÓN':state.visitReturn==='community'?'← VOLVER A PUBLICACIONES':'← VOLVER A COMUNIDAD';
+ if(!profile)state.visitReturn='home';
+ $('visitBack').textContent=!profile?'← INICIO':state.visitReturn==='forumThread'?'← VOLVER A LA CONVERSACIÓN':state.visitReturn==='community'?'← VOLVER A PUBLICACIONES':'← VOLVER A COMUNIDAD';
  const version=state.version,request=++state.visitRequest;state.visitTarget=id;state.visitData=null;state.visitBusy=true;state.visitError=false;base.go('playerVisit');renderVisitedPlayer();
- try{const {data,error}=await client.rpc('arcade_visit_player',{p_public_id:id});if(error)throw error;if(version===state.version&&request===state.visitRequest)state.visitData=data;}
+ try{const {data,error}=await client.rpc(profile?'arcade_visit_player':'arcade_share_profile',{p_public_id:id});if(error)throw error;if(version===state.version&&request===state.visitRequest)state.visitData=data;}
  catch{if(version===state.version&&request===state.visitRequest)state.visitError=true;}
  finally{if(version===state.version&&request===state.visitRequest){state.visitBusy=false;renderVisitedPlayer();}}
 };
@@ -133,12 +139,12 @@ function renderVisitedPlayer(){
  const panel=$('visitedPlayer');panel.replaceChildren();
  if(state.visitBusy){panel.textContent='Cargando perfil…';return;}
  if(state.visitError||!state.visitData){const text=document.createElement('p');text.textContent='No pudimos abrir este perfil. Puede que ya no esté disponible.';const retry=document.createElement('button');retry.textContent='REINTENTAR';retry.onclick=()=>visitPlayer(state.visitTarget);panel.append(text,retry);return;}
- const p=state.visitData,top=document.createElement('div');top.className='profile-top visited-identity';top.innerHTML=avatarHTML({avatar:p.avatar,cosmetics:p.cosmetics||{}});
- const copy=document.createElement('div'),name=document.createElement('h1'),level=document.createElement('p');name.textContent=p.nickname+(p.is_me?' · Vos':'');level.textContent='Nivel '+p.level;copy.append(name,level);top.appendChild(copy);panel.appendChild(top);
+ const p=state.visitData;const share=document.createElement('button');share.className='secondary profile-posts';share.textContent='COMPARTIR PERFIL';share.onclick=()=>sharing.shareProfile({name:p.nickname,publicId:p.public_id,avatar:p.avatar,cosmetics:p.cosmetics,level:p.level,bestPerfectStreak:p.best_perfect_streak});const top=document.createElement('div');top.className='profile-top visited-identity';top.innerHTML=avatarHTML({avatar:p.avatar,cosmetics:p.cosmetics||{}});
+ const copy=document.createElement('div'),name=document.createElement('h1'),level=document.createElement('p');name.textContent=p.nickname+(p.is_me?' · Vos':'');level.textContent='Nivel '+p.level;copy.append(name,level);top.appendChild(copy);panel.appendChild(top);panel.appendChild(share);
  const medal=document.createElement('div');medal.innerHTML=streakBadge(p.best_perfect_streak,p.perfect_streak);panel.appendChild(medal);
  const social=document.createElement('div');social.className='profile-social';const count=document.createElement('p');count.textContent=(p.likes||0)+' Me gusta';social.appendChild(count);
- if(!p.is_me){const like=document.createElement('button');like.className='secondary';like.textContent=p.liked_by_me?'♥ TE GUSTA':'♡ ME GUSTA';like.setAttribute('aria-pressed',String(!!p.liked_by_me));like.disabled=state.likeBusy;like.onclick=()=>likeProfile();social.appendChild(like);}const status=document.createElement('p');status.id='likeNotice';status.setAttribute('role','status');social.appendChild(status);panel.appendChild(social);
- const posts=document.createElement('button');posts.className='secondary profile-posts';posts.textContent='VER PUBLICACIONES';posts.onclick=()=>forum.open('author',p.public_id,p.nickname);panel.appendChild(posts);
+ if(profile&&!p.is_me){const like=document.createElement('button');like.className='secondary';like.textContent=p.liked_by_me?'♥ TE GUSTA':'♡ ME GUSTA';like.setAttribute('aria-pressed',String(!!p.liked_by_me));like.disabled=state.likeBusy;like.onclick=()=>likeProfile();social.appendChild(like);}const status=document.createElement('p');status.id='likeNotice';status.setAttribute('role','status');social.appendChild(status);panel.appendChild(social);
+ const posts=document.createElement('button');posts.className='secondary profile-posts';posts.textContent='VER PUBLICACIONES';posts.onclick=()=>profile?forum.open('author',p.public_id,p.nickname):createPlayer();if(!profile)posts.textContent='ENTRAR AL ARCADE PARA PARTICIPAR';panel.appendChild(posts);
  const heading=document.createElement('h2');heading.textContent='Cartas exhibidas';panel.appendChild(heading);
  const note=document.createElement('p');note.className='muted';note.textContent='Cada jugador elige hasta tres cartas para mostrar.';panel.appendChild(note);
  const grid=document.createElement('div');grid.className='album-mini-grid visited-showcase';
@@ -177,7 +183,7 @@ function renderProfileInventory(){
 }
 function renderOwnProfile(){
  const root=$('ownProfileIdentity');if(!root)return;root.replaceChildren();if(!profile)return;
- const identity=document.createElement('div');identity.className='profile-top';identity.innerHTML=avatarHTML(profile);const copy=document.createElement('div'),name=document.createElement('h2'),level=document.createElement('p');name.textContent=profile.name;level.textContent='Nivel '+(Math.floor(profile.xp/1800)+1)+' · '+profile.xp+' XP';copy.append(name,level);const exit=document.createElement('button');exit.className='secondary mini';exit.textContent='SALIR';exit.onclick=()=>logout();identity.append(copy,exit);root.appendChild(identity);
+ const identity=document.createElement('div');identity.className='profile-top';identity.innerHTML=avatarHTML(profile);const copy=document.createElement('div'),name=document.createElement('h2'),level=document.createElement('p');name.textContent=profile.name;level.textContent='Nivel '+(Math.floor(profile.xp/1800)+1)+' · '+profile.xp+' XP';copy.append(name,level);const exit=document.createElement('button');exit.className='secondary mini';exit.textContent='SALIR';exit.onclick=()=>logout();identity.append(copy,exit);root.appendChild(identity);const share=document.createElement('button');share.className='secondary profile-share';share.textContent='COMPARTIR MI PERFIL';share.onclick=()=>sharing.shareProfile();root.appendChild(share);
 }
 window.openProfileHub=async function(){await ready;if(!profile){await enterPlayer(true);return;}renderOwnProfile();renderProfileInventory();base.go('player');};
 window.openTriviaSection=async function(){await ready;if(!profile){await enterPlayer(true);return;}mode='player';base.go('menu');};
@@ -314,7 +320,7 @@ async function useSession(session){
   state.cosmetics=[];state.owned=[];state.chests=[];state.chestBusy=false;state.catalog=null;state.catalogLoading=false;state.catalogError=false;state.catalogPromise=null;
   state.community=null;state.communityOffset=0;state.visitData=null;state.visitTarget=null;state.visitReturn='community';state.visitRequest++;state.visitBusy=false;state.visitError=false;state.likeBusy=false;$('visitedPlayer').replaceChildren();state.communityBusy=false;state.communityError=false;wardrobeSlot='all';
   state.uid=uid;state.profileLoading=!!uid;state.profileError=false;state.game=null;state.answers=[];state.pending=null;profile=null;mode='player';
-  audio.cancelEffects();state.isAdmin=false;$('adminEntry').hidden=true;admin.reset();forum.reset();rewardUI.clear();state.coupon=null;state.couponError=false;state.ownedCosmetics=[];state.lastResult=null;
+  audio.cancelEffects();state.isAdmin=false;$('adminEntry').hidden=true;admin.reset();forum.reset();sharing.clear();rewardUI.clear();state.coupon=null;state.couponError=false;state.ownedCosmetics=[];state.lastResult=null;
   $('recoverGame').hidden=true;
   selectedCollection=null;selectedCard=null;$('cardDetailActions').replaceChildren();$('cardDetailStatus').textContent='';
   if($('cardDetail').open)$('cardDetail').close();$('cardDetailArt').replaceChildren();
@@ -610,7 +616,7 @@ window.showHistory=async function(){
   await ready;if(!state.uid)return;
   mode='player';const version=state.version;base.go('history');$('historyList').textContent='Cargando tus últimas partidas…';
   await refreshQuizzes();if(version!==state.version)return;
-  const {data,error}=await client.from('arcade_games').select('id,quiz_id,category,difficulty,started_at,finished_at,correct,score').eq('player_id',state.uid).order('started_at',{ascending:false}).limit(20);
+  const {data,error}=await client.from('arcade_games').select('id,quiz_id,category,difficulty,started_at,finished_at,correct,score,passed').eq('player_id',state.uid).order('started_at',{ascending:false}).limit(20);
   if(version!==state.version)return;
   $('historyList').replaceChildren();
   if(error){$('historyList').textContent=publicError(error);return;}
@@ -619,10 +625,11 @@ window.showHistory=async function(){
     const box=document.createElement('div');box.className='review-item';
     const date=new Date(game.started_at).toLocaleString('es-AR');
     box.textContent=date+' · '+game.category.toUpperCase()+' · '+(state.catalog?.find(q=>q.id===game.quiz_id)?tierNames[state.catalog.find(q=>q.id===game.quiz_id).difficulty]:(game.quiz_id?'Trivia de catálogo':game.difficulty==='expert'?'Experto (partida libre)':'Normal (partida libre)'))+' · '+(game.finished_at?game.score+' puntos · '+game.correct+'/5':'Sin finalizar');
+    if(game.finished_at&&game.quiz_id){const share=document.createElement('button');share.className='secondary mini history-share';share.textContent='COMPARTIR LOGRO';share.onclick=()=>sharing.shareResult({correct:game.correct,score:game.score,passed:game.passed,console:game.category,difficulty:tierNames[state.catalog?.find(q=>q.id===game.quiz_id)?.difficulty]||tierNames[game.difficulty]||'Catálogo'});box.appendChild(share);}
     $('historyList').appendChild(box);
   }
 };
-shareScore=()=>rewardUI.shareResult(state.lastResult);
+shareScore=()=>sharing.shareResult(state.lastResult);
 window.openBenefits=async function(){
  await ready;if(!profile){await enterPlayer(true);return;}base.go('benefits');$('couponContent').textContent='Cargando tu cupón…';
  const version=state.version,{data,error}=await client.rpc('arcade_get_coupon');if(version!==state.version)return;
@@ -773,7 +780,7 @@ renderAlbum=function(){
 function renderCardActions(){
  const actions=$('cardDetailActions');actions.replaceChildren();$('cardDetailStatus').textContent='';
  if(!selectedCard||!profile?.unlocked.includes(selectedCard))return;
- const featured=profile.featured.includes(selectedCard),button=document.createElement('button');button.textContent=featured?'QUITAR DEL PERFIL':'EXHIBIR';button.disabled=state.featureBusy;button.setAttribute('aria-pressed',String(featured));const id=selectedCard;button.onclick=()=>toggleFeatured(id);actions.appendChild(button);
+ const featured=profile.featured.includes(selectedCard),button=document.createElement('button');button.textContent=featured?'QUITAR DEL PERFIL':'EXHIBIR';button.disabled=state.featureBusy;button.setAttribute('aria-pressed',String(featured));const id=selectedCard;button.onclick=()=>toggleFeatured(id);actions.appendChild(button);const share=document.createElement('button');share.className='secondary';share.textContent='COMPARTIR CARTA';share.onclick=()=>{const card=cards.find(c=>c.id===id);if(!profile?.unlocked.includes(id))return;$('cardDetail').close();sharing.shareCard(card);};actions.appendChild(share);
  $('cardDetailStatus').textContent=featured?'Esta carta está exhibida en tu perfil.':profile.featured.length+' de 3 espacios de exhibición ocupados.';
 }
 window.showCollectible=function(id){
@@ -845,7 +852,7 @@ function sectionRoute(id){
 base.go=function(id){const suppressHistory=restoringRoute;restoringRoute=false;rawGo(id);syncPrimaryNav();const route=sectionRoute(currentSection()||id);if(navigationReady&&profile&&!suppressHistory&&route&&location.hash!==route)history.pushState(null,'',route);};
 go=base.go;
 async function restoreRoute(hash){
- if(!profile){pendingRoute=hash;return;}
+ if(!profile&&!hash.startsWith('#jugador/')){pendingRoute=hash;return;}
  const [path,query='']=hash.replace(/^#/,'').split('?'),params=new URLSearchParams(query);restoringRoute=true;
  try{
   if(path.startsWith('tema/'))await forum.openThread(path.slice(5));
@@ -870,4 +877,4 @@ async function restoreRoute(hash){
 }
 async function restorePendingRoute(){const route=pendingRoute;pendingRoute='';if(route){history.replaceState(null,'',route);await restoreRoute(route);}}
 window.addEventListener('popstate',()=>{void restoreRoute(location.hash);});
-ready.then(async()=>{navigationReady=true;if(pendingRoute&&profile)await restorePendingRoute();syncPrimaryNav();});
+ready.then(async()=>{navigationReady=true;if(pendingRoute&&(profile||pendingRoute.startsWith('#jugador/')))await restorePendingRoute();syncPrimaryNav();});

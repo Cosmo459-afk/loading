@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node tests/database.mjs && node tests/rewards.mjs && node tests/approval.mjs && node tests/import.mjs && node tests/collections.mjs && node tests/upgrade.mjs && node tests/route-community.mjs && node tests/v15.mjs && node tests/community-v16.mjs && node tests/visits-v18.mjs && node tests/social-v19.mjs && node tests/admin-v20.mjs && node tests/feed-v21.mjs && node tests/repair-v21.mjs && node tests/forum-v23.mjs"
+    "test": "node tests/database.mjs && node tests/rewards.mjs && node tests/approval.mjs && node tests/import.mjs && node tests/collections.mjs && node tests/upgrade.mjs && node tests/route-community.mjs && node tests/v15.mjs && node tests/community-v16.mjs && node tests/visits-v18.mjs && node tests/social-v19.mjs && node tests/admin-v20.mjs && node tests/feed-v21.mjs && node tests/repair-v21.mjs && node tests/forum-v23.mjs && node tests/sharing-v24.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.11"

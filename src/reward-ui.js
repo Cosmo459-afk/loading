@@ -2,10 +2,10 @@
 const image=async src=>{const i=new Image();i.src=src;await i.decode();return i;};
 const blob=canvas=>new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Export failed')),'image/png'));
 export function installRewardUI({profile,coupon,couponError,uid,requestRedemption,avatar,brand,art}){
- let couponURL=null,shareURL=null,shareBlob=null;
+ let couponURL=null;
  const $=id=>document.getElementById(id);
- function revoke(kind){if(kind==='coupon'&&couponURL){URL.revokeObjectURL(couponURL);couponURL=null;}if(kind==='share'&&shareURL){URL.revokeObjectURL(shareURL);shareURL=null;shareBlob=null;}}
- function clear(){revoke('coupon');revoke('share');$('couponContent').replaceChildren();$('sharePreview').removeAttribute('src');if($('shareDialog').open)$('shareDialog').close();}
+ function revoke(){if(couponURL)URL.revokeObjectURL(couponURL);couponURL=null;}
+ function clear(){revoke();$('couponContent').replaceChildren();}
  function redemptionText(c){return 'Hola Loading! Quiero canjear mi cupón de 10% de descuento de Loading Arcade. Mi código es '+c.code+'. Mi jugador es '+profile().name+'. Entiendo que es de un solo uso y no acumulable.';}
  async function copy(text){try{await navigator.clipboard.writeText(text);return true;}catch{return false;}}
  function download(url,name){const a=document.createElement('a');a.href=url;a.download=name;a.click();}
@@ -32,26 +32,5 @@ export function installRewardUI({profile,coupon,couponError,uid,requestRedemptio
    const b=await blob(canvas);if(owner!==uid())return;revoke('coupon');couponURL=URL.createObjectURL(b);img.src=couponURL;save.disabled=false;
   }catch{if(owner!==uid())return;img.src=art;status.textContent+=' No pudimos generar la imagen personalizada, pero tu código sigue disponible.';}
  }
- async function shareResult(result){
-  const p=profile(),owner=uid();if(!p||!result)return;
-  $('shareStatus').textContent='Preparando tu imagen…';$('shareImageBtn').disabled=true;$('downloadShareBtn').disabled=true;$('shareDialog').showModal();
-  try{
-   await document.fonts.ready;const [logo,mascot]=await Promise.all([image(brand),image(avatar(p))]);const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1350;const ctx=canvas.getContext('2d');
-   const bg=ctx.createLinearGradient(0,0,1080,1350);bg.addColorStop(0,'#1e1934');bg.addColorStop(.6,'#0d111e');bg.addColorStop(1,'#211629');ctx.fillStyle=bg;ctx.fillRect(0,0,1080,1350);
-   ctx.strokeStyle='#775992';ctx.lineWidth=3;ctx.strokeRect(38,38,1004,1274);ctx.fillStyle='#c38ebc';for(let y=70;y<1300;y+=30){ctx.globalAlpha=.08;ctx.fillRect(50,y,980,1);}ctx.globalAlpha=1;
-   const lw=780,lh=lw*logo.naturalHeight/logo.naturalWidth;ctx.drawImage(logo,(1080-lw)/2,70,lw,lh);
-   ctx.fillStyle='#a17cba';ctx.fillRect(420,440,240,240);ctx.drawImage(mascot,428,448,224,224);
-   ctx.textAlign='center';ctx.fillStyle='#f2e8f5';ctx.font='700 45px LoadingPixel,monospace';ctx.fillText(p.name,540,750,900);
-   ctx.font='700 100px LoadingPixel,monospace';ctx.fillStyle='#e8b5da';ctx.fillText(result.correct+'/5',540,900);
-   ctx.font='700 28px sans-serif';ctx.fillStyle='#efebf5';ctx.fillText(result.passed?'TRIVIA APROBADA':'SEGUÍ SUMANDO RECUERDOS',540,967,920);
-   ctx.font='25px sans-serif';ctx.fillStyle='#c8bed2';ctx.fillText((result.console==='ps1'?'PlayStation 1':'PlayStation 2')+' · '+result.difficulty+' · +'+result.score+' XP',540,1020);
-   ctx.fillText('Nivel '+(Math.floor(p.xp/1800)+1)+' · '+p.xp+' XP totales',540,1070);
-   ctx.font='700 34px sans-serif';ctx.fillStyle='#e2c08a';ctx.fillText('DEMOSTRÁ CUÁNTO SABÉS',540,1170,920);
-   ctx.font='21px sans-serif';ctx.fillStyle='#bdb4cc';ctx.fillText('loading-arcade.tienda-somosloading.workers.dev',540,1240,930);
-   const b=await blob(canvas);if(owner!==uid())return;revoke('share');shareBlob=b;shareURL=URL.createObjectURL(b);$('sharePreview').src=shareURL;$('downloadShareBtn').disabled=false;$('shareImageBtn').disabled=false;$('shareStatus').textContent='Tu imagen está lista para historias o publicaciones. No incluye datos privados ni códigos de descuento.';
-  }catch{if(owner!==uid())return;$('shareStatus').textContent='No pudimos generar la imagen. Podés volver a intentarlo.';}
- }
- $('downloadShareBtn').onclick=()=>shareURL&&download(shareURL,'loading-arcade-logro.png');
- $('shareImageBtn').onclick=async()=>{if(!shareBlob)return;const file=new File([shareBlob],'loading-arcade-logro.png',{type:'image/png'});try{if(navigator.canShare?.({files:[file]})){await navigator.share({files:[file],title:'Mi logro en Loading Arcade',text:'Demostrá cuánto sabés. Jugá en https://loading-arcade.tienda-somosloading.workers.dev/'});}else{$('shareStatus').textContent='Descargá la imagen y subila a tu historia o publicación.';download(shareURL,file.name);}}catch(e){if(e.name!=='AbortError')$('shareStatus').textContent='Podés guardar la imagen y compartirla manualmente.';}};
- return {showCoupon,shareResult,clear};
+ return {showCoupon,clear};
 }

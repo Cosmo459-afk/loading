@@ -26,7 +26,7 @@ with sync_playwright() as p:
  assert page.get_by_role('link',name='CANJEAR CÓDIGO').get_attribute('href')=='https://ig.me/m/somosloading'
  assert code in page.locator('#couponMessage').input_value() and 'Alice' in page.locator('#couponMessage').input_value()
  # Trigger click handler without navigating or contacting Instagram.
- page.get_by_role('link',name='CANJEAR CÓDIGO').evaluate('(a)=>a.onclick()')
+ with page.expect_response(lambda r:'arcade_request_coupon_redemption' in r.url):page.get_by_role('link',name='CANJEAR CÓDIGO').evaluate('(a)=>a.onclick()')
  page.wait_for_function('document.getElementById("couponStatus").textContent.includes("mensaje")||document.getElementById("couponStatus").textContent.includes("Mensaje")')
  c=fixture('/rest/v1/rpc/arcade_get_coupon',{},alice['access_token']);assert c['requested_at'] and c['redeemed_at'] is None
  with page.expect_download() as d:page.get_by_role('button',name='GUARDAR IMAGEN',exact=True).click()
@@ -44,7 +44,7 @@ with sync_playwright() as p:
  page.get_by_role('button',name='COMPARTIR LOGRO').click();page.wait_for_function('!document.getElementById("downloadShareBtn").disabled')
  with page.expect_download() as d:page.locator('#downloadShareBtn').click()
  d.value.save_as('/tmp/loading-v15-achievement.png');assert Image.open('/tmp/loading-v15-achievement.png').size==(1080,1350)
- assert code not in page.locator('#shareDialog').inner_text();page.locator('#shareDialog [aria-label="Cerrar imagen"]').click()
+ assert code not in page.locator('#shareDialog').inner_text();page.locator('#shareDialog [aria-label="Cerrar compartir"]').click()
  fixture('/_test/redeem-coupon',{'code':code});page.reload();page.wait_for_function('profile!==null');page.evaluate('openBenefits()');page.wait_for_selector('.coupon-code');assert 'ya fue canjeado' in page.locator('#couponStatus').inner_text();assert page.get_by_role('link',name='CANJEAR CÓDIGO').count()==0
  # Switching accounts removes old coupon and image.
  page.evaluate('s=>localStorage.setItem('+json.dumps(STORE)+',JSON.stringify(s))',bob);page.reload();page.wait_for_function('profile?.name==="Bob"');page.evaluate('openBenefits()');page.wait_for_selector('#benefits:not(.hidden)');assert code not in page.content();assert page.locator('#sharePreview').get_attribute('src') is None

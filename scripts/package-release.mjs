@@ -42,8 +42,8 @@ with ZipFile(root/archive,'w',ZIP_DEFLATED) as z:
 with ZipFile(root/archive) as z:
  assert z.testzip() is None
  assert z.read('loading-arcade/sitio/index.html')==(root/'dist/index.html').read_bytes()
- assert len([n for n in z.namelist() if '/assets/media/' in n])==6
+ assert len([n for n in z.namelist() if '/assets/media/' in n])==7
  assert not any(n.endswith('.sql') or n.endswith('.json') for n in z.namelist())
-print('Release ZIP verified: upload entire sitio folder; lightweight HTML and six hashed images, instructions and licenses only.')
+print('Release ZIP verified: upload entire sitio folder; lightweight HTML and seven hashed images, instructions and licenses only.')
 `],{stdio:'inherit'});
 if(result.status!==0)throw new Error('Package verification failed');
