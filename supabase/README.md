@@ -63,3 +63,12 @@ La nueva tabla privada tier_unlocks registra desbloqueos permanentes por usuario
 arcade_cosmetics es catálogo de lectura para usuarios autenticados; arcade_profiles.cosmetics contiene la selección. Solo arcade_equip_cosmetic puede modificarla, valida slot, artículo y XP en servidor. arcade_cards incorpora kind y rarity según la clasificación del propietario; no existe RNG ni porcentajes de aparición.
 
 La migración incluye diez preguntas de desarrolladores y sus dos packs medios. La fuente literal por pregunta se conserva en content/question-batch-v07.json. No se atribuye procedencia primaria a esos datos; las limitaciones de la investigación están documentadas.
+
+
+## Reiniciar todo el progreso de prueba (v25/v26)
+
+El dueño puede ejecutar `reset-all-progress.sql` completo desde SQL Editor. Es destructivo: elimina para todos los jugadores XP, partidas normales y semanales, rankings, rachas, cofres, cartas normales/Exclusivas, cosméticos desbloqueados/equipados, cupones y desbloqueos de dificultad. Conserva las cuentas, apodos, avatar base, UUID público, permisos de administrador, preguntas, publicaciones, reacciones y configuración/fechas del desafío. No es una migración y no se debe ejecutar como parte de una actualización normal.
+
+Cerrar las pestañas del juego antes, ejecutar toda la transacción y recargar después. La identidad interna de la edición activa cambia para impedir que una pestaña vieja recree intentos tras el reset. Si la edición ya venció, sus fechas no se extienden automáticamente. Al final, el cuadro muestra cuentas conservadas y los contadores de progreso en cero. Si falla una sentencia o un bloqueo supera cinco segundos, la transacción no deja un reinicio parcial.
+
+No borra usuarios de Supabase Auth ni pide reinstalar el sitio o importar de nuevo las preguntas. `tests/reset-all.mjs` comprueba recompensas realmente obtenidas, conservación de cuentas/admin/foro/banco, rechazo de intentos viejos y nuevas partidas habilitadas en una base PGlite local.
