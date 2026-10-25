@@ -1,4 +1,67 @@
-# LOADING ARCADE 0.18 — comunidad y perfiles visitables
+# LOADING ARCADE 0.19 — likes, foro e insignias de racha
+
+**Desde 0.18: ejecutar `supabase/upgrade-v19.sql` en Supabase SQL Editor → New query → Run; luego subir el `index.html` del ZIP v19 a Cloudflare.** Conserva cuentas, XP, cartas, cofres, cupones y mensajes existentes. La migración reconoce retroactivamente las rachas del historial.
+
+## Likes a perfiles
+
+Un Me gusta por jugador a cada perfil ajeno; se puede retirar. No hay likes a cartas ni a mensajes, y no se puede reaccionar al propio perfil. El número y tu reacción se ven en el perfil visitado; no se publica una lista de quién reaccionó. Los likes no entregan XP ni recompensas. La clave única en servidor y las operaciones idempotentes evitan duplicarlos por doble toque o corte de conexión.
+
+## Foro de Comunidad
+
+Acceso desde **Comunidad → Entrar al foro**. Tres categorías: Charlas retro, Ayuda y recomendaciones, Arcade y desafíos. Se pueden abrir temas, responder, visitar autores, retirar el texto de mensajes propios y reportar mensajes ajenos. Los temas tienen hasta 100 caracteres de título y los mensajes hasta 3.000; solo texto, sin HTML ejecutable, imágenes ni adjuntos.
+
+Hay páginas de 20 temas y 30 mensajes; tras publicar se abre la página correspondiente a ese mensaje. Botones de actualización manual, estados vacíos, recuperación ante error y temas cerrados de solo lectura. Un envío puede reintentarse conservando su identificador, sin duplicar el mensaje; cambiar de cuenta limpia formularios y estados. Si cambiás de pantalla mientras publica, la respuesta no interrumpe tu partida.
+
+El servidor exige personaje/sesión, valida categoría y longitudes y limita a un mensaje cada 10 segundos y un tema nuevo por minuto por jugador. Las tablas están en el esquema privado; los RPC solo entregan texto público, fechas, apodos, avatares e identificadores públicos. No entregan IDs de autenticación, correos, cupones ni inventarios. Retirar un mensaje borra su texto y deja una indicación; el título y la conversación se conservan.
+
+## Insignias por perfectas consecutivas
+
+Cada trivia de catálogo terminada con **5/5** aumenta la racha global entre PS1 y PS2. Terminar con cualquier otro resultado, incluso desaprobar, reinicia la racha actual a cero. Las prácticas antiguas no cuentan ni cortan racha; abandonar una partida sin resultado no suma. Una trivia aprobada sigue sin poder repetirse y reintentar el guardado no duplica la racha.
+
+El perfil propio y los perfiles visitables exhiben un escudo con el **número exacto de la mejor racha**, más un texto con racha actual y mejor marca. La mejor insignia se conserva al perder la racha. No se obtiene en cofres ni añade XP.
+
+| Mejor racha | Acabado |
+| --- | --- |
+| 1–2 | Bronce |
+| 3–4 | Plata |
+| 5–9 | Oro |
+| 10–19 | Prisma |
+| 20 o más | Maestría |
+
+Son logros por mérito; los acabados altos requieren una racha más larga y no son premios de disponibilidad limitada. El historial se reconstruye por fecha de finalización e ID como desempate; se actualiza en servidor en la misma transacción del resultado. La migración puede reejecutarse sin incrementar marcas artificialmente ni borrar progreso.
+
+## Revisar reportes y moderar como dueño
+
+Los reportes se guardan para revisión del dueño y no ocultan automáticamente contenido. Para revisar en **Supabase → SQL Editor**:
+
+```sql
+select m.id as mensaje_id,t.id as tema_id,t.title,m.body,p.nickname,
+ count(r.reporter_id) as reportes
+from arcade_private.forum_reports r
+join arcade_private.forum_posts m on m.id=r.post_id
+join arcade_private.forum_threads t on t.id=m.thread_id
+join public.arcade_profiles p on p.id=m.author_id
+group by m.id,t.id,p.nickname order by reportes desc;
+
+-- Ocultar un mensaje (reemplazar el UUID):
+select public.arcade_forum_moderate(null,'UUID-DEL-MENSAJE',true,false);
+-- Cerrar un tema conservando su lectura:
+select public.arcade_forum_moderate('UUID-DEL-TEMA',null,false,true);
+-- Ocultar un tema completo:
+select public.arcade_forum_moderate('UUID-DEL-TEMA',null,true,true);
+```
+
+La moderación solo está permitida al dueño desde SQL Editor o a un backend con rol de servicio. No hay claves de servicio ni controles de moderador en el HTML. Para volver a mostrar/reabrir, usar `false,false` en el contenido correspondiente. La revisión de reportes es manual; no hay notificaciones externas ni correos automáticos.
+
+## Instalar 0.19
+
+1. Con 0.18 instalada, abrir [`upgrade-v19.sql`](https://github.com/Cosmo459-afk/loading/blob/supabase-setup/supabase/upgrade-v19.sql), copiar todo a **Supabase → SQL Editor → New query → Run**.
+2. Descargar `loading-arcade-v19.zip`, descomprimir y subir **solo `index.html`** a **Cloudflare → Workers & Pages → loading-arcade → New deployment → Deploy**.
+3. Confirmar «Versión 0.19». Probar un perfil ajeno, abrir el foro y revisar la insignia en Mi perfil. No correr los reinicios antiguos.
+
+Validación específica: `social-v19.mjs` comprueba likes únicos, permisos, rachas reales y retrospectivas, corte de racha, prácticas excluidas, reintentos, publicación y respuestas, reportes, retirada propia, moderación, límites y preservación al reejecutar. `social-v19.py` comprueba estos flujos en la interfaz, errores tras confirmar en servidor, texto malicioso mostrado literalmente, categorías separadas y pantallas móviles/escritorio. Todo usa SQL/Auth locales, sin mensajes ni escrituras a producción.
+
+## Registro anterior: 0.18
 
 **Desde 0.16/0.17: ejecutar `supabase/upgrade-v18.sql` en Supabase SQL Editor → New query → Run; después subir el `index.html` del ZIP v18 a Cloudflare.** No reinicia progreso, cartas, cofres ni cupones.
 
@@ -178,7 +241,7 @@ Los artes de producción están en `assets/cards/re4/art-v13/`: cuatro láminas 
 
 El build incrusta cada lámina una sola vez, junto con Silkscreen Bold (OFL) y los estilos; sin CDN ni fuentes externas. El HTML final es independiente y está dentro del límite de tamaño de assets estáticos. El build falla si falta arte. `npm run build:preview` solo sirve para desarrollo y no debe empaquetarse.
 
-`loading-arcade-v18.zip` contiene el HTML independiente, README y licencias. No subir al Worker los JSON con respuestas, SQL, tests, fixture ni node_modules. Para reconstruir: `npm run build` y `node scripts/package-release.mjs`. Los ZIP previos se conservan como versiones históricas. No aplicar de nuevo la migración 0.9 al actualizar solo la interfaz.
+`loading-arcade-v19.zip` contiene el HTML independiente, README y licencias. No subir al Worker los JSON con respuestas, SQL, tests, fixture ni node_modules. Para reconstruir: `npm run build` y `node scripts/package-release.mjs`. Los ZIP previos se conservan como versiones históricas. No aplicar de nuevo la migración 0.9 al actualizar solo la interfaz.
 
 ## Desarrollo y validación
 

@@ -29,10 +29,10 @@ with sync_playwright() as p:
  assert 'de 14' not in page.locator('#visitedPlayer').inner_text();assert 'example.invalid' not in page.locator('#visitedPlayer').inner_html();assert bob['user']['id'] not in page.locator('#visitedPlayer').inner_html()
  page.locator('#visitedPlayer .album-thumb').click();page.wait_for_selector('#cardDetail[open]');assert page.locator('#cardDetail h3').inner_text().casefold()==shown_name.casefold();assert page.locator('#cardDetailActions button').count()==0;assert 'Exhibida por Bob' in page.locator('#cardDetailStatus').inner_text();assert page.evaluate('profile.unlocked.length')==0
  page.locator('#cardDetail').get_by_role('button',name='Cerrar detalle').click();page.evaluate('id=>showExhibitedCard(id)',awards[1]);assert not page.locator('#cardDetail').is_visible();page.evaluate('id=>showCollectible(id)',awards[0]);assert not page.locator('#cardDetail').is_visible()
- page.screenshot(path='/workspace/loading/design/perfil-publico-v18-mobile.png',full_page=True)
+ page.screenshot(path='/workspace/loading/design/perfil-publico-v19-mobile.png',full_page=True)
  for width in [320,390,768,1280]:
   page.set_viewport_size({'width':width,'height':844});assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
- page.set_viewport_size({'width':390,'height':844});page.get_by_role('button',name='← VOLVER A COMUNIDAD').click();page.wait_for_selector('#community:not(.hidden)');page.screenshot(path='/workspace/loading/design/comunidad-v18-mobile.png',full_page=True)
+ page.set_viewport_size({'width':390,'height':844});page.get_by_role('button',name='← VOLVER A COMUNIDAD').click();page.wait_for_selector('#community:not(.hidden)');page.screenshot(path='/workspace/loading/design/comunidad-v19-mobile.png',full_page=True)
  page.get_by_role('button',name='Visitar perfil de Alice').click();page.wait_for_selector('.visited-empty');assert 'Todavía no exhibe cartas' in page.locator('#visitedPlayer').inner_text()
  # Last requested profile wins, without navigating when the earlier request finishes.
  page.evaluate('ids=>Promise.all(ids.map(id=>visitPlayer(id)))',[pub_bob,pub_alice]);assert page.locator('#visitedPlayer h1').inner_text()=='Alice · Vos'

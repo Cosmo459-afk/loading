@@ -9,6 +9,8 @@ import {decorateAvatar,badges,slotNames} from './cosmetics.js';
 import brandLogo from '../assets/brand/loading-arcade.png';
 import couponArt from '../assets/rewards/coupon-level5.png';
 import {installRewardUI} from './reward-ui.js';
+import {installForum} from './forum.js';
+import {streakBadge} from './streaks.js';
 const lockup=document.querySelector('header > div');lockup.className='brand-lockup';lockup.innerHTML='<img class="brand-logo" src="'+brandLogo+'" alt="LOADING ARCADE" width="1966" height="804">';
 const audio=installAudio();
 // Replace the provisional catalog with the confirmed RE4 collection.
@@ -20,9 +22,12 @@ const returning=new URLSearchParams(location.search).has('code');
 const client=createClient(config.url,config.publishableKey,{
   auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
 });
-const state={session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false,owned:[],chests:[],chestBusy:false,community:null,communityOffset:0,visitData:null,visitTarget:null,visitRequest:0,visitBusy:false,visitError:false,communityBusy:false,communityError:false,visibilityBusy:false,coupon:null,couponError:false,ownedCosmetics:[],lastResult:null};
+const state={session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false,owned:[],chests:[],chestBusy:false,community:null,communityOffset:0,visitData:null,visitTarget:null,visitReturn:'community',visitRequest:0,visitBusy:false,visitError:false,likeBusy:false,communityBusy:false,communityError:false,visibilityBusy:false,coupon:null,couponError:false,ownedCosmetics:[],lastResult:null};
 profile=null; // Never turn a local profile into a verified cloud account.
 const rewardUI=installRewardUI({profile:()=>profile,coupon:()=>state.coupon,couponError:()=>state.couponError,uid:()=>state.uid,requestRedemption:async id=>{const {data,error}=await client.rpc('arcade_request_coupon_redemption',{p_coupon_id:id});if(!error&&data?.player_id===state.uid)state.coupon=data;},avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),brand:brandLogo,art:couponArt});
+const forum=installForum({rpc:(name,args)=>client.rpc(name,args),identity:()=>state.uid&&profile,go:id=>base.go(id),visit:id=>visitPlayer(id),avatar:p=>avatarHTML(p)});
+window.openForum=async()=>{await ready;if(!profile){await enterPlayer(true);return;}await forum.open();};
+
 
 
 function message(text){$('cloudNotice').textContent=text;$('cloudNotice').hidden=!text;}
@@ -100,8 +105,12 @@ function renderCommunity(){
  if(state.community?.has_more)control('MÁS JUGADORES →',state.communityOffset+24);
  control('ACTUALIZAR',state.communityError?0:state.communityOffset);panel.appendChild(actions);
 }
+window.backFromPlayer=function(){base.go(state.visitReturn||'community');};
 window.visitPlayer=async function(id){
  await ready;if(!profile)return;
+ const origin=[...document.querySelectorAll('main>section')].find(s=>!s.classList.contains('hidden'))?.id;
+ if(origin!=='playerVisit')state.visitReturn=['forum','forumThread'].includes(origin)?origin:'community';
+ $('visitBack').textContent=state.visitReturn==='forumThread'?'← VOLVER A LA CONVERSACIÓN':state.visitReturn==='forum'?'← VOLVER AL FORO':'← VOLVER A COMUNIDAD';
  const version=state.version,request=++state.visitRequest;state.visitTarget=id;state.visitData=null;state.visitBusy=true;state.visitError=false;base.go('playerVisit');renderVisitedPlayer();
  try{const {data,error}=await client.rpc('arcade_visit_player',{p_public_id:id});if(error)throw error;if(version===state.version&&request===state.visitRequest)state.visitData=data;}
  catch{if(version===state.version&&request===state.visitRequest)state.visitError=true;}
@@ -113,6 +122,9 @@ function renderVisitedPlayer(){
  if(state.visitError||!state.visitData){const text=document.createElement('p');text.textContent='No pudimos abrir este perfil. Puede que ya no esté disponible.';const retry=document.createElement('button');retry.textContent='REINTENTAR';retry.onclick=()=>visitPlayer(state.visitTarget);panel.append(text,retry);return;}
  const p=state.visitData,top=document.createElement('div');top.className='profile-top visited-identity';top.innerHTML=avatarHTML({avatar:p.avatar,cosmetics:p.cosmetics||{}});
  const copy=document.createElement('div'),name=document.createElement('h1'),level=document.createElement('p');name.textContent=p.nickname+(p.is_me?' · Vos':'');level.textContent='Nivel '+p.level;copy.append(name,level);top.appendChild(copy);panel.appendChild(top);
+ const medal=document.createElement('div');medal.innerHTML=streakBadge(p.best_perfect_streak,p.perfect_streak);panel.appendChild(medal);
+ const social=document.createElement('div');social.className='profile-social';const count=document.createElement('p');count.textContent=(p.likes||0)+' Me gusta';social.appendChild(count);
+ if(!p.is_me){const like=document.createElement('button');like.className='secondary';like.textContent=p.liked_by_me?'♥ TE GUSTA':'♡ ME GUSTA';like.setAttribute('aria-pressed',String(!!p.liked_by_me));like.disabled=state.likeBusy;like.onclick=()=>likeProfile();social.appendChild(like);}const status=document.createElement('p');status.id='likeNotice';status.setAttribute('role','status');social.appendChild(status);panel.appendChild(social);
  const heading=document.createElement('h2');heading.textContent='Cartas exhibidas';panel.appendChild(heading);
  const note=document.createElement('p');note.className='muted';note.textContent='Cada jugador elige hasta tres cartas para mostrar.';panel.appendChild(note);
  const grid=document.createElement('div');grid.className='album-mini-grid visited-showcase';
@@ -120,6 +132,13 @@ function renderVisitedPlayer(){
  panel.appendChild(grid);
  if(!p.featured_ids?.length){const empty=document.createElement('p');empty.className='visited-empty';empty.textContent='Todavía no exhibe cartas.';panel.appendChild(empty);}
  else if(!grid.childElementCount){const update=document.createElement('p');update.textContent='Actualizá el Arcade para ver estos coleccionables.';panel.appendChild(update);}
+}
+async function likeProfile(){
+ if(!state.visitData||state.visitData.is_me||state.likeBusy)return;
+ const version=state.version,request=state.visitRequest,id=state.visitData.public_id,liked=!state.visitData.liked_by_me;state.likeBusy=true;renderVisitedPlayer();
+ try{const {data,error}=await client.rpc('arcade_set_profile_like',{p_public_id:id,p_liked:liked});if(error)throw error;if(version===state.version&&request===state.visitRequest)Object.assign(state.visitData,data);}
+ catch{if(version===state.version&&request===state.visitRequest)$('likeNotice').textContent='No pudimos guardar tu reacción. Volvé a intentarlo.';}
+ finally{if(version===state.version){state.likeBusy=false;const notice=request===state.visitRequest?$('likeNotice')?.textContent:'';renderVisitedPlayer();if(notice&&$('likeNotice'))$('likeNotice').textContent=notice;}}
 }
 window.showExhibitedCard=function(id){
  if($('playerVisit').classList.contains('hidden')||!state.visitData?.featured_ids?.includes(id))return;
@@ -135,7 +154,7 @@ function badge(n,label){return n?'<span class="pending-dot" aria-label="'+n+' '+
 function renderProfileInventory(){
  const panel=$('profileInventory');if(!panel)return;panel.hidden=!profile;panel.replaceChildren();if(!profile)return;
  const chests=state.chests.filter(c=>!c.opened_at).length,newCards=unseenCards().length,coupon=state.coupon?.id&&!state.coupon.redeemed_at?1:0;
- panel.innerHTML='<h3>Tu inventario</h3><div class="profile-inventory-actions">'+
+ panel.innerHTML=streakBadge(profile.bestPerfectStreak,profile.perfectStreak)+'<p class="muted">La insignia conserva tu mejor racha de trivias perfectas. Una trivia no perfecta corta la racha actual; las prácticas no cuentan.</p><h3>Tu inventario</h3><div class="profile-inventory-actions">'+
  '<button class="secondary" onclick="openChests()">MIS COFRES'+badge(chests,'cofres por abrir')+'</button>'+
  '<button class="secondary" onclick="showCollections()">MI COLECCIÓN'+badge(newCards,'coleccionables nuevos')+'</button>'+
  '<button class="secondary" onclick="openWardrobe()">MI ESTILO</button>'+
@@ -228,7 +247,7 @@ function unpack(row){return Array.isArray(row)?row[0]:row;}
 function adopt(row){
   row=unpack(row);
   if(!row){profile=null;accountUI();return;}
-  profile={name:row.nickname,avatar:row.avatar,communityVisible:row.community_visible===true,photo:null,rewardsSeenXP:Number(row.rewards_seen_xp||0),xp:Number(row.xp),games:row.games,featured:row.featured||[],unlocked:[],cosmetics:row.cosmetics||{}};
+  profile={publicId:row.community_id,perfectStreak:Number(row.perfect_streak)||0,bestPerfectStreak:Number(row.best_perfect_streak)||0,name:row.nickname,avatar:row.avatar,communityVisible:row.community_visible===true,photo:null,rewardsSeenXP:Number(row.rewards_seen_xp||0),xp:Number(row.xp),games:row.games,featured:row.featured||[],unlocked:[],cosmetics:row.cosmetics||{}};
   syncUnlocks();accountUI();
 }
 async function loadProfile(uid,version){
@@ -270,9 +289,9 @@ async function useSession(session){
   if(uid===state.uid)return;
   const version=++state.version;
   state.cosmetics=[];state.owned=[];state.chests=[];state.chestBusy=false;state.catalog=null;state.catalogLoading=false;state.catalogError=false;state.catalogPromise=null;
-  state.community=null;state.communityOffset=0;state.visitData=null;state.visitTarget=null;state.visitRequest++;state.visitBusy=false;state.visitError=false;$('visitedPlayer').replaceChildren();state.communityBusy=false;state.communityError=false;wardrobeSlot='all';
+  state.community=null;state.communityOffset=0;state.visitData=null;state.visitTarget=null;state.visitReturn='community';state.visitRequest++;state.visitBusy=false;state.visitError=false;state.likeBusy=false;$('visitedPlayer').replaceChildren();state.communityBusy=false;state.communityError=false;wardrobeSlot='all';
   state.uid=uid;state.profileLoading=!!uid;state.profileError=false;state.game=null;state.answers=[];state.pending=null;profile=null;mode='player';
-  audio.cancelEffects();rewardUI.clear();state.coupon=null;state.couponError=false;state.ownedCosmetics=[];state.lastResult=null;
+  audio.cancelEffects();forum.reset();rewardUI.clear();state.coupon=null;state.couponError=false;state.ownedCosmetics=[];state.lastResult=null;
   $('recoverGame').hidden=true;
   selectedCollection=null;selectedCard=null;$('cardDetailActions').replaceChildren();$('cardDetailStatus').textContent='';
   if($('cardDetail').open)$('cardDetail').close();$('cardDetailArt').replaceChildren();
@@ -530,7 +549,7 @@ finish=async function(){
 async function submitPending(){
   const pending=state.pending;
   if(state.busy||!pending||pending.owner!==state.uid)return;
-  state.busy=true;const version=state.version;const oldXP=profile?.xp||0;const oldOwned=new Set(state.cosmetics.filter(c=>cosmeticOwned(c)).map(c=>c.id));
+  state.busy=true;const version=state.version;const oldXP=profile?.xp||0,oldBest=profile?.bestPerfectStreak||0;const oldOwned=new Set(state.cosmetics.filter(c=>cosmeticOwned(c)).map(c=>c.id));
   $('nextBtn').disabled=true;$('recoverGame').disabled=true;
   message('Guardando la partida…');
   try{
@@ -550,6 +569,7 @@ async function submitPending(){
     $('scoreSummary').textContent=data.correct+' de 5 respuestas correctas';
     $('xpSummary').textContent='+'+data.score+' XP · Total: '+profile.xp+' XP · Guardado en tu cuenta';
     $('resultDetail').textContent=!pending.quizId?'La práctica no entrega XP ni recompensas.':data.passed?'Ganaste 200 XP por aprobar, 100 por acierto y 200 extra si fue perfecta. Esta trivia ya no se puede repetir.':'Necesitás al menos 3 respuestas correctas. No se revelan las soluciones y este intento no entrega XP. Podés volver a intentarlo.';
+    if(profile.bestPerfectStreak>oldBest)$('resultDetail').textContent+=' ¡Nueva insignia: '+profile.bestPerfectStreak+' trivias perfectas seguidas!';
     const earned=rewardSteps().filter(r=>r.at>oldXP&&r.at<=profile.xp&&!oldOwned.has(r.id));
     if(earned.length)$('resultDetail').textContent+=' ¡Desbloqueaste: '+earned.map(r=>r.name).join(', ')+'!';
     $('progress').style.width='100%';

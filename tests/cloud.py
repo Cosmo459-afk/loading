@@ -50,7 +50,7 @@ with sync_playwright() as p:
     assert page.locator('#resultReview').inner_text()=='';assert page.evaluate('profile.xp')==0
     page.evaluate("go('menu')");page.wait_for_function('!document.getElementById("beginBtn").disabled')
     play(5,True)
-    assert page.evaluate('profile.xp')==900;assert page.locator('#resultReview .review-item').count()==5
+    assert page.evaluate('profile.perfectStreak')==1;assert page.evaluate('profile.bestPerfectStreak')==1;assert page.evaluate('profile.xp')==900;assert page.locator('#resultReview .review-item').count()==5
     assert page.locator('#rewardBadge').get_attribute('hidden') is None # Reload already adopted committed XP; badge survives recovery.
     page.reload();page.wait_for_selector('#rewardBadge:not([hidden])',state='attached')
     page.evaluate("openAccountPage('rewards')");page.wait_for_selector('#rewards:not(.hidden)');page.wait_for_selector('#rewardBadge[hidden]',state='attached')
@@ -58,7 +58,7 @@ with sync_playwright() as p:
     page.evaluate('openPlayer()');page.wait_for_selector('#menu:not(.hidden)');page.wait_for_function('!document.getElementById("beginBtn").disabled')
     assert page.locator('#difficulty').input_value()=='medium'
     play(5)
-    assert page.evaluate('profile.xp')==1800
+    assert page.evaluate('profile.xp')==1800;assert page.evaluate('profile.bestPerfectStreak')==2
     assert 'nivel 2' in page.locator('#levelToast').inner_text()
     page.evaluate("go('home')")
     assert 'Nivel 2' in page.locator('#homeAccount').inner_text()
