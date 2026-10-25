@@ -20,7 +20,7 @@ const returning=new URLSearchParams(location.search).has('code');
 const client=createClient(config.url,config.publishableKey,{
   auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
 });
-const state={session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false,owned:[],chests:[],chestBusy:false,community:null,communityBusy:false,communityError:false,visibilityBusy:false,coupon:null,couponError:false,ownedCosmetics:[],lastResult:null};
+const state={session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false,owned:[],chests:[],chestBusy:false,community:null,communityOffset:0,visitData:null,visitTarget:null,visitRequest:0,visitBusy:false,visitError:false,communityBusy:false,communityError:false,visibilityBusy:false,coupon:null,couponError:false,ownedCosmetics:[],lastResult:null};
 profile=null; // Never turn a local profile into a verified cloud account.
 const rewardUI=installRewardUI({profile:()=>profile,coupon:()=>state.coupon,couponError:()=>state.couponError,uid:()=>state.uid,requestRedemption:async id=>{const {data,error}=await client.rpc('arcade_request_coupon_redemption',{p_coupon_id:id});if(!error&&data?.player_id===state.uid)state.coupon=data;},avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),brand:brandLogo,art:couponArt});
 
@@ -70,34 +70,61 @@ function centerProgress(list){
  if(!list?.clientWidth)return;
  const node=list.querySelector('.next');if(node)list.scrollLeft=Math.max(0,node.offsetLeft-list.offsetLeft-list.clientWidth/2+node.offsetWidth/2);
 }
-async function refreshCommunity(version=state.version){
+async function refreshCommunity(version=state.version,offset=state.communityOffset){
  if(!state.uid||state.communityBusy)return;
  state.communityBusy=true;state.communityError=false;renderCommunity();
- try{const {data,error}=await client.rpc('arcade_community');if(error)throw error;if(!data||!('me' in data))throw new Error('Community update required');if(version===state.version)state.community=data;}
+ try{const {data,error}=await client.rpc('arcade_list_players',{p_offset:offset});if(error)throw error;if(!Array.isArray(data?.players))throw new Error('Community update required');if(version===state.version){state.community=data;state.communityOffset=offset;}}
  catch{if(version===state.version)state.communityError=true;}
  finally{if(version===state.version){state.communityBusy=false;renderCommunity();}}
 }
+window.openCommunity=async function(){await ready;if(!profile){await enterPlayer(true);return;}base.go('community');await refreshCommunity(state.version,0);};
+window.backToCommunity=function(){base.go('community');renderCommunity();};
 function renderCommunity(){
- const panel=$('homeCommunity');if(!panel)return;
- panel.hidden=!profile;panel.replaceChildren();if(!profile)return;
- const header=document.createElement('div');header.className='eyebrow';header.textContent='COMUNIDAD';const title=document.createElement('h2');title.textContent='Ranking de progreso';panel.append(header,title);
- const note=document.createElement('p');note.className='muted';note.textContent='Por experiencia total. A igual XP, mismo puesto.';panel.appendChild(note);
- if(state.communityError){const text=document.createElement('p');text.textContent='No pudimos cargar el ranking. Volvé a intentarlo.';panel.appendChild(text);}
+ const panel=$('communityDirectory');if(!panel)return;
+ panel.replaceChildren();if(!profile)return;
+ if(state.communityError){const text=document.createElement('p');text.textContent='No pudimos cargar la comunidad. Volvé a intentarlo.';panel.appendChild(text);}
  else if(state.communityBusy&&!state.community){const text=document.createElement('p');text.textContent='Cargando jugadores…';panel.appendChild(text);}
  else{
-  const count=document.createElement('p');count.className='community-count';const n=state.community?.total||0;count.textContent=n+' '+(n===1?'jugador':'jugadores')+' en el arcade';panel.appendChild(count);
-  const list=document.createElement('ol');list.className='community-players';list.setAttribute('aria-label','Ranking por experiencia');
-  const row=p=>{
-   const item=document.createElement('li');item.classList.toggle('is-me',p.is_me);const rank=document.createElement('span');rank.className='community-position';rank.textContent='#'+p.position;
+  const count=document.createElement('p');count.className='community-count';const n=state.community?.total||0;count.textContent=n+' '+(n===1?'jugador':'jugadores')+' en el arcade · Orden alfabético';panel.appendChild(count);
+  const list=document.createElement('ul');list.className='community-players community-directory';
+  for(const p of state.community?.players||[]){
+   const item=document.createElement('li'),button=document.createElement('button');button.className='community-player secondary';button.classList.toggle('is-me',p.is_me);button.setAttribute('aria-label','Visitar perfil de '+p.nickname);
    const avatar=document.createElement('span');avatar.innerHTML=avatarHTML({avatar:p.avatar,cosmetics:p.cosmetics||{}});
-   const text=document.createElement('div'),name=document.createElement('strong'),level=document.createElement('small');name.textContent=p.nickname+(p.is_me?' · Vos':'');level.textContent='Nivel '+p.level+' · '+p.xp+' XP';text.append(name,level);item.append(rank,avatar,text);return item;
-  };
-  for(const p of state.community?.players||[])list.appendChild(row(p));panel.appendChild(list);
-  if(state.community?.me&&!state.community.players.some(p=>p.is_me)){const own=document.createElement('ol');own.className='community-players community-own';own.setAttribute('aria-label','Tu puesto');own.appendChild(row(state.community.me));panel.appendChild(own);}
-  if(!n){const empty=document.createElement('p');empty.textContent='El ranking aparecerá cuando se creen los primeros jugadores.';panel.appendChild(empty);}
+   const text=document.createElement('span'),name=document.createElement('strong'),level=document.createElement('small');name.textContent=p.nickname+(p.is_me?' · Vos':'');level.textContent='Nivel '+p.level+' · Ver perfil →';text.append(name,level);button.append(avatar,text);button.onclick=()=>visitPlayer(p.public_id);item.appendChild(button);list.appendChild(item);
+  }
+  panel.appendChild(list);if(!n){const empty=document.createElement('p');empty.textContent='Todavía no hay jugadores para mostrar.';panel.appendChild(empty);}
  }
- const refresh=document.createElement('button');refresh.type='button';refresh.className='secondary mini';refresh.disabled=state.communityBusy;refresh.textContent='ACTUALIZAR RANKING';refresh.onclick=()=>refreshCommunity();panel.appendChild(refresh);
+ const actions=document.createElement('div');actions.className='actions';
+ const control=(label,offset)=>{const button=document.createElement('button');button.className='secondary mini';button.textContent=label;button.disabled=state.communityBusy;button.onclick=()=>refreshCommunity(state.version,offset);actions.appendChild(button);};
+ if(state.communityOffset>0)control('← ANTERIORES',Math.max(0,state.communityOffset-24));
+ if(state.community?.has_more)control('MÁS JUGADORES →',state.communityOffset+24);
+ control('ACTUALIZAR',state.communityError?0:state.communityOffset);panel.appendChild(actions);
 }
+window.visitPlayer=async function(id){
+ await ready;if(!profile)return;
+ const version=state.version,request=++state.visitRequest;state.visitTarget=id;state.visitData=null;state.visitBusy=true;state.visitError=false;base.go('playerVisit');renderVisitedPlayer();
+ try{const {data,error}=await client.rpc('arcade_visit_player',{p_public_id:id});if(error)throw error;if(version===state.version&&request===state.visitRequest)state.visitData=data;}
+ catch{if(version===state.version&&request===state.visitRequest)state.visitError=true;}
+ finally{if(version===state.version&&request===state.visitRequest){state.visitBusy=false;renderVisitedPlayer();}}
+};
+function renderVisitedPlayer(){
+ const panel=$('visitedPlayer');panel.replaceChildren();
+ if(state.visitBusy){panel.textContent='Cargando perfil…';return;}
+ if(state.visitError||!state.visitData){const text=document.createElement('p');text.textContent='No pudimos abrir este perfil. Puede que ya no esté disponible.';const retry=document.createElement('button');retry.textContent='REINTENTAR';retry.onclick=()=>visitPlayer(state.visitTarget);panel.append(text,retry);return;}
+ const p=state.visitData,top=document.createElement('div');top.className='profile-top visited-identity';top.innerHTML=avatarHTML({avatar:p.avatar,cosmetics:p.cosmetics||{}});
+ const copy=document.createElement('div'),name=document.createElement('h1'),level=document.createElement('p');name.textContent=p.nickname+(p.is_me?' · Vos':'');level.textContent='Nivel '+p.level;copy.append(name,level);top.appendChild(copy);panel.appendChild(top);
+ const heading=document.createElement('h2');heading.textContent='Cartas exhibidas';panel.appendChild(heading);
+ const note=document.createElement('p');note.className='muted';note.textContent='Cada jugador elige hasta tres cartas para mostrar.';panel.appendChild(note);
+ const grid=document.createElement('div');grid.className='album-mini-grid visited-showcase';
+ for(const id of p.featured_ids||[]){const card=cards.find(c=>c.id===id);if(!card)continue;const button=document.createElement('button');button.className='album-thumb';button.setAttribute('aria-label','Ver carta exhibida: '+card.name);button.innerHTML=cardMarkup(card);button.onclick=()=>showExhibitedCard(id);grid.appendChild(button);}
+ panel.appendChild(grid);
+ if(!p.featured_ids?.length){const empty=document.createElement('p');empty.className='visited-empty';empty.textContent='Todavía no exhibe cartas.';panel.appendChild(empty);}
+ else if(!grid.childElementCount){const update=document.createElement('p');update.textContent='Actualizá el Arcade para ver estos coleccionables.';panel.appendChild(update);}
+}
+window.showExhibitedCard=function(id){
+ if($('playerVisit').classList.contains('hidden')||!state.visitData?.featured_ids?.includes(id))return;
+ const card=cards.find(c=>c.id===id);if(!card)return;selectedCard=null;$('cardDetailArt').innerHTML=cardMarkup(card);renderCardActions();$('cardDetailStatus').textContent='Exhibida por '+state.visitData.nickname;if(!$('cardDetail').open)$('cardDetail').showModal();
+};
 function unseenCards(){
  if(!state.uid)return [];
  let seen=[];try{seen=JSON.parse(localStorage.getItem('loading_arcade_cards_seen_'+state.uid)||'[]');}catch{}
@@ -167,7 +194,7 @@ function accountUI(){
   panel.innerHTML='<div class="profile-top">'+avatarHTML(profile)+'<div><div class="eyebrow">TU JUGADOR</div><h2>'+esc(profile.name)+'</h2><p>Nivel '+level+' · '+(isTemporary()?'Sin correo vinculado':'Acceso protegido')+'</p></div><button class="secondary home-exit" onclick="logout()" aria-label="Cerrar sesión" title="Cerrar sesión">↪</button></div>'+
     '<div class="home-mini-stats"><span><strong>'+xp+'</strong> XP totales</span><span><strong>'+profile.unlocked.length+'</strong> coleccionables</span></div>'+
     '<button class="home-play" onclick="openPlayer()">CONTINUAR RUTA →</button>'+
-    '<div class="home-shortcuts"><button class="secondary" onclick="showProfile()">MI PERFIL'+badge(unopened+unseenCards().length+(state.coupon?.id&&!state.coupon.redeemed_at?1:0),'pendientes en tu perfil')+'</button><button class="secondary" onclick="showCollections()">MI COLECCIÓN'+badge(unseenCards().length,'coleccionables nuevos')+'</button><button class="secondary" onclick="openWardrobe()">MI ESTILO</button></div>'+
+    '<div class="home-shortcuts"><button class="secondary" onclick="showProfile()">MI PERFIL'+badge(unopened+unseenCards().length+(state.coupon?.id&&!state.coupon.redeemed_at?1:0),'pendientes en tu perfil')+'</button><button class="secondary" onclick="showCollections()">MI COLECCIÓN'+badge(unseenCards().length,'coleccionables nuevos')+'</button><button class="secondary" onclick="openWardrobe()">MI ESTILO</button><button class="secondary" onclick="openCommunity()">COMUNIDAD</button></div>'+
     (isTemporary()?'<button class="text-button home-link" onclick="openLinkAccount()">Vincular correo para proteger mi acceso</button>':'');
   $('homeProgress').hidden=false;
   $('homeProgress').innerHTML='<div class="home-route-heading"><div><div class="eyebrow">PROGRESO</div><h2>'+(level+1===5?'Cupón del 10% · Nivel 5':'Próximo cofre · Nivel '+(level+1))+'</h2></div><span class="home-chest-icon" aria-hidden="true">▣</span></div>'+
@@ -243,7 +270,7 @@ async function useSession(session){
   if(uid===state.uid)return;
   const version=++state.version;
   state.cosmetics=[];state.owned=[];state.chests=[];state.chestBusy=false;state.catalog=null;state.catalogLoading=false;state.catalogError=false;state.catalogPromise=null;
-  state.community=null;state.communityBusy=false;state.communityError=false;wardrobeSlot='all';
+  state.community=null;state.communityOffset=0;state.visitData=null;state.visitTarget=null;state.visitRequest++;state.visitBusy=false;state.visitError=false;$('visitedPlayer').replaceChildren();state.communityBusy=false;state.communityError=false;wardrobeSlot='all';
   state.uid=uid;state.profileLoading=!!uid;state.profileError=false;state.game=null;state.answers=[];state.pending=null;profile=null;mode='player';
   audio.cancelEffects();rewardUI.clear();state.coupon=null;state.couponError=false;state.ownedCosmetics=[];state.lastResult=null;
   $('recoverGame').hidden=true;

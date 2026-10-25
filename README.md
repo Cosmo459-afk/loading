@@ -1,4 +1,28 @@
-# LOADING ARCADE 0.17 — álbum por juego con miniaturas
+# LOADING ARCADE 0.18 — comunidad y perfiles visitables
+
+**Desde 0.16/0.17: ejecutar `supabase/upgrade-v18.sql` en Supabase SQL Editor → New query → Run; después subir el `index.html` del ZIP v18 a Cloudflare.** No reinicia progreso, cartas, cofres ni cupones.
+
+## Nuevo en 0.18
+
+- Se retira el top del inicio. **Comunidad** tiene su propia pantalla, accesible desde el menú principal del jugador.
+- Todos los perfiles aparecen automáticamente en un directorio **alfabético**, con páginas de 24 jugadores y botones para seguir navegando. No se muestran puestos ni un ranking por nivel/XP.
+- Cada jugador abre una página de perfil de solo lectura: avatar con cosméticos, apodo, nivel y **hasta tres cartas que decidió exhibir**. No se muestra el número de cartas que posee, sus pendientes, correo, XP exacta, historial, cofres ni cupones.
+- Se puede tocar una carta exhibida para verla en detalle. Esa vista no permite exhibirla, quitarla ni adquirirla. Ver la carta de otra persona no la añade al inventario del visitante. Los controles del álbum propio siguen funcionando normalmente.
+- Perfiles sin cartas muestran un estado vacío. Los perfiles que ya no están disponibles permiten volver o reintentar. Cambiar de cuenta limpia las vistas y respuestas tardías de solicitudes anteriores no reemplazan al último perfil solicitado.
+- Cada perfil usa un identificador público aleatorio separado del ID de autenticación. El RPC de visita solo entrega los IDs de cartas exhibidas que siguen siendo propiedad de ese jugador, con máximo de tres. Las tablas de inventario conservan sus políticas privadas.
+- Este paso no incorpora reacciones, foro, mensajes ni intercambios; quedan para una etapa posterior.
+
+## Instalar 0.18
+
+1. Aplicar [`upgrade-v18.sql`](https://github.com/Cosmo459-afk/loading/blob/supabase-setup/supabase/upgrade-v18.sql) en **Supabase → SQL Editor → New query → Run**. Conserva los datos y se puede reejecutar; los identificadores públicos existentes no cambian.
+2. Descargar `loading-arcade-v18.zip`, descomprimir y subir **solo `index.html`** a **Cloudflare → Workers & Pages → loading-arcade → New deployment → Deploy**.
+3. Confirmar «Versión 0.18». Abrir Comunidad y tocar un jugador. Para decidir qué cartas ven los demás: Mi colección → juego → carta → Exhibir. El límite sigue siendo tres.
+
+Si todavía falta 0.15 o 0.16, aplicar esos pasos históricos primero. No repetir los reinicios antiguos.
+
+Validación: SQL comprueba paginación, orden alfabético, campos públicos permitidos, identificadores separados de Auth, límite de tres cartas realmente propias, exclusión de cartas no exhibidas/no obtenidas, RLS, sesión requerida y migración reejecutable. `tests/visits-v18.py` usa exclusivamente la fixture local y prueba visitas reales, detalle de carta ajena sin acciones, estado vacío/error, orden de solicitudes y retirada de una carta exhibida.
+
+## Registro anterior: 0.17
 
 **Si ya instalaste 0.16, esta actualización no necesita SQL.** Descargar `loading-arcade-v17.zip`, descomprimir y subir **solo `index.html`** a Cloudflare → Workers & Pages → loading-arcade → New deployment → Deploy. Confirmar «Versión 0.17» en el pie. Se conserva todo el progreso.
 
@@ -88,7 +112,7 @@ La comprobación de orden se hace en servidor, con bloqueo por perfil. Un intent
 
 ## Comunidad y reconocimiento
 
-Desde 0.16 todos los jugadores aparecen automáticamente en el ranking de progreso, con la XP como criterio y los empates compartidos. El ranking semanal sigue pendiente y separado. Ver arriba las reglas y campos expuestos.
+Desde 0.18 todos los jugadores aparecen automáticamente en el directorio alfabético de Comunidad. Cada perfil muestra solo avatar, apodo, nivel y hasta tres cartas exhibidas. El ranking de progreso anterior fue retirado; el desafío semanal sigue pendiente.
 
 ## Personalización ampliada
 
@@ -154,7 +178,7 @@ Los artes de producción están en `assets/cards/re4/art-v13/`: cuatro láminas 
 
 El build incrusta cada lámina una sola vez, junto con Silkscreen Bold (OFL) y los estilos; sin CDN ni fuentes externas. El HTML final es independiente y está dentro del límite de tamaño de assets estáticos. El build falla si falta arte. `npm run build:preview` solo sirve para desarrollo y no debe empaquetarse.
 
-`loading-arcade-v17.zip` contiene el HTML independiente, README y licencias. No subir al Worker los JSON con respuestas, SQL, tests, fixture ni node_modules. Para reconstruir: `npm run build` y `node scripts/package-release.mjs`. Los ZIP previos se conservan como versiones históricas. No aplicar de nuevo la migración 0.9 al actualizar solo la interfaz.
+`loading-arcade-v18.zip` contiene el HTML independiente, README y licencias. No subir al Worker los JSON con respuestas, SQL, tests, fixture ni node_modules. Para reconstruir: `npm run build` y `node scripts/package-release.mjs`. Los ZIP previos se conservan como versiones históricas. No aplicar de nuevo la migración 0.9 al actualizar solo la interfaz.
 
 ## Desarrollo y validación
 
