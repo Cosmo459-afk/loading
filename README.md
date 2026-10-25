@@ -1,4 +1,18 @@
-# LOADING ARCADE 0.16 — inicio compacto e inventario en el perfil
+# LOADING ARCADE 0.17 — álbum por juego con miniaturas
+
+**Si ya instalaste 0.16, esta actualización no necesita SQL.** Descargar `loading-arcade-v17.zip`, descomprimir y subir **solo `index.html`** a Cloudflare → Workers & Pages → loading-arcade → New deployment → Deploy. Confirmar «Versión 0.17» en el pie. Se conserva todo el progreso.
+
+## Cambios de 0.17
+
+- El listado de colecciones y el álbum de cada juego son pantallas independientes. Abrir Resident Evil 4 lleva a su propio álbum; «Volver a colecciones» regresa al listado.
+- Cartas conseguidas en miniatura, hasta 140 px de ancho, sin botones de exhibición. El tamaño es el mismo aunque solo haya una carta.
+- Tres grupos: **comunes, épicas y legendarias**, cada uno con cantidad conseguida, total y pendientes. Los espacios que faltan son dorsos negros genéricos, sin nombres, imágenes, siluetas ni controles de apertura. No representan una identidad o posición secreta concreta: son el número de cartas que faltan de esa rareza.
+- Tocar una miniatura abre el detalle grande con descripción y la opción **Exhibir / Quitar del perfil**. Se mantiene el límite de tres destacados y la validación del servidor. Ninguna carta pendiente puede abrirse por el controlador de detalle.
+- Las imágenes y recursos no cambian; no se agregan coleccionables, recompensas ni migraciones. Se conserva el estado de lectura del álbum y los indicadores del perfil.
+
+Validación: flujo de colección vacía 8/4/2, primer premio, miniatura, pantalla independiente, detalle y exhibición persistente, identidad oculta de las pendientes, rechazo de acceso a carta no obtenida y tamaños móviles/escritorio.
+
+## Registro anterior: 0.16
 
 **Desde 0.15: ejecutar solo `supabase/upgrade-v16.sql` en Supabase SQL Editor → New query → Run; después subir el `index.html` del ZIP v16 a Cloudflare.** No reinicia cuentas, XP, partidas, cartas, cofres ni cupones.
 
@@ -96,11 +110,9 @@ El panel semanal está ubicado en el inicio y se muestra como **EN PREPARACIÓN*
 
 ## Descubrimiento y misterio
 
-La entrada al álbum muestra solo los juegos disponibles y sus contadores reales, por ejemplo «Resident Evil 4 · 2 de 14 descubiertos». No hay galería desplegada de antemano ni desglose de las cartas pendientes por rareza.
+El listado inicial muestra juegos y contadores. El álbum separado agrupa las cartas por rareza y presenta miniaturas de las obtenidas junto con dorsos negros genéricos para las pendientes. Los dorsos no tienen nombres, diseños, siluetas ni botones. Los controles para exhibir aparecen únicamente en el detalle de una carta propia.
 
-Al abrir una colección se muestran únicamente las cartas obtenidas en cofres. Las pendientes se representan por un único aviso con dorso genérico y su cantidad, sin nombres, descripciones, siluetas, colores de rareza ni controles de vista previa. La primera revelación ocurre en la apertura del cofre. Solo las cartas propias se pueden ampliar o destacar en el perfil; intentar abrir una no obtenida por el controlador de detalle no abre el modal.
-
-Los artes y nombres de producción se conservan en los recursos del HTML independiente; esta entrega implementa el misterio de la interfaz, no un sistema de confidencialidad de assets frente a inspección del código. No afirmar que los recursos ausentes de la interfaz no viajan al cliente. Una entrega selectiva por propiedad requeriría cambiar a recursos remotos autenticados.
+Los artes están incrustados en el HTML independiente. Esta es una experiencia de descubrimiento en la interfaz, no confidencialidad frente a inspección del código. Entregar recursos solo después de adquirirlos requeriría almacenamiento remoto autenticado.
 
 ## Paso histórico previo: actualizar desde 0.9–0.13 a 0.14
 
@@ -142,7 +154,7 @@ Los artes de producción están en `assets/cards/re4/art-v13/`: cuatro láminas 
 
 El build incrusta cada lámina una sola vez, junto con Silkscreen Bold (OFL) y los estilos; sin CDN ni fuentes externas. El HTML final es independiente y está dentro del límite de tamaño de assets estáticos. El build falla si falta arte. `npm run build:preview` solo sirve para desarrollo y no debe empaquetarse.
 
-`loading-arcade-v16.zip` contiene el HTML independiente, README y licencias. No subir al Worker los JSON con respuestas, SQL, tests, fixture ni node_modules. Para reconstruir: `npm run build` y `node scripts/package-release.mjs`. Los ZIP previos se conservan como versiones históricas. No aplicar de nuevo la migración 0.9 al actualizar solo la interfaz.
+`loading-arcade-v17.zip` contiene el HTML independiente, README y licencias. No subir al Worker los JSON con respuestas, SQL, tests, fixture ni node_modules. Para reconstruir: `npm run build` y `node scripts/package-release.mjs`. Los ZIP previos se conservan como versiones históricas. No aplicar de nuevo la migración 0.9 al actualizar solo la interfaz.
 
 ## Desarrollo y validación
 

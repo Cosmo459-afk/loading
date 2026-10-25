@@ -71,17 +71,21 @@ with sync_playwright() as p:
     page.evaluate('openWardrobe()');page.wait_for_selector('#wardrobe:not(.hidden)');assert page.locator('#wardrobeItems .cosmetic-item').count()==31
     page.locator('#wardrobeItems .cosmetic-item').filter(has_text='Gafas neón').get_by_role('button').click();page.wait_for_function('profile.cosmetics.glasses==="pink-glasses"')
     page.evaluate('showCollections()');page.wait_for_selector('#collection:not(.hidden)')
-    assert page.locator('#collectionContent').is_hidden()
+    assert page.locator('#collectionAlbum').is_hidden()
     assert page.locator('#album .game-card').count()==0
     assert '0 de 14' in page.locator('#collectionOverview').inner_text()
     names=page.evaluate('cards.map(c=>c.name)')
     def no_hidden_card_details(except_name=None):
-        html=page.locator('#collection').inner_html()
+        html=page.locator('#collection').inner_html()+page.locator('#collectionAlbum').inner_html()
         assert all(name not in html for name in names if name.casefold()!=(except_name or '').casefold()), [name for name in names if name.casefold()!=(except_name or '').casefold() and name in html]
     no_hidden_card_details()
     page.locator('#collectionOverview button').click()
-    assert page.locator('#collectionContent').is_visible()
-    assert '14 coleccionables por descubrir' in page.locator('#collectionMystery').inner_text()
+    assert page.locator('#collectionAlbum').is_visible()
+    assert page.locator('#collection').is_hidden()
+    assert page.locator('#album .album-locked').count()==14
+    assert page.locator('.album-common .album-locked').count()==8
+    assert page.locator('.album-epic .album-locked').count()==4
+    assert page.locator('.album-legendary .album-locked').count()==2
     assert page.locator('#album .game-card').count()==0
     assert page.locator('#collection svg image').count()==0
     assert page.locator('#collection').get_by_role('button',name='VER CARTA',exact=True).count()==0
@@ -112,20 +116,28 @@ with sync_playwright() as p:
     assert len(page.evaluate('profile.unlocked'))==1
     page.evaluate('showCollections()');page.wait_for_selector('#collection:not(.hidden)')
     assert '1 de 14' in page.locator('#collectionOverview').inner_text()
-    assert page.locator('#collectionContent').is_hidden()
+    assert page.locator('#collectionAlbum').is_hidden()
     page.screenshot(path='/tmp/re4-v11-overview.png',full_page=True)
     page.locator('#collectionOverview button').click()
     assert page.locator('#profileInventory').get_by_role('button',name='MI COLECCIÓN',exact=True).locator('.pending-dot').count()==0
     assert page.locator('#album .game-card').count()==1
     assert page.locator('#album svg image').count()==1
     assert page.locator('#album h3').inner_text()==awarded
-    assert '13 coleccionables por descubrir' in page.locator('#collectionMystery').inner_text()
+    assert page.locator('#album .album-locked').count()==13
+    assert page.locator('#album .album-thumb').count()==1
+    assert page.locator('#album .album-thumb').bounding_box()['width']<=140
+    assert page.locator('#album').get_by_role('button',name='EXHIBIR',exact=True).count()==0
     no_hidden_card_details(awarded)
     decoded=page.locator('#album svg image').evaluate_all("els=>Promise.all(els.map(async el=>{const i=new Image();i.src=el.getAttribute('href');await i.decode();return i.naturalWidth>0;}))")
     assert decoded==[True]
-    page.get_by_role('button',name='EXHIBIR',exact=True).click()
+    page.locator('#album .album-thumb').click()
+    page.locator('#cardDetail').get_by_role('button',name='EXHIBIR',exact=True).click()
     page.wait_for_function('profile.featured.length===1')
-    page.locator('#album').get_by_role('button',name='VER CARTA',exact=True).click()
+    page.locator('#cardDetail').get_by_role('button',name='QUITAR DEL PERFIL',exact=True).wait_for()
+    page.locator('#cardDetail').get_by_role('button',name='QUITAR DEL PERFIL',exact=True).click()
+    page.wait_for_function('profile.featured.length===0')
+    page.locator('#cardDetail').get_by_role('button',name='EXHIBIR',exact=True).click()
+    page.wait_for_function('profile.featured.length===1')
     assert page.locator('#cardDetail').is_visible()
     assert page.locator('#cardDetail h3').inner_text()==awarded
     page.locator('#cardDetail').get_by_role('button',name='Cerrar detalle').click()
@@ -135,17 +147,17 @@ with sync_playwright() as p:
     page.evaluate('document.fonts.ready')
     assert page.evaluate("document.fonts.check('700 14px LoadingPixel')")
     page.screenshot(path='/tmp/re4-v11-discovered.png',full_page=True)
-    page.get_by_role('button',name='VOLVER A COLECCIONES').click()
-    assert page.locator('#collectionContent').is_hidden()
+    page.get_by_role('button',name='← VOLVER A COLECCIONES').click()
+    assert page.locator('#collectionAlbum').is_hidden()
     assert page.locator('#album .game-card').count()==0
     page.reload();page.wait_for_function('profile?.unlocked?.length===1 && profile?.featured?.length===1')
     assert page.evaluate('profile.xp')==1800
     page.evaluate('showCollections()');page.wait_for_selector('#collection:not(.hidden)')
     assert '1 de 14' in page.locator('#collectionOverview').inner_text()
-    assert page.locator('#collectionContent').is_hidden()
+    assert page.locator('#collectionAlbum').is_hidden()
     for width in [320,390,768,1280]:
         page.set_viewport_size({'width':width,'height':844})
-        for screen in ['home','menu','rewards','wardrobe','result','profile','collection','chests','chestOpening']:
+        for screen in ['home','menu','rewards','wardrobe','result','profile','collection','collectionAlbum','chests','chestOpening']:
             page.evaluate('(id)=>go(id)',screen)
             page.evaluate('()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))')
             assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),(width,screen,page.evaluate('[document.documentElement.scrollWidth,innerWidth,document.body.scrollWidth]'),page.evaluate('Array.from(document.querySelectorAll("body *")).filter(e=>e.getBoundingClientRect().right>innerWidth+1).map(e=>[e.tagName,e.id,e.className,e.textContent.slice(0,80),e.getBoundingClientRect().right]).slice(0,12)'))
