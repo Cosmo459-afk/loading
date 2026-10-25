@@ -11,3 +11,7 @@ La app obtiene el catálogo desde Supabase. No hace falta subir un HTML nuevo po
 Las soluciones y fuentes se guardan en el esquema privado. No se debe subir el JSON con respuestas ni el SQL al Worker público. No alterar preguntas de trivias ya jugadas: crear otra trivia con ID nuevo.
 
 Este primer flujo evita tocar código pero todavía requiere preparar el lote y ejecutar SQL; no es un panel administrativo. Podés entregar documentos en el chat para que preparemos el lote.
+
+## Lote retro 0.15
+
+`retro-v15.json`: 96 trivias, 480 preguntas, 16 por consola/dificultad. Registro de fuentes en `../research/retro-v15-audit.json`. Se instala dentro de `supabase/upgrade-v15.sql`, no ejecutando además una importación separada del mismo lote. `node scripts/assemble-v15.mjs` regenera la migración completa; admite reejecución sin sobrescribir IDs ni perder progreso y rechaza un lote parcialmente instalado.

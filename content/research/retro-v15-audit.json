@@ -1,0 +1,3667 @@
+{
+  "method": "Manuales de juegos originales, edición estadounidense. Mirror público con revisión fijada por commit; escaneos revisados con apoyo OCR. Se excluyeron datos ambiguos o contradictorios. No se redistribuyen manuales.",
+  "manuals": [
+    {
+      "id": "ps1-SLUS-00421",
+      "console": "ps1",
+      "title": "Resident Evil 2",
+      "repository": "nostlan/ps1-manuals0",
+      "commit": "a8c3ac166dca556b3d9eac289157bc325775dde5",
+      "path": "ps1/SLUS-00421/Resident Evil 2.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps1-manuals0/a8c3ac166dca556b3d9eac289157bc325775dde5/ps1/SLUS-00421/Resident%20Evil%202.cbz",
+      "sha256": "3f33131c282efd46d9993b87961476ba272475a4a6c8bfbacd69e6efaf41f99c"
+    },
+    {
+      "id": "ps1-SLUS-00594",
+      "console": "ps1",
+      "title": "Metal Gear Solid",
+      "repository": "nostlan/ps1-manuals0",
+      "commit": "a8c3ac166dca556b3d9eac289157bc325775dde5",
+      "path": "ps1/SLUS-00594/Metal Gear Solid.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps1-manuals0/a8c3ac166dca556b3d9eac289157bc325775dde5/ps1/SLUS-00594/Metal%20Gear%20Solid.cbz",
+      "sha256": "a17cb99c65ab88cb36af5eaccc8402f07abb2b471ea656e315263e12e3cfd3aa"
+    },
+    {
+      "id": "ps1-SLUS-00707",
+      "console": "ps1",
+      "title": "Silent Hill",
+      "repository": "nostlan/ps1-manuals1",
+      "commit": "099be3d0502da24682c02899df0108dda0bb35de",
+      "path": "ps1/SLUS-00707/Silent Hill.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps1-manuals1/099be3d0502da24682c02899df0108dda0bb35de/ps1/SLUS-00707/Silent%20Hill.cbz",
+      "sha256": "087648f5643b7b2b74b41e5d40622427de42faf9bd08e6fabe7af54c7f349127"
+    },
+    {
+      "id": "ps1-SLUS-01042",
+      "console": "ps1",
+      "title": "Parasite Eve II",
+      "repository": "nostlan/ps1-manuals1",
+      "commit": "099be3d0502da24682c02899df0108dda0bb35de",
+      "path": "ps1/SLUS-01042/Parasite Eve II.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps1-manuals1/099be3d0502da24682c02899df0108dda0bb35de/ps1/SLUS-01042/Parasite%20Eve%20II.cbz",
+      "sha256": "99ab3e6fac359b0e2362cf96138c073cf66bde4452d4326688e3152a39377567"
+    },
+    {
+      "id": "ps1-SLUS-00067",
+      "console": "ps1",
+      "title": "Castlevania - Symphony of the Night",
+      "repository": "nostlan/ps1-manuals0",
+      "commit": "a8c3ac166dca556b3d9eac289157bc325775dde5",
+      "path": "ps1/SLUS-00067/Castlevania - Symphony of the Night.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps1-manuals0/a8c3ac166dca556b3d9eac289157bc325775dde5/ps1/SLUS-00067/Castlevania%20-%20Symphony%20of%20the%20Night.cbz",
+      "sha256": "286647dd35d3f35795c56b7439b168251eea412d1ee931963379f84d5f316fc4"
+    },
+    {
+      "id": "ps1-SCUS-94154",
+      "console": "ps1",
+      "title": "Crash Bandicoot 2 - Cortex Strikes Back",
+      "repository": "nostlan/ps1-manuals0",
+      "commit": "a8c3ac166dca556b3d9eac289157bc325775dde5",
+      "path": "ps1/SCUS-94154/Crash Bandicoot 2 - Cortex Strikes Back.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps1-manuals0/a8c3ac166dca556b3d9eac289157bc325775dde5/ps1/SCUS-94154/Crash%20Bandicoot%202%20-%20Cortex%20Strikes%20Back.cbz",
+      "sha256": "3ab4056cce6fcc98ca13673c1b1bc1819781c6f6f90bf3ad74b018d1e41538b2"
+    },
+    {
+      "id": "ps1-SCUS-94228",
+      "console": "ps1",
+      "title": "Spyro the Dragon",
+      "repository": "nostlan/ps1-manuals0",
+      "commit": "a8c3ac166dca556b3d9eac289157bc325775dde5",
+      "path": "ps1/SCUS-94228/Spyro the Dragon.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps1-manuals0/a8c3ac166dca556b3d9eac289157bc325775dde5/ps1/SCUS-94228/Spyro%20the%20Dragon.cbz",
+      "sha256": "40d4006c93cde50bd4312d2b4279135223351dd590bea11c0136b7c19c2beb6f"
+    },
+    {
+      "id": "ps1-SLUS-00402",
+      "console": "ps1",
+      "title": "Tekken 3",
+      "repository": "nostlan/ps1-manuals0",
+      "commit": "a8c3ac166dca556b3d9eac289157bc325775dde5",
+      "path": "ps1/SLUS-00402/Tekken 3.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps1-manuals0/a8c3ac166dca556b3d9eac289157bc325775dde5/ps1/SLUS-00402/Tekken%203.cbz",
+      "sha256": "0ebfa441c2365100e620c7193ccdc622247e6c885f4e49df5c0e9b7d5963c481"
+    },
+    {
+      "id": "ps1-SLUS-00437",
+      "console": "ps1",
+      "title": "Tomb Raider II - Starring Lara Croft",
+      "repository": "nostlan/ps1-manuals0",
+      "commit": "a8c3ac166dca556b3d9eac289157bc325775dde5",
+      "path": "ps1/SLUS-00437/Tomb Raider II - Starring Lara Croft.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps1-manuals0/a8c3ac166dca556b3d9eac289157bc325775dde5/ps1/SLUS-00437/Tomb%20Raider%20II%20-%20Starring%20Lara%20Croft.cbz",
+      "sha256": "fe2818cf00b3360274f857004e8ddaaf766c4051135e3423564a49f287e034b1"
+    },
+    {
+      "id": "ps1-SCUS-94163",
+      "console": "ps1",
+      "title": "Final Fantasy VII",
+      "repository": "nostlan/ps1-manuals0",
+      "commit": "a8c3ac166dca556b3d9eac289157bc325775dde5",
+      "path": "ps1/SCUS-94163/Final Fantasy VII.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps1-manuals0/a8c3ac166dca556b3d9eac289157bc325775dde5/ps1/SCUS-94163/Final%20Fantasy%20VII.cbz",
+      "sha256": "88c1a32a533c5c8e3d6fe803273c7f54613db349466059a89751f42826533b38"
+    },
+    {
+      "id": "ps1-SLUS-00892",
+      "console": "ps1",
+      "title": "Final Fantasy VIII",
+      "repository": "nostlan/ps1-manuals1",
+      "commit": "099be3d0502da24682c02899df0108dda0bb35de",
+      "path": "ps1/SLUS-00892/Final Fantasy VIII.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps1-manuals1/099be3d0502da24682c02899df0108dda0bb35de/ps1/SLUS-00892/Final%20Fantasy%20VIII.cbz",
+      "sha256": "a524fa714761c3bcac3e76774b29e290b2d13094c3d5de77e2a05fbde0214ba6"
+    },
+    {
+      "id": "ps1-SLUS-00922",
+      "console": "ps1",
+      "title": "Dino Crisis",
+      "repository": "nostlan/ps1-manuals1",
+      "commit": "099be3d0502da24682c02899df0108dda0bb35de",
+      "path": "ps1/SLUS-00922/Dino Crisis.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps1-manuals1/099be3d0502da24682c02899df0108dda0bb35de/ps1/SLUS-00922/Dino%20Crisis.cbz",
+      "sha256": "44b5dac5e9f36386351b57b02373d0ca001f5f990b2f9e9143a59e3f0d6532f0"
+    },
+    {
+      "id": "ps1-SCUS-94227",
+      "console": "ps1",
+      "title": "Medievil",
+      "repository": "nostlan/ps1-manuals0",
+      "commit": "a8c3ac166dca556b3d9eac289157bc325775dde5",
+      "path": "ps1/SCUS-94227/Medievil.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps1-manuals0/a8c3ac166dca556b3d9eac289157bc325775dde5/ps1/SCUS-94227/Medievil.cbz",
+      "sha256": "89a2eab387c5e0fe27bbdecf1619e241ccbcfb6548c5b5448b43e30a29f66f05"
+    },
+    {
+      "id": "ps1-SCUS-94455",
+      "console": "ps1",
+      "title": "Gran Turismo 2 (Arcade Mode)",
+      "repository": "nostlan/ps1-manuals0",
+      "commit": "a8c3ac166dca556b3d9eac289157bc325775dde5",
+      "path": "ps1/SCUS-94455/Gran Turismo 2 (Arcade Mode).cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps1-manuals0/a8c3ac166dca556b3d9eac289157bc325775dde5/ps1/SCUS-94455/Gran%20Turismo%202%20%28Arcade%20Mode%29.cbz",
+      "sha256": "8779bdba2a7eea967b9c57c76bf097e57dd7c01dfec0ef9961c8c4b2b67a46d3"
+    },
+    {
+      "id": "ps1-SLUS-00708",
+      "console": "ps1",
+      "title": "Legacy of Kain - Soul Reaver",
+      "repository": "nostlan/ps1-manuals1",
+      "commit": "099be3d0502da24682c02899df0108dda0bb35de",
+      "path": "ps1/SLUS-00708/Legacy of Kain - Soul Reaver.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps1-manuals1/099be3d0502da24682c02899df0108dda0bb35de/ps1/SLUS-00708/Legacy%20of%20Kain%20-%20Soul%20Reaver.cbz",
+      "sha256": "7dca30bd2b19327591c9f08f031b9ec6ab6ece8369b9340a32642c065d3a072f"
+    },
+    {
+      "id": "ps2-SLUS21134",
+      "console": "ps2",
+      "title": "Resident Evil 4",
+      "repository": "nostlan/ps2-manuals1",
+      "commit": "1c3c23309a5aca6ed96abe1499df138cc554d2d0",
+      "path": "ps2/SLUS21134/Resident Evil 4.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps2-manuals1/1c3c23309a5aca6ed96abe1499df138cc554d2d0/ps2/SLUS21134/Resident%20Evil%204.cbz",
+      "sha256": "682db545d45fdfa7ea0d5e7ac102e262762ac090c97bc9bb5e0ebe2793a77063"
+    },
+    {
+      "id": "ps2-SLUS20228",
+      "console": "ps2",
+      "title": "Silent Hill 2",
+      "repository": "nostlan/ps2-manuals0",
+      "commit": "a1ba1a5a405881a8acecb673a320977cd22b1808",
+      "path": "ps2/SLUS20228/Silent Hill 2.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps2-manuals0/a1ba1a5a405881a8acecb673a320977cd22b1808/ps2/SLUS20228/Silent%20Hill%202.cbz",
+      "sha256": "74b62b9334ece39207fbbbb71e9b998351761adcb118700a72657fb7bed679b4"
+    },
+    {
+      "id": "ps2-SLUS20144",
+      "console": "ps2",
+      "title": "Metal Gear Solid 2 - Sons of Liberty",
+      "repository": "nostlan/ps2-manuals0",
+      "commit": "a1ba1a5a405881a8acecb673a320977cd22b1808",
+      "path": "ps2/SLUS20144/Metal Gear Solid 2 - Sons of Liberty.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps2-manuals0/a1ba1a5a405881a8acecb673a320977cd22b1808/ps2/SLUS20144/Metal%20Gear%20Solid%202%20-%20Sons%20of%20Liberty.cbz",
+      "sha256": "845b5c1703d0d30c22d7a85e670c9ff383e3e8265b46463bb7cee528e0c3b035"
+    },
+    {
+      "id": "ps2-SLUS20915",
+      "console": "ps2",
+      "title": "Metal Gear Solid 3 - Snake Eater",
+      "repository": "nostlan/ps2-manuals1",
+      "commit": "1c3c23309a5aca6ed96abe1499df138cc554d2d0",
+      "path": "ps2/SLUS20915/Metal Gear Solid 3 - Snake Eater.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps2-manuals1/1c3c23309a5aca6ed96abe1499df138cc554d2d0/ps2/SLUS20915/Metal%20Gear%20Solid%203%20-%20Snake%20Eater.cbz",
+      "sha256": "a5446ab0ae290cc91faa548fe144777ff5dc277cbcc1a95116be6ea07df5510b"
+    },
+    {
+      "id": "ps2-SCUS97399",
+      "console": "ps2",
+      "title": "God of War",
+      "repository": "nostlan/ps2-manuals0",
+      "commit": "a1ba1a5a405881a8acecb673a320977cd22b1808",
+      "path": "ps2/SCUS97399/God of War.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps2-manuals0/a1ba1a5a405881a8acecb673a320977cd22b1808/ps2/SCUS97399/God%20of%20War.cbz",
+      "sha256": "a326a69130ff1c9e5ef6db4024ef64de94fb78a1f8678523be3e07115cb7a57d"
+    },
+    {
+      "id": "ps2-SLUS20216",
+      "console": "ps2",
+      "title": "Devil May Cry",
+      "repository": "nostlan/ps2-manuals0",
+      "commit": "a1ba1a5a405881a8acecb673a320977cd22b1808",
+      "path": "ps2/SLUS20216/Devil May Cry.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps2-manuals0/a1ba1a5a405881a8acecb673a320977cd22b1808/ps2/SLUS20216/Devil%20May%20Cry.cbz",
+      "sha256": "3765eb57749b1822c32dbecc395f7a736bacdc9ebf0d8190cd3603eb6a4a7e46"
+    },
+    {
+      "id": "ps2-SCUS97472",
+      "console": "ps2",
+      "title": "Shadow of the Colossus",
+      "repository": "nostlan/ps2-manuals0",
+      "commit": "a1ba1a5a405881a8acecb673a320977cd22b1808",
+      "path": "ps2/SCUS97472/Shadow of the Colossus.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps2-manuals0/a1ba1a5a405881a8acecb673a320977cd22b1808/ps2/SCUS97472/Shadow%20of%20the%20Colossus.cbz",
+      "sha256": "6424c997f602529c6076f76af6e579c0d8bf794fb5ee2c971e7920b822b82b7b"
+    },
+    {
+      "id": "ps2-SCUS97113",
+      "console": "ps2",
+      "title": "Ico",
+      "repository": "nostlan/ps2-manuals0",
+      "commit": "a1ba1a5a405881a8acecb673a320977cd22b1808",
+      "path": "ps2/SCUS97113/Ico.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps2-manuals0/a1ba1a5a405881a8acecb673a320977cd22b1808/ps2/SCUS97113/Ico.cbz",
+      "sha256": "46acc414917e92fa344dd03435494e295be51bd02bb28fd570894f6a94652483"
+    },
+    {
+      "id": "ps2-SCUS97124",
+      "console": "ps2",
+      "title": "Jak and Daxter - The Precursor Legacy",
+      "repository": "nostlan/ps2-manuals0",
+      "commit": "a1ba1a5a405881a8acecb673a320977cd22b1808",
+      "path": "ps2/SCUS97124/Jak and Daxter - The Precursor Legacy.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps2-manuals0/a1ba1a5a405881a8acecb673a320977cd22b1808/ps2/SCUS97124/Jak%20and%20Daxter%20-%20The%20Precursor%20Legacy.cbz",
+      "sha256": "d132eca31d0a7e2fbd1f02e37e47bbd0329c3da3bd33b8730c51220acdb57078"
+    },
+    {
+      "id": "ps2-SCUS97199",
+      "console": "ps2",
+      "title": "Ratchet and Clank",
+      "repository": "nostlan/ps2-manuals0",
+      "commit": "a1ba1a5a405881a8acecb673a320977cd22b1808",
+      "path": "ps2/SCUS97199/Ratchet and Clank.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps2-manuals0/a1ba1a5a405881a8acecb673a320977cd22b1808/ps2/SCUS97199/Ratchet%20and%20Clank.cbz",
+      "sha256": "dbd24342edd27307714ed12a05625d334fba5dcba0ef1e6a7503182a894bcbb2"
+    },
+    {
+      "id": "ps2-SCUS97198",
+      "console": "ps2",
+      "title": "Sly Cooper and the Thievius Raccoonus",
+      "repository": "nostlan/ps2-manuals0",
+      "commit": "a1ba1a5a405881a8acecb673a320977cd22b1808",
+      "path": "ps2/SCUS97198/Sly Cooper and the Thievius Raccoonus.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps2-manuals0/a1ba1a5a405881a8acecb673a320977cd22b1808/ps2/SCUS97198/Sly%20Cooper%20and%20the%20Thievius%20Raccoonus.cbz",
+      "sha256": "75baf61793c54513dc004b03474b44575398276b9cfd7d08b1d42c231308e9a6"
+    },
+    {
+      "id": "ps2-SLUS20370",
+      "console": "ps2",
+      "title": "Kingdom Hearts",
+      "repository": "nostlan/ps2-manuals0",
+      "commit": "a1ba1a5a405881a8acecb673a320977cd22b1808",
+      "path": "ps2/SLUS20370/Kingdom Hearts.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps2-manuals0/a1ba1a5a405881a8acecb673a320977cd22b1808/ps2/SLUS20370/Kingdom%20Hearts.cbz",
+      "sha256": "1cbefbfc8e9a0cd7f11efce73d407d9337702936e3888a08d15ec583463877a7"
+    },
+    {
+      "id": "ps2-SLUS20312",
+      "console": "ps2",
+      "title": "Final Fantasy X",
+      "repository": "nostlan/ps2-manuals0",
+      "commit": "a1ba1a5a405881a8acecb673a320977cd22b1808",
+      "path": "ps2/SLUS20312/Final Fantasy X.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps2-manuals0/a1ba1a5a405881a8acecb673a320977cd22b1808/ps2/SLUS20312/Final%20Fantasy%20X.cbz",
+      "sha256": "4f8f37f49dd95d4f06c38ea1124f05b9facb06171f456d8f8409f57bafc78ee4"
+    },
+    {
+      "id": "ps2-SLUS21115",
+      "console": "ps2",
+      "title": "Okami",
+      "repository": "nostlan/ps2-manuals1",
+      "commit": "1c3c23309a5aca6ed96abe1499df138cc554d2d0",
+      "path": "ps2/SLUS21115/Okami.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps2-manuals1/1c3c23309a5aca6ed96abe1499df138cc554d2d0/ps2/SLUS21115/Okami.cbz",
+      "sha256": "c7ae0fe13e86e7035f50af9dd8a5618d7ec7e678ef895779206de04944e7dba8"
+    },
+    {
+      "id": "ps2-SLUS20946",
+      "console": "ps2",
+      "title": "Grand Theft Auto - San Andreas",
+      "repository": "nostlan/ps2-manuals1",
+      "commit": "1c3c23309a5aca6ed96abe1499df138cc554d2d0",
+      "path": "ps2/SLUS20946/Grand Theft Auto - San Andreas.cbz",
+      "url": "https://raw.githubusercontent.com/nostlan/ps2-manuals1/1c3c23309a5aca6ed96abe1499df138cc554d2d0/ps2/SLUS20946/Grand%20Theft%20Auto%20-%20San%20Andreas.cbz",
+      "sha256": "0043fc265441107beaba70f7d2486f842ef59c3eff992959dd920676f4fa50fc"
+    }
+  ],
+  "questions": [
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 18,
+      "anchor": "Dollar bags",
+      "prompt": "¿Qué objetos aumentan el dinero de Alucard en Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 20,
+      "anchor": "Soul of Wolf",
+      "prompt": "¿Qué reliquia transforma a Alucard en lobo en Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 23,
+      "anchor": "Anti-venom",
+      "prompt": "¿Qué objeto neutraliza el veneno en Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 9,
+      "anchor": "journalist",
+      "prompt": "¿Qué profesión adopta Laguna después de ser soldado en Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 26,
+      "anchor": "blinds",
+      "prompt": "¿Para qué sirve Combat Light en Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00421",
+      "scan": 15,
+      "anchor": "ROOKIE COP",
+      "prompt": "¿Qué trabajo tiene Leon al comienzo de Resident Evil 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00421",
+      "scan": 15,
+      "anchor": "CLAIRE REDFIELD",
+      "prompt": "¿Cuál es el apellido de Claire en Resident Evil 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00421",
+      "scan": 15,
+      "anchor": "SHERRY BIRKIN",
+      "prompt": "¿Cuál es el apellido de Sherry en Resident Evil 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00421",
+      "scan": 15,
+      "anchor": "MYSTERIOUS WOMAN",
+      "prompt": "¿Qué mujer misteriosa encuentra Leon en Resident Evil 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00421",
+      "scan": 13,
+      "anchor": "CURRENT CONDITION",
+      "prompt": "¿Qué muestra el electrocardiograma de la pantalla de estado de Resident Evil 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00594",
+      "scan": 9,
+      "anchor": "Shadow Moses",
+      "prompt": "¿En qué isla está la instalación ocupada en Metal Gear Solid de PS1?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00594",
+      "scan": 30,
+      "anchor": "Codec",
+      "prompt": "¿Qué sistema usa Snake para comunicarse con su equipo en Metal Gear Solid?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00594",
+      "scan": 36,
+      "anchor": "Restores your life",
+      "prompt": "¿Qué objeto recupera la barra de vida de Snake en Metal Gear Solid?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00594",
+      "scan": 36,
+      "anchor": "Cardboard Box",
+      "prompt": "¿Qué objeto permite a Snake ocultarse dentro de una caja en Metal Gear Solid?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00594",
+      "scan": 33,
+      "anchor": "commander of the operation",
+      "prompt": "¿Quién comanda la operación de Snake en Metal Gear Solid?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00707",
+      "scan": 13,
+      "anchor": "Cheryl Mason",
+      "prompt": "¿A quién busca Harry durante Silent Hill de PS1?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00707",
+      "scan": 13,
+      "anchor": "Writer",
+      "prompt": "¿A qué se dedica Harry en Silent Hill de PS1?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00707",
+      "scan": 14,
+      "anchor": "Police officer",
+      "prompt": "¿Cuál es la profesión de Cybil en Silent Hill de PS1?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00707",
+      "scan": 16,
+      "anchor": "Flashlight",
+      "prompt": "¿Qué objeto ilumina las zonas oscuras en Silent Hill de PS1?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00707",
+      "scan": 16,
+      "anchor": "Pocket radio",
+      "prompt": "¿Qué objeto emite estática cuando se acercan enemigos en Silent Hill de PS1?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 8,
+      "anchor": "Aya Brea",
+      "prompt": "¿Quién es la protagonista de Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 8,
+      "anchor": "FBI agent",
+      "prompt": "¿A qué organismo federal pertenece Aya en Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 8,
+      "anchor": "private detective",
+      "prompt": "¿Qué profesión dice ejercer Kyle Madigan en Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 9,
+      "anchor": "Flint",
+      "prompt": "¿Cómo se llama el perro de Gary Douglas en Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 9,
+      "anchor": "desert town",
+      "prompt": "¿Qué clase de lugar es Dryfield en Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 16,
+      "anchor": "You are Alucard",
+      "prompt": "¿A quién controlás durante la aventura principal de Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 10,
+      "anchor": "Count Dracula",
+      "prompt": "¿Quién es el padre de Alucard en Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 11,
+      "anchor": "sacred whip",
+      "prompt": "¿Qué arma tradicional del clan Belmont lleva Richter en Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 25,
+      "anchor": "Master Librarian",
+      "prompt": "¿Qué personaje vende objetos en la Long Library de Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 18,
+      "anchor": "destroy candles",
+      "prompt": "¿Qué objetos del escenario pueden dejar premios al romperlos en Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94154",
+      "scan": 8,
+      "anchor": "Coco",
+      "prompt": "¿Cómo se llama la hermana de Crash en Cortex Strikes Back?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94154",
+      "scan": 11,
+      "anchor": "save the world",
+      "prompt": "¿Qué afirma querer hacer Cortex al pedir ayuda en Crash Bandicoot 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94154",
+      "scan": 8,
+      "anchor": "instant access",
+      "prompt": "¿Qué función cumplen las puertas de los Warp Rooms en Crash Bandicoot 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94154",
+      "scan": 7,
+      "anchor": "crystals",
+      "prompt": "¿Qué objetos le pide Cortex reunir a Crash en Crash Bandicoot 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94154",
+      "scan": 14,
+      "anchor": "N. Brio",
+      "prompt": "¿Qué antiguo socio de Cortex quiere frustrar sus planes en Crash Bandicoot 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94228",
+      "scan": 8,
+      "anchor": "Gnasty Gnorc",
+      "prompt": "¿Quién hechiza a los dragones en el primer Spyro the Dragon?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94228",
+      "scan": 8,
+      "anchor": "Sparx",
+      "prompt": "¿Cómo se llama la libélula que acompaña a Spyro en su primer juego?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94228",
+      "scan": 13,
+      "anchor": "Dragon Eggs",
+      "prompt": "¿Qué roban los ladrones que corren por los niveles del primer Spyro?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94228",
+      "scan": 13,
+      "anchor": "crystal prisons",
+      "prompt": "¿De qué debe liberar Spyro a los dragones en su primer juego?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94228",
+      "scan": 13,
+      "anchor": "hint or tip",
+      "prompt": "¿Qué suelen dar los dragones rescatados a Spyro en su primer juego?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00402",
+      "scan": 20,
+      "anchor": "Kazuya Mishima",
+      "prompt": "¿Quiénes son los padres de Jin Kazama en Tekken 3?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00402",
+      "scan": 23,
+      "anchor": "Capoeira",
+      "prompt": "¿Qué estilo de combate utiliza Eddy Gordo en Tekken 3?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00402",
+      "scan": 22,
+      "anchor": "Tae Kwon Do",
+      "prompt": "¿Qué arte marcial utiliza Hwoarang en Tekken 3?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00402",
+      "scan": 24,
+      "anchor": "Marshall Law",
+      "prompt": "¿De quién es hijo Forest Law en Tekken 3?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00402",
+      "scan": 29,
+      "anchor": "Manji Clan",
+      "prompt": "¿Qué clan lidera Yoshimitsu en Tekken 3?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00437",
+      "scan": 6,
+      "anchor": "Lara Croft",
+      "prompt": "¿Quién protagoniza Tomb Raider II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00437",
+      "scan": 6,
+      "anchor": "Dagger of Xian",
+      "prompt": "¿Qué artefacto ocupa el centro de la historia de Tomb Raider II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00437",
+      "scan": 6,
+      "anchor": "power of the dragon",
+      "prompt": "Según la leyenda de Tomb Raider II, ¿en qué puede transformar a su portador la Daga de Xian?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00437",
+      "scan": 7,
+      "anchor": "training level",
+      "prompt": "¿Qué lugar funciona como nivel de entrenamiento en Tomb Raider II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00437",
+      "scan": 9,
+      "anchor": "two pistols",
+      "prompt": "¿Con qué armas empieza Lara en Tomb Raider II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94163",
+      "scan": 9,
+      "anchor": "CLOUD STRIFE",
+      "prompt": "¿Cómo se llama el mercenario protagonista de Final Fantasy VII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94163",
+      "scan": 10,
+      "anchor": "Leader of AVALANCHE",
+      "prompt": "¿Quién lidera AVALANCHE al comienzo de Final Fantasy VII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94163",
+      "scan": 9,
+      "anchor": "selling flowers",
+      "prompt": "¿Qué vende Aeris cuando conoce a Cloud en Final Fantasy VII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94163",
+      "scan": 10,
+      "anchor": "fists",
+      "prompt": "¿Qué personaje de Final Fantasy VII destaca por luchar con los puños?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94163",
+      "scan": 11,
+      "anchor": "Pilot",
+      "prompt": "¿Qué personaje del grupo de Final Fantasy VII es un piloto veterano?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 9,
+      "anchor": "SQUALL LEONHART",
+      "prompt": "¿Quién es el cadete protagonista de Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 8,
+      "anchor": "SeeD",
+      "prompt": "¿Cómo se llama la unidad de combate a la que aspira Squall en Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 9,
+      "anchor": "Balamb",
+      "prompt": "¿Qué academia militar forma a Squall en Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 10,
+      "anchor": "SEIFER ALMASY",
+      "prompt": "¿Quién es el rival de Squall entre los candidatos a SeeD en Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 23,
+      "anchor": "Angelo",
+      "prompt": "¿Cómo se llama el perro que participa en los límites de Rinoa en Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00922",
+      "scan": 20,
+      "anchor": "REGINA",
+      "prompt": "¿Quién es la agente protagonista de Dino Crisis?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00922",
+      "scan": 8,
+      "anchor": "Edward Kirk",
+      "prompt": "¿A qué científico debe encontrar y recuperar el equipo en Dino Crisis?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00922",
+      "scan": 8,
+      "anchor": "Ibis Island",
+      "prompt": "¿A qué isla se dirige el equipo en Dino Crisis?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00922",
+      "scan": 22,
+      "anchor": "dinosaurs",
+      "prompt": "¿Qué criaturas pueden paralizar temporalmente los dardos anestésicos de Dino Crisis?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00922",
+      "scan": 8,
+      "anchor": "Third Energy",
+      "prompt": "¿Cómo se llama la tecnología energética investigada por Kirk en Dino Crisis?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94227",
+      "scan": 8,
+      "anchor": "Sir Daniel Fortesque",
+      "prompt": "¿Cómo se llama el caballero protagonista de MediEvil?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94227",
+      "scan": 8,
+      "anchor": "Zarok",
+      "prompt": "¿Qué hechicero amenaza Gallowmere en MediEvil?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94227",
+      "scan": 8,
+      "anchor": "Gallowmere",
+      "prompt": "¿Cómo se llama el reino de MediEvil?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94227",
+      "scan": 9,
+      "anchor": "Peregrin",
+      "prompt": "¿Qué rey nombró caballero a Sir Dan según la historia de MediEvil?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94227",
+      "scan": 18,
+      "anchor": "rusty",
+      "prompt": "¿Qué arma básica lleva Sir Dan al empezar MediEvil?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94455",
+      "scan": 12,
+      "anchor": "2-disc",
+      "prompt": "¿Cuántos discos incluye Gran Turismo 2 para PS1?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94455",
+      "scan": 12,
+      "anchor": "prize money",
+      "prompt": "¿Qué modo de Gran Turismo 2 permite comprar y mejorar coches con premios de carreras?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94455",
+      "scan": 23,
+      "anchor": "racing license",
+      "prompt": "¿Qué necesitás para entrar en muchas carreras de Gran Turismo 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94455",
+      "scan": 25,
+      "anchor": "GARAGE",
+      "prompt": "¿Dónde consultás y seleccionás los coches que poseés en Gran Turismo 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94455",
+      "scan": 17,
+      "anchor": "unpaved roads",
+      "prompt": "¿Qué modalidad de Gran Turismo 2 se disputa sobre caminos sin pavimentar?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00708",
+      "scan": 8,
+      "anchor": "Raziel",
+      "prompt": "¿Quién protagoniza Legacy of Kain: Soul Reaver?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00708",
+      "scan": 7,
+      "anchor": "Nosgoth",
+      "prompt": "¿Cómo se llama el mundo de Soul Reaver?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00708",
+      "scan": 8,
+      "anchor": "wings",
+      "prompt": "¿Qué nuevo rasgo provoca el castigo de Raziel al principio de Soul Reaver?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00708",
+      "scan": 19,
+      "anchor": "Material Plane",
+      "prompt": "¿Entre qué dos planos puede desplazarse Raziel en Soul Reaver?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00708",
+      "scan": 12,
+      "anchor": "souls",
+      "prompt": "¿Qué consume Raziel para mantener su existencia en Soul Reaver?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 21,
+      "anchor": "Stops time",
+      "prompt": "¿Qué arma secundaria detiene el tiempo para ciertos enemigos en Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 21,
+      "anchor": "rebounds",
+      "prompt": "¿Qué arma secundaria rebota en paredes y suelo en Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 26,
+      "anchor": "Parthenon Cafe",
+      "prompt": "¿Qué abre Cafeteria Key en Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 23,
+      "anchor": "Slot",
+      "prompt": "¿Cómo se llama el Limit Break de Selphie en Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 23,
+      "anchor": "Angelo",
+      "prompt": "¿Qué compañero participa en el Limit Break de Rinoa en Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00421",
+      "scan": 13,
+      "anchor": "ITEM BOX",
+      "prompt": "¿Dónde podés guardar objetos que no querés llevar encima en Resident Evil 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00421",
+      "scan": 12,
+      "anchor": "COMBINE",
+      "prompt": "¿Qué orden permite juntar munición con un arma desde el inventario de Resident Evil 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00421",
+      "scan": 12,
+      "anchor": "CHECK",
+      "prompt": "¿Qué orden sirve para inspeccionar un objeto en Resident Evil 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00421",
+      "scan": 12,
+      "anchor": "EQUIPPED",
+      "prompt": "¿Qué tenés que hacer antes de usar un arma del inventario en Resident Evil 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00421",
+      "scan": 13,
+      "anchor": "NOTEBOOK",
+      "prompt": "¿En qué función se consultan los documentos encontrados en Resident Evil 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00594",
+      "scan": 38,
+      "anchor": "Electronic jamming",
+      "prompt": "¿Qué hacen las granadas Chaff en Metal Gear Solid?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00594",
+      "scan": 38,
+      "anchor": "Remote Controlled",
+      "prompt": "¿Qué distingue al misil Nikita en Metal Gear Solid?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00594",
+      "scan": 39,
+      "anchor": "Sniper rifle",
+      "prompt": "¿Qué clase de arma es el PSG1 en Metal Gear Solid?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00594",
+      "scan": 38,
+      "anchor": "Temporarily stuns",
+      "prompt": "¿Qué efecto tiene una Stun Grenade en Metal Gear Solid?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00594",
+      "scan": 39,
+      "anchor": "Radar-guided missiles",
+      "prompt": "¿Qué arma de Metal Gear Solid utiliza misiles guiados por radar?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00707",
+      "scan": 11,
+      "anchor": "memo pads",
+      "prompt": "¿Qué objetos se usan para guardar la partida en Silent Hill de PS1?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00707",
+      "scan": 10,
+      "anchor": "red marker",
+      "prompt": "¿Cómo marca Harry los lugares relevantes en su mapa de Silent Hill de PS1?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00707",
+      "scan": 15,
+      "anchor": "First aid kit",
+      "prompt": "¿Qué objeto recupera mucha más salud que una bebida energética en Silent Hill de PS1?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00707",
+      "scan": 15,
+      "anchor": "Iron pipe",
+      "prompt": "Según el manual de Silent Hill de PS1, ¿qué arma es más potente que el cuchillo pero más difícil de usar?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00707",
+      "scan": 10,
+      "anchor": "Green",
+      "prompt": "¿Qué cambia en la barra de vida de Harry cuando su salud empeora en Silent Hill de PS1?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 11,
+      "anchor": "displayed in red",
+      "prompt": "¿Qué significa una zona roja en el GPS de Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 11,
+      "anchor": "will be white",
+      "prompt": "¿Qué color identifica una zona recorrida y libre de NMCs en el GPS de Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 17,
+      "anchor": "consumes MP",
+      "prompt": "¿Qué recurso consumen las habilidades Parasite Energy de Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 13,
+      "anchor": "attachments",
+      "prompt": "¿Dónde deben estar equipados los objetos para poder usarlos durante un combate de Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 20,
+      "anchor": "EXP COST",
+      "prompt": "¿Qué recurso se gasta para reactivar habilidades PE selladas en Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 14,
+      "anchor": "hearts",
+      "prompt": "¿Qué recurso consumen las armas secundarias de Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 14,
+      "anchor": "Magic meter",
+      "prompt": "¿Qué barra disminuye al usar magia o transformaciones en Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 19,
+      "anchor": "Each hand",
+      "prompt": "¿Cómo se equipa una espada y un escudo simultáneamente en Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 20,
+      "anchor": "OFF",
+      "prompt": "¿Qué pasa si una reliquia está en OFF en Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 25,
+      "anchor": "recover strength",
+      "prompt": "Además de guardar, ¿para qué sirven las habitaciones de guardado en Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94154",
+      "scan": 10,
+      "anchor": "Check Point",
+      "prompt": "¿Qué indican las cajas con una C en Crash Bandicoot 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94154",
+      "scan": 9,
+      "anchor": "100 pieces",
+      "prompt": "¿Cuántas frutas Wumpa otorgan una vida extra en Crash Bandicoot 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94154",
+      "scan": 10,
+      "anchor": "Nitro Boxes",
+      "prompt": "¿Qué puede ocurrir al tocar una caja Nitro en Crash Bandicoot 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94154",
+      "scan": 10,
+      "anchor": "3 second fuse",
+      "prompt": "¿Cuánto dura la cuenta de una TNT activada al saltar sobre ella en Crash Bandicoot 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94154",
+      "scan": 10,
+      "anchor": "ALL of the Nitro",
+      "prompt": "¿Para qué sirve la caja verde con signo de exclamación en Crash Bandicoot 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94228",
+      "scan": 11,
+      "anchor": "charge",
+      "prompt": "¿Qué ataque recomienda el manual contra enemigos protegidos con armadura en Spyro the Dragon?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94228",
+      "scan": 11,
+      "anchor": "really big",
+      "prompt": "¿Qué ataque recomienda el manual para enemigos demasiado grandes para embestir en Spyro the Dragon?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94228",
+      "scan": 10,
+      "anchor": "butterflies",
+      "prompt": "¿Qué come Sparx para recuperar salud en Spyro the Dragon?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94228",
+      "scan": 16,
+      "anchor": "back Home",
+      "prompt": "¿A dónde llevan las plataformas de vórtice de los niveles en Spyro the Dragon?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94228",
+      "scan": 16,
+      "anchor": "balloonists",
+      "prompt": "¿Quién transporta a Spyro de un mundo a otro en su primer juego?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00402",
+      "scan": 14,
+      "anchor": "four limbs",
+      "prompt": "¿Qué representan los cuatro botones básicos de ataque de Tekken 3?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00402",
+      "scan": 14,
+      "anchor": "standing guard",
+      "prompt": "¿Qué guardia bloquea normalmente los ataques medios en Tekken 3?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00402",
+      "scan": 14,
+      "anchor": "crouching guard",
+      "prompt": "¿Qué guardia permite bloquear ataques bajos en Tekken 3?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00402",
+      "scan": 13,
+      "anchor": "flank",
+      "prompt": "¿Qué permite el desplazamiento lateral en Tekken 3?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00402",
+      "scan": 10,
+      "anchor": "TEKKEN FORCE",
+      "prompt": "¿Qué modo de Tekken 3 se centra en avanzar por áreas y vencer a las fuerzas enemigas?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00437",
+      "scan": 25,
+      "anchor": "1/2",
+      "prompt": "¿Qué proporción de salud repone un botiquín pequeño en Tomb Raider II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00437",
+      "scan": 25,
+      "anchor": "fully restore",
+      "prompt": "¿Cuánta salud repone un botiquín grande en Tomb Raider II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00437",
+      "scan": 23,
+      "anchor": "light",
+      "prompt": "¿Para qué sirven las bengalas de Tomb Raider II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00437",
+      "scan": 7,
+      "anchor": "Passport",
+      "prompt": "¿Qué objeto del menú permite iniciar o cargar una partida en Tomb Raider II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00437",
+      "scan": 9,
+      "anchor": "unlimited ammunition",
+      "prompt": "¿Qué armas de Lara tienen munición ilimitada en Tomb Raider II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94163",
+      "scan": 24,
+      "anchor": "Active Time Battle",
+      "prompt": "¿Qué significan las siglas ATB en Final Fantasy VII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94163",
+      "scan": 35,
+      "anchor": "slots",
+      "prompt": "¿Dónde se coloca la Materia para habilitar habilidades en Final Fantasy VII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94163",
+      "scan": 27,
+      "anchor": "Ability Points",
+      "prompt": "¿Qué puntos hacen crecer a la Materia en Final Fantasy VII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94163",
+      "scan": 10,
+      "anchor": "Shinra",
+      "prompt": "¿Qué corporación explota la energía Mako en Final Fantasy VII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94163",
+      "scan": 12,
+      "anchor": "Materia Hunter",
+      "prompt": "¿Qué integrante opcional del grupo es una ninja cazadora de Materia en Final Fantasy VII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 27,
+      "anchor": "Guardian Force",
+      "prompt": "¿Qué significa GF en Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 27,
+      "anchor": "Draw",
+      "prompt": "¿Qué comando permite extraer magia de enemigos en Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 35,
+      "anchor": "Junction",
+      "prompt": "¿Qué sistema permite vincular magia a atributos de un personaje en Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 38,
+      "anchor": "TRIPLE TRIAD",
+      "prompt": "¿Cómo se llama el juego de cartas de Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 28,
+      "anchor": "ice",
+      "prompt": "¿Con qué elemento se asocia Shiva en Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00922",
+      "scan": 13,
+      "anchor": "HEMOSTAT",
+      "prompt": "¿Qué suministro detiene una hemorragia en Dino Crisis?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00922",
+      "scan": 13,
+      "anchor": "MED PAK",
+      "prompt": "¿Qué suministro se usa para recuperar las lesiones de Regina en Dino Crisis?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00922",
+      "scan": 17,
+      "anchor": "block access",
+      "prompt": "¿Para qué sirven los campos de fuerza del complejo en Dino Crisis?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00922",
+      "scan": 17,
+      "anchor": "rapidly",
+      "prompt": "¿Qué recomienda hacer el manual al aparecer DANGER en Dino Crisis?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00922",
+      "scan": 15,
+      "anchor": "store items",
+      "prompt": "Además de dar suministros, ¿qué permiten las Emergency Boxes de Dino Crisis?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94227",
+      "scan": 25,
+      "anchor": "souls",
+      "prompt": "¿Qué llena el Chalice of Souls de MediEvil?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94227",
+      "scan": 23,
+      "anchor": "MERCHANT GARGOYLE",
+      "prompt": "¿Qué gárgolas de MediEvil ofrecen suministros y servicios?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94227",
+      "scan": 23,
+      "anchor": "handy hints",
+      "prompt": "¿Qué ofrecen principalmente las Information Gargoyles de MediEvil?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94227",
+      "scan": 16,
+      "anchor": "Life Bottles",
+      "prompt": "¿Qué objetos pueden rellenar automáticamente la energía de Sir Dan al agotarse en MediEvil?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94227",
+      "scan": 19,
+      "anchor": "shock-wave",
+      "prompt": "¿Qué arma de MediEvil puede producir una onda de choque?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94455",
+      "scan": 26,
+      "anchor": "TUNE-UP SHOP",
+      "prompt": "¿Qué servicio mejora las prestaciones del coche con piezas en Gran Turismo 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94455",
+      "scan": 17,
+      "anchor": "TIME TRIAL",
+      "prompt": "¿Qué modalidad de Gran Turismo 2 busca lograr la vuelta más rápida sin rivales en pista?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94455",
+      "scan": 12,
+      "anchor": "one player only",
+      "prompt": "¿Cuántos jugadores admite directamente Simulation Mode de Gran Turismo 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94455",
+      "scan": 17,
+      "anchor": "split screen",
+      "prompt": "¿Cómo se muestran las carreras entre dos jugadores de Gran Turismo 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94455",
+      "scan": 26,
+      "anchor": "single make",
+      "prompt": "¿Qué tipo de carreras ofrecen algunos fabricantes desde su menú en Gran Turismo 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00708",
+      "scan": 20,
+      "anchor": "full health",
+      "prompt": "¿Qué necesita Raziel para volver voluntariamente del plano Espectral al Material en Soul Reaver?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00708",
+      "scan": 21,
+      "anchor": "active warp gates",
+      "prompt": "¿Qué hay que hacer antes de viajar a una zona mediante Warp Gates en Soul Reaver?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00708",
+      "scan": 13,
+      "anchor": "Spectral Plane",
+      "prompt": "¿En qué plano se atraviesan rejas con la habilidad de fase en Soul Reaver?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00708",
+      "scan": 13,
+      "anchor": "Material Plane",
+      "prompt": "¿En qué plano puede Raziel escalar las paredes habilitadas en Soul Reaver?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00708",
+      "scan": 18,
+      "anchor": "torch",
+      "prompt": "¿Qué arma permite prender fuego a un vampiro aturdido en Soul Reaver?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 26,
+      "anchor": "30",
+      "prompt": "¿Cuántos MP recupera MP Boost1 desde el menú de Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 26,
+      "anchor": "25",
+      "prompt": "¿Cuántos MP recupera MP Boost1 durante un combate de Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 26,
+      "anchor": "Attachment +1",
+      "prompt": "¿En cuánto aumenta Belt Pouch los espacios de attachments de Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 26,
+      "anchor": "50",
+      "prompt": "¿Cuántos HP recupera Recovery1 desde el menú de Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 26,
+      "anchor": "45",
+      "prompt": "¿Cuántos HP recupera Recovery1 durante un combate de Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00421",
+      "scan": 8,
+      "anchor": "DISC #1",
+      "prompt": "En la edición original de Resident Evil 2 para PS1, ¿qué disco inicia la misión de Leon?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00421",
+      "scan": 11,
+      "anchor": "OPPOSITE DISC",
+      "prompt": "¿Cómo se inicia la segunda misión enlazada de Resident Evil 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00421",
+      "scan": 15,
+      "anchor": "12-YEAR-OLD",
+      "prompt": "¿Qué edad tiene Sherry según el manual de Resident Evil 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00421",
+      "scan": 14,
+      "anchor": "NUMBER OF SAVES",
+      "prompt": "¿Qué dos factores destaca el manual para mejorar el rango final en Resident Evil 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00421",
+      "scan": 12,
+      "anchor": "1 WEAPON",
+      "prompt": "¿Cuántas armas podés tener en uso a la vez en Resident Evil 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00594",
+      "scan": 36,
+      "anchor": "heat signatures",
+      "prompt": "¿Qué detectan las Thermal Goggles de Metal Gear Solid?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00594",
+      "scan": 38,
+      "anchor": "Crawl to disarm",
+      "prompt": "¿Cómo recuperás una mina Claymore colocada en Metal Gear Solid?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00594",
+      "scan": 36,
+      "anchor": "used automatically",
+      "prompt": "¿Qué pasa si la vida de Snake llega a cero con raciones equipadas en Metal Gear Solid?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00594",
+      "scan": 19,
+      "anchor": "HARD and EXTREME",
+      "prompt": "Según el manual de la edición estadounidense, ¿en qué dificultades no hay radar en Metal Gear Solid?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00594",
+      "scan": 39,
+      "anchor": "two",
+      "prompt": "¿Cuántos bloques de Memory Card ocupa una foto de la cámara en Metal Gear Solid de PS1?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00707",
+      "scan": 13,
+      "anchor": "Age 7",
+      "prompt": "¿Qué edad tiene Cheryl al comenzar Silent Hill de PS1?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00707",
+      "scan": 14,
+      "anchor": "Age 22",
+      "prompt": "¿Qué edad tiene Cybil según el manual de Silent Hill de PS1?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00707",
+      "scan": 17,
+      "anchor": "cannot hear",
+      "prompt": "En Silent Hill de PS1, ¿los monstruos pueden oír la estática que emite la radio de Harry?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00707",
+      "scan": 17,
+      "anchor": "accuracy",
+      "prompt": "¿Qué ocurre con la precisión de Harry al apagar la luz en Silent Hill de PS1?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00707",
+      "scan": 17,
+      "anchor": "Search View",
+      "prompt": "¿Qué prioriza el modo Search View de Silent Hill de PS1?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 21,
+      "anchor": "4 properties",
+      "prompt": "¿Cuántas propiedades elementales agrupan las habilidades PE en Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 20,
+      "anchor": "Pyrokinesis",
+      "prompt": "¿Qué habilidad PE es la única disponible al inicio de Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 23,
+      "anchor": "20 rounds",
+      "prompt": "¿Qué capacidad indica el manual para la pistola M93R en Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 18,
+      "anchor": "interrupted",
+      "prompt": "¿Qué puede interrumpir la preparación de una habilidad PE en Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-01042",
+      "scan": 26,
+      "anchor": "45 HP",
+      "prompt": "¿Cuántos HP recupera Recovery1 si se utiliza durante una batalla en Parasite Eve II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 20,
+      "anchor": "Leap Stone",
+      "prompt": "¿Qué reliquia permite el doble salto en Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 20,
+      "anchor": "Cube of Zoe",
+      "prompt": "¿Qué reliquia habilita la aparición de objetos al destruir velas en Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 20,
+      "anchor": "change into a bat",
+      "prompt": "¿Qué reliquia permite transformarse en murciélago en Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 20,
+      "anchor": "Form of Mist",
+      "prompt": "¿Qué reliquia permite convertirse en niebla en Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00067",
+      "scan": 23,
+      "anchor": "Uncurse",
+      "prompt": "¿Qué consumible elimina inmediatamente una maldición en Symphony of the Night?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94154",
+      "scan": 9,
+      "anchor": "three",
+      "prompt": "¿Cuántas máscaras Aku Aku seguidas dan invulnerabilidad temporal en Crash Bandicoot 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94154",
+      "scan": 7,
+      "anchor": "25 crystals",
+      "prompt": "¿Cuántos cristales necesita el plan de Cortex en Crash Bandicoot 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94154",
+      "scan": 12,
+      "anchor": "missile",
+      "prompt": "¿Qué tiene incrustado N. Gin en la cabeza en Crash Bandicoot 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94154",
+      "scan": 13,
+      "anchor": "Samurai swordplay",
+      "prompt": "¿Cuál de los hermanos Komodo es experto en esgrima samurái en Crash Bandicoot 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94154",
+      "scan": 13,
+      "anchor": "unbelievable strength",
+      "prompt": "¿Cuál de los hermanos Komodo destaca por su tamaño y fuerza física en Crash Bandicoot 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94228",
+      "scan": 10,
+      "anchor": "Yellow",
+      "prompt": "¿De qué color está Sparx cuando tiene su salud completa en Spyro the Dragon?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94228",
+      "scan": 8,
+      "anchor": "six worlds",
+      "prompt": "Incluyendo el de Gnasty, ¿cuántos mundos debe recorrer Spyro en su primer juego?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94228",
+      "scan": 19,
+      "anchor": "BEAST MAKERS",
+      "prompt": "¿Qué familia de dragones vive entre pantanos y crea nuevas criaturas en Spyro the Dragon?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94228",
+      "scan": 19,
+      "anchor": "MAGIC CRAFTERS",
+      "prompt": "¿Qué familia de dragones estudia magia entre montañas y cuevas en Spyro the Dragon?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94228",
+      "scan": 20,
+      "anchor": "DREAM WEAVERS",
+      "prompt": "¿Qué familia protege los sueños desde una isla entre las nubes en Spyro the Dragon?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00402",
+      "scan": 7,
+      "anchor": "40",
+      "prompt": "Según el manual de Tekken 3 para PS1, ¿cuál es el tiempo de ronda predeterminado?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00402",
+      "scan": 9,
+      "anchor": "little extra energy",
+      "prompt": "¿Qué ocurre con la salud al ganar un combate en Survival de Tekken 3?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00402",
+      "scan": 28,
+      "anchor": "cryogenic research",
+      "prompt": "¿En qué investigación fue utilizada Nina antes de despertar en Tekken 3?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00402",
+      "scan": 29,
+      "anchor": "Ogre",
+      "prompt": "¿Por qué Yoshimitsu busca la sangre de Ogre en Tekken 3?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00402",
+      "scan": 21,
+      "anchor": "amusement park",
+      "prompt": "¿Qué quiere construir Ling Xiaoyu con ayuda del torneo en Tekken 3?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00437",
+      "scan": 23,
+      "anchor": "underwater",
+      "prompt": "¿Funcionan las bengalas bajo el agua en Tomb Raider II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00437",
+      "scan": 24,
+      "anchor": "Stone Dragon",
+      "prompt": "¿Qué conjunto identifica los tres tipos de secretos de Tomb Raider II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00437",
+      "scan": 24,
+      "anchor": "STOPWATCH",
+      "prompt": "¿Qué objeto del inventario muestra tiempo de nivel y estadísticas en Tomb Raider II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00437",
+      "scan": 8,
+      "anchor": "opposite direction",
+      "prompt": "¿Qué hace Lara al usar la voltereta en Tomb Raider II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00437",
+      "scan": 24,
+      "anchor": "going over edges",
+      "prompt": "¿El botón de caminar impide que un vehículo caiga por un borde en Tomb Raider II?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94163",
+      "scan": 35,
+      "anchor": "will not obtain",
+      "prompt": "¿La Materia guardada sin equipar gana AP de las batallas en Final Fantasy VII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94163",
+      "scan": 43,
+      "anchor": "Wait",
+      "prompt": "¿Qué ajuste del ATB detiene el tiempo mientras elegís magia u objetos en Final Fantasy VII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94163",
+      "scan": 44,
+      "anchor": "World Map",
+      "prompt": "¿Dónde permite cambiar miembros el PHS, salvo eventos especiales, en Final Fantasy VII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94163",
+      "scan": 48,
+      "anchor": "Chocobo Lure",
+      "prompt": "¿Qué Materia permite atraer chocobos en las zonas con huellas en Final Fantasy VII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94163",
+      "scan": 65,
+      "anchor": "10 minutes",
+      "prompt": "¿Cuánto tiempo tiene Cloud para evacuar el primer reactor tras vencer al Guard Scorpion en Final Fantasy VII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 28,
+      "anchor": "Quezacotl and Shiva",
+      "prompt": "¿Qué dos GF se obtienen al consultar el panel de estudio al principio de Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 23,
+      "anchor": "Renzokuken",
+      "prompt": "¿Cómo se llama el Limit Break de Squall en Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 36,
+      "anchor": "quantity",
+      "prompt": "¿Qué pasa con la bonificación de un atributo cuando gastás magia vinculada a él en Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 38,
+      "anchor": "denoted",
+      "prompt": "¿Qué valor representa la letra A en una carta de Triple Triad de Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00892",
+      "scan": 38,
+      "anchor": "3X3 grid",
+      "prompt": "¿Qué tamaño tiene el tablero básico de Triple Triad en Final Fantasy VIII?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00922",
+      "scan": 16,
+      "anchor": "code disc",
+      "prompt": "¿Qué dos discos se necesitan para resolver una cerradura D.D.K. en Dino Crisis?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00922",
+      "scan": 15,
+      "anchor": "same color",
+      "prompt": "¿Qué condición deben cumplir las cajas remotas accesibles mediante ACCESS en Dino Crisis?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00922",
+      "scan": 15,
+      "anchor": "plugs",
+      "prompt": "¿Qué recurso permite abrir las cajas de emergencia de colores en Dino Crisis?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00922",
+      "scan": 22,
+      "anchor": "limited time",
+      "prompt": "¿Qué efecto tienen los Anesthetic Darts de Dino Crisis?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00922",
+      "scan": 17,
+      "anchor": "blue arrow",
+      "prompt": "¿Qué señala la flecha azul cuando Regina pierde el arma por un golpe en Dino Crisis?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94227",
+      "scan": 9,
+      "anchor": "arrow",
+      "prompt": "¿Qué hirió mortalmente a Sir Dan en la batalla de su vida humana en MediEvil?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94227",
+      "scan": 9,
+      "anchor": "100",
+      "prompt": "¿Cuánto tiempo pasa antes del regreso de Zarok que relata el manual de MediEvil?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94227",
+      "scan": 26,
+      "anchor": "one reward",
+      "prompt": "¿Cuántas recompensas podés recoger por visita al Hall of Heroes de MediEvil?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94227",
+      "scan": 23,
+      "anchor": "Broadsword",
+      "prompt": "¿Qué arma pueden encantar las gárgolas mercaderes en MediEvil?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94227",
+      "scan": 19,
+      "anchor": "Fireflies",
+      "prompt": "¿Qué ayudan a hacer las luciérnagas al usar armas arrojadizas en MediEvil?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94455",
+      "scan": 27,
+      "anchor": "B CLASS",
+      "prompt": "¿Cuál es la primera licencia que se obtiene en Gran Turismo 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94455",
+      "scan": 26,
+      "anchor": "cannot change",
+      "prompt": "¿Podés elegir otro color al comprar un coche usado en Gran Turismo 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94455",
+      "scan": 17,
+      "anchor": "LOAD GUEST GARAGE",
+      "prompt": "¿Para qué sirve Load Guest Garage en el Arcade de Gran Turismo 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94455",
+      "scan": 33,
+      "anchor": "same track",
+      "prompt": "¿Dónde se puede reutilizar un fantasma guardado de Time Trial en Gran Turismo 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SCUS-94455",
+      "scan": 28,
+      "anchor": "last position",
+      "prompt": "Al elegir Start Race en las carreras de Simulation descritas por el manual, ¿desde dónde se parte en Gran Turismo 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00708",
+      "scan": 22,
+      "anchor": "only",
+      "prompt": "¿Qué arma puede conservar Raziel al cambiar entre planos en Soul Reaver?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00708",
+      "scan": 22,
+      "anchor": "fully charged",
+      "prompt": "¿Qué condición permite manifestar la Soul Reaver en el plano Material?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00708",
+      "scan": 14,
+      "anchor": "never swim",
+      "prompt": "¿Puede Raziel nadar en el plano Espectral de Soul Reaver?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00708",
+      "scan": 25,
+      "anchor": "five",
+      "prompt": "¿Cuántos Health Power-Ups forman cada aumento de capacidad de energía Material en Soul Reaver?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps1-SLUS-00708",
+      "scan": 27,
+      "anchor": "Rahabim",
+      "prompt": "¿Qué clan de vampiros de Soul Reaver es inmune al agua pero especialmente vulnerable al sol?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 9,
+      "anchor": "various dolls",
+      "prompt": "¿Qué personaje usa muñecos para canalizar magia negra en Final Fantasy X?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 9,
+      "anchor": "steal items",
+      "prompt": "¿Qué joven Al Bhed puede robar objetos de enemigos en Final Fantasy X?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 14,
+      "anchor": "icy",
+      "prompt": "¿Qué eón de Final Fantasy X está asociado al hielo?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21115",
+      "scan": 9,
+      "anchor": "SAKE BREWER",
+      "prompt": "¿Qué produce Kushi en Okami?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21115",
+      "scan": 20,
+      "anchor": "control and move water",
+      "prompt": "¿Qué poder del pincel mueve agua en Okami?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21134",
+      "scan": 7,
+      "anchor": "Ashley",
+      "prompt": "¿A quién debe rescatar Leon en Resident Evil 4 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21134",
+      "scan": 7,
+      "anchor": "President",
+      "prompt": "¿De quién es hija Ashley en Resident Evil 4 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21134",
+      "scan": 7,
+      "anchor": "Europe",
+      "prompt": "¿A qué continente viaja Leon en su misión de Resident Evil 4 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21134",
+      "scan": 15,
+      "anchor": "Attache Case",
+      "prompt": "¿Dónde organiza Leon las armas y objetos que transporta en Resident Evil 4 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21134",
+      "scan": 23,
+      "anchor": "typewriters",
+      "prompt": "¿Qué objetos permiten guardar la partida en Resident Evil 4 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 13,
+      "anchor": "James",
+      "prompt": "¿Quién es el protagonista de Silent Hill 2 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 13,
+      "anchor": "wife",
+      "prompt": "¿Cómo se llama la esposa de James en Silent Hill 2 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 15,
+      "anchor": "looks exactly",
+      "prompt": "¿Qué personaje se parece físicamente a Mary en Silent Hill 2 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 14,
+      "anchor": "cemetery",
+      "prompt": "¿Dónde conoce James a Angela por primera vez en Silent Hill 2 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 19,
+      "anchor": "white noise",
+      "prompt": "¿Qué objeto advierte de monstruos cercanos con estática en Silent Hill 2 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97399",
+      "scan": 14,
+      "anchor": "Blades of Chaos",
+      "prompt": "¿Cómo se llaman las armas encadenadas características de Kratos en God of War de 2005?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97399",
+      "scan": 14,
+      "anchor": "Ares",
+      "prompt": "¿Qué dios debe detener Kratos en God of War de 2005?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97399",
+      "scan": 15,
+      "anchor": "stone",
+      "prompt": "¿Qué poder permite convertir enemigos en piedra en God of War de 2005?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97399",
+      "scan": 15,
+      "anchor": "Poseidon",
+      "prompt": "¿Qué dios concede Poseidon's Rage en God of War de 2005?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97399",
+      "scan": 31,
+      "anchor": "SAVE ALTAR",
+      "prompt": "¿Qué lugares de luz divina permiten guardar en God of War de 2005?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20144",
+      "scan": 8,
+      "anchor": "Raiden",
+      "prompt": "¿Quién es el agente protagonista del capítulo Plant de Sons of Liberty?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20144",
+      "scan": 8,
+      "anchor": "Solid Snake",
+      "prompt": "¿Quién realiza la infiltración del capítulo Tanker de Sons of Liberty?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20144",
+      "scan": 8,
+      "anchor": "Big Shell",
+      "prompt": "¿Cómo se llama la gran instalación marítima del capítulo Plant en Sons of Liberty?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20144",
+      "scan": 47,
+      "anchor": "Hal Emmerich",
+      "prompt": "¿Cuál es el verdadero nombre de Otacon en Sons of Liberty?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20144",
+      "scan": 8,
+      "anchor": "Philanthropy",
+      "prompt": "¿A qué organización antimetal Gear pertenece Snake en Sons of Liberty?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20915",
+      "scan": 6,
+      "anchor": "Cold War",
+      "prompt": "¿En qué conflicto histórico se ambienta Snake Eater?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20915",
+      "scan": 20,
+      "anchor": "eat",
+      "prompt": "¿Qué debe hacer Snake para recuperar stamina en Snake Eater?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20915",
+      "scan": 21,
+      "anchor": "blend in",
+      "prompt": "¿Para qué sirve el camuflaje en Snake Eater?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20915",
+      "scan": 26,
+      "anchor": "CLOSE QUARTERS",
+      "prompt": "¿Qué significa CQC en Snake Eater?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20915",
+      "scan": 35,
+      "anchor": "CURE",
+      "prompt": "¿Qué opción del Survival Viewer trata heridas y envenenamiento en Snake Eater?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 10,
+      "anchor": "Dante",
+      "prompt": "¿Quién protagoniza el primer Devil May Cry?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 11,
+      "anchor": "Trish",
+      "prompt": "¿Qué mujer invita a Dante a la isla en el primer Devil May Cry?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 11,
+      "anchor": "Mallet Island",
+      "prompt": "¿A qué isla invita Trish a Dante en Devil May Cry original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 12,
+      "anchor": "strings",
+      "prompt": "¿Qué clase de enemigos son las Marionettes en Devil May Cry original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 13,
+      "anchor": "spider",
+      "prompt": "¿A qué animal se parece el jefe Phantom en Devil May Cry original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97113",
+      "scan": 7,
+      "anchor": "horns",
+      "prompt": "¿Qué rasgo físico hace que los aldeanos teman a Ico?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97113",
+      "scan": 8,
+      "anchor": "Yorda",
+      "prompt": "¿Cómo se llama la joven a la que ayuda Ico?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97113",
+      "scan": 9,
+      "anchor": "Queen",
+      "prompt": "¿Quién gobierna el castillo de Ico?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97113",
+      "scan": 9,
+      "anchor": "escape",
+      "prompt": "¿Cuál es el objetivo principal de Ico y Yorda?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97113",
+      "scan": 24,
+      "anchor": "The Stick",
+      "prompt": "¿Qué arma sencilla puede usar Ico contra los espíritus?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97472",
+      "scan": 25,
+      "anchor": "Wander",
+      "prompt": "¿Cómo se llama el joven protagonista de Shadow of the Colossus?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97472",
+      "scan": 15,
+      "anchor": "Agro",
+      "prompt": "¿Cómo se llama el caballo de Shadow of the Colossus?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97472",
+      "scan": 25,
+      "anchor": "Mono",
+      "prompt": "¿Cómo se llama la joven vinculada a la misión de Wander en Shadow of the Colossus?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97472",
+      "scan": 5,
+      "anchor": "Colossi",
+      "prompt": "¿Qué clase de seres recorren las tierras de Shadow of the Colossus?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97472",
+      "scan": 5,
+      "anchor": "dead back to life",
+      "prompt": "¿Con qué poder relaciona la leyenda a los colosos en Shadow of the Colossus?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97199",
+      "scan": 1,
+      "anchor": "mechanic",
+      "prompt": "¿Qué profesión tiene Ratchet al comienzo del juego original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97199",
+      "scan": 1,
+      "anchor": "ROBOT NAMED CLANK",
+      "prompt": "¿Qué clase de personaje es Clank en Ratchet & Clank original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97199",
+      "scan": 1,
+      "anchor": "DREK",
+      "prompt": "¿Quién quiere construir un planeta con partes de otros mundos en Ratchet & Clank original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97199",
+      "scan": 1,
+      "anchor": "bolts",
+      "prompt": "¿Qué se utiliza como moneda habitual en Ratchet & Clank original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97199",
+      "scan": 1,
+      "anchor": "GADGETRON",
+      "prompt": "¿Qué empresa vende gran parte de los gadgets en Ratchet & Clank original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97124",
+      "scan": 1,
+      "anchor": "Power Cells",
+      "prompt": "¿Qué objetos permiten abrir nuevas zonas y se pueden conseguir como recompensa o intercambio en The Precursor Legacy?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97124",
+      "scan": 1,
+      "anchor": "Precursor Orbs",
+      "prompt": "¿Qué objetos antiguos se pueden intercambiar por Power Cells en The Precursor Legacy?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97124",
+      "scan": 1,
+      "anchor": "Green Eco",
+      "prompt": "¿Qué color de eco ayuda a recuperar salud en The Precursor Legacy?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97124",
+      "scan": 1,
+      "anchor": "Zoomer",
+      "prompt": "¿Qué vehículo permite recorrer tierra y mar en The Precursor Legacy?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97124",
+      "scan": 1,
+      "anchor": "Flut Flut",
+      "prompt": "¿Qué ave puede montar Jak para alcanzar lugares elevados en The Precursor Legacy?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97198",
+      "scan": 14,
+      "anchor": "cane",
+      "prompt": "¿Qué herramienta usa Sly para golpear y engancharse en Sly Cooper de PS2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97198",
+      "scan": 19,
+      "anchor": "Fiendish Five",
+      "prompt": "¿Cómo se llama el grupo de villanos de Sly Cooper and the Thievius Raccoonus?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97198",
+      "scan": 17,
+      "anchor": "binocucom",
+      "prompt": "¿Qué aparato permite observar zonas y recibir informes de Bentley en Sly Cooper?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97198",
+      "scan": 19,
+      "anchor": "blue",
+      "prompt": "¿De qué color son las auras que indican oportunidades de ladrón en Sly Cooper?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97198",
+      "scan": 33,
+      "anchor": "manually save",
+      "prompt": "¿Sly Cooper and the Thievius Raccoonus permite guardar manualmente además del autoguardado?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20370",
+      "scan": 3,
+      "anchor": "Destiny Islands",
+      "prompt": "¿Dónde viven Sora, Riku y Kairi al comienzo del primer Kingdom Hearts?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20370",
+      "scan": 6,
+      "anchor": "Court wizard",
+      "prompt": "¿Qué función tiene Donald en la corte del primer Kingdom Hearts?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20370",
+      "scan": 6,
+      "anchor": "Captain of the royal knights",
+      "prompt": "¿Qué cargo tiene Goofy en el primer Kingdom Hearts?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20370",
+      "scan": 7,
+      "anchor": "HEARTLESS",
+      "prompt": "¿Cómo se llaman los seres misteriosos que persiguen a Sora en Kingdom Hearts?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20370",
+      "scan": 11,
+      "anchor": "restore HP and MP",
+      "prompt": "Además de guardar, ¿qué recuperan los puntos de guardado de Kingdom Hearts?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 8,
+      "anchor": "summoner named Yuna",
+      "prompt": "¿Qué invocadora emprende la peregrinación central de Final Fantasy X?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 8,
+      "anchor": "Sin",
+      "prompt": "¿Cómo se llama la amenaza que Yuna busca derrotar en Final Fantasy X?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 19,
+      "anchor": "underwater sport",
+      "prompt": "¿Qué deporte se juega bajo el agua en Final Fantasy X?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 16,
+      "anchor": "Sphere Grid",
+      "prompt": "¿Qué tablero desarrolla atributos y habilidades de los personajes en Final Fantasy X?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 9,
+      "anchor": "Ronso tribe",
+      "prompt": "¿Qué personaje de Final Fantasy X pertenece a los Ronso?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21115",
+      "scan": 8,
+      "anchor": "AMATERASU",
+      "prompt": "¿Quién es el personaje controlado por el jugador en Okami?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21115",
+      "scan": 8,
+      "anchor": "ISSUN",
+      "prompt": "¿Qué diminuto acompañante viaja con Amaterasu en Okami?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21115",
+      "scan": 14,
+      "anchor": "Celestial Brush",
+      "prompt": "¿Qué herramienta permite dibujar y transformar el mundo en Okami?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21115",
+      "scan": 8,
+      "anchor": "SAKUYA",
+      "prompt": "¿Qué espíritu ayuda a Amaterasu a regresar al mundo en Okami?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21115",
+      "scan": 13,
+      "anchor": "Origin Mirror",
+      "prompt": "¿Qué objetos permiten guardar la aventura en Okami?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20946",
+      "scan": 4,
+      "anchor": "CARL JOHNSON",
+      "prompt": "¿Cuál es el apellido de Carl en GTA: San Andreas?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20946",
+      "scan": 7,
+      "anchor": "Los Santos",
+      "prompt": "¿Cuál de estas ciudades pertenece al mapa de GTA: San Andreas?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20946",
+      "scan": 16,
+      "anchor": "Las Venturas",
+      "prompt": "¿Qué ciudad de GTA: San Andreas destaca por sus casinos?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20946",
+      "scan": 19,
+      "anchor": "barber",
+      "prompt": "¿Qué servicio permite cambiar el corte de pelo en GTA: San Andreas?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20946",
+      "scan": 18,
+      "anchor": "Sprunk",
+      "prompt": "¿Qué bebida ficticia aparece anunciada en el manual de GTA: San Andreas?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20915",
+      "scan": 42,
+      "anchor": "Cold Medicine",
+      "prompt": "¿Qué tratamiento cura un resfriado en Metal Gear Solid 3 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20915",
+      "scan": 42,
+      "anchor": "leeches",
+      "prompt": "¿Qué objeto se usa contra las sanguijuelas en Metal Gear Solid 3 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 12,
+      "anchor": "masks",
+      "prompt": "¿Dónde conviene apuntar contra Sin Scissors en Devil May Cry original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 13,
+      "anchor": "projectile",
+      "prompt": "¿Qué ataques afectan inicialmente al cuerpo de Shadow en Devil May Cry original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 26,
+      "anchor": "vitality recovers",
+      "prompt": "Además de aumentar el ataque, ¿qué ocurre durante Devil Trigger en Devil May Cry original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21134",
+      "scan": 21,
+      "anchor": "treasures",
+      "prompt": "¿A quién se venden joyas y tesoros en Resident Evil 4 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21134",
+      "scan": 21,
+      "anchor": "firepower",
+      "prompt": "¿Para qué sirve mejorar las armas con el vendedor en Resident Evil 4 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21134",
+      "scan": 20,
+      "anchor": "COMBINING ITEMS",
+      "prompt": "¿Qué acción permite obtener efectos mejores con determinadas hierbas en Resident Evil 4 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21134",
+      "scan": 12,
+      "anchor": "laser sight",
+      "prompt": "¿Qué ayuda a apuntar las armas de Leon en Resident Evil 4 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21134",
+      "scan": 24,
+      "anchor": "explode",
+      "prompt": "¿Qué elemento del escenario puede explotar al dispararle en Resident Evil 4 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 18,
+      "anchor": "nails",
+      "prompt": "¿Qué arma inicial del manual de Silent Hill 2 es un palo con clavos?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 18,
+      "anchor": "Replenishes a lot",
+      "prompt": "¿Qué objeto repone una cantidad importante de salud en Silent Hill 2 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 11,
+      "anchor": "red",
+      "prompt": "¿De qué color son los misteriosos objetos que señalan puntos de guardado en Silent Hill 2 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 10,
+      "anchor": "red",
+      "prompt": "¿Cómo registra James información importante en su mapa de Silent Hill 2 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 20,
+      "anchor": "Combine",
+      "prompt": "¿Qué orden permite reunir objetos que deben utilizarse juntos en un rompecabezas de Silent Hill 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97399",
+      "scan": 30,
+      "anchor": "Green Orbs",
+      "prompt": "¿Qué color de orbes recupera salud en God of War de 2005?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97399",
+      "scan": 30,
+      "anchor": "Blue Orbs",
+      "prompt": "¿Qué color de orbes recupera magia en God of War de 2005?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97399",
+      "scan": 30,
+      "anchor": "Red Orbs",
+      "prompt": "¿Qué color de orbes se utiliza para mejorar armas y magia en God of War de 2005?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97399",
+      "scan": 31,
+      "anchor": "Trident",
+      "prompt": "¿Qué reliquia permite a Kratos nadar y respirar bajo el agua en God of War de 2005?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97399",
+      "scan": 9,
+      "anchor": "bigger attack combos",
+      "prompt": "¿Qué favorece que se llene más rápido la barra Rage of the Gods en God of War de 2005?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20144",
+      "scan": 31,
+      "anchor": "Nodes",
+      "prompt": "¿Qué terminales se usan para descargar mapas en Big Shell en Sons of Liberty?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20144",
+      "scan": 37,
+      "anchor": "COOLANT SPRAY",
+      "prompt": "¿Qué objeto se utiliza para desactivar bombas en Sons of Liberty?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20144",
+      "scan": 28,
+      "anchor": "hiding bodies",
+      "prompt": "¿Para qué sirve arrastrar a un soldado caído en Sons of Liberty?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20144",
+      "scan": 49,
+      "anchor": "saving mission",
+      "prompt": "¿Quién guarda los datos de misión de Raiden por Codec en Sons of Liberty?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20144",
+      "scan": 39,
+      "anchor": "blood",
+      "prompt": "¿Qué objeto detiene el sangrado de heridas abiertas en Sons of Liberty?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20915",
+      "scan": 21,
+      "anchor": "UNIFORM",
+      "prompt": "¿Qué dos componentes de camuflaje se seleccionan en Snake Eater?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20915",
+      "scan": 21,
+      "anchor": "higher",
+      "prompt": "¿Qué indica un Camo Index más alto en Snake Eater?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20915",
+      "scan": 29,
+      "anchor": "rotten",
+      "prompt": "¿Qué riesgo tiene comer alimentos podridos en Snake Eater?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20915",
+      "scan": 26,
+      "anchor": "Interrogate",
+      "prompt": "¿Para qué sirve interrogar a un enemigo capturado con CQC en Snake Eater?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20915",
+      "scan": 20,
+      "anchor": "tranquilizer",
+      "prompt": "¿Qué ataques reducen la barra de stamina de los jefes en Snake Eater?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 22,
+      "anchor": "Red Orbs",
+      "prompt": "¿Qué orbes se gastan en mejoras y habilidades en Devil May Cry original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 27,
+      "anchor": "YELLOW ORB",
+      "prompt": "¿Qué orbe permite continuar después de la derrota en Devil May Cry original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 27,
+      "anchor": "GREEN ORB",
+      "prompt": "¿Qué orbe recupera la vitalidad actual de Dante en Devil May Cry original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 27,
+      "anchor": "BLUE ORB",
+      "prompt": "¿Qué orbe aumenta la vitalidad máxima en Devil May Cry original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 27,
+      "anchor": "PURPLE ORB",
+      "prompt": "¿Qué orbe aumenta la capacidad máxima de Devil Trigger en Devil May Cry original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97113",
+      "scan": 14,
+      "anchor": "by the hand",
+      "prompt": "¿Qué gesto permite a Ico guiar de cerca a Yorda?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97113",
+      "scan": 15,
+      "anchor": "couches",
+      "prompt": "¿En qué muebles se guarda el progreso de Ico?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97113",
+      "scan": 20,
+      "anchor": "Yorda",
+      "prompt": "¿Quién puede abrir normalmente las Idol Doors en Ico?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97113",
+      "scan": 15,
+      "anchor": "portals",
+      "prompt": "¿A dónde intentan llevar los espíritus a Yorda en Ico?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97113",
+      "scan": 24,
+      "anchor": "torch",
+      "prompt": "¿Qué segundo uso puede tener el palo de Ico?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97472",
+      "scan": 7,
+      "anchor": "grip strength",
+      "prompt": "¿Qué reserva debés vigilar al mantenerte aferrado en Shadow of the Colossus?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97472",
+      "scan": 21,
+      "anchor": "stronger",
+      "prompt": "¿Qué efecto tiene tensar más tiempo el arco en Shadow of the Colossus?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97472",
+      "scan": 20,
+      "anchor": "Strength Meter",
+      "prompt": "¿Cuándo se puede ejecutar una estocada de espada a plena fuerza en Shadow of the Colossus?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97472",
+      "scan": 12,
+      "anchor": "underwater",
+      "prompt": "¿Qué limita el tiempo que podés permanecer bajo el agua en Shadow of the Colossus?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97472",
+      "scan": 17,
+      "anchor": "duck",
+      "prompt": "¿Qué postura defensiva puede adoptar Wander mientras cabalga en Shadow of the Colossus?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97199",
+      "scan": 1,
+      "anchor": "perfect tool",
+      "prompt": "¿Qué es el OmniWrench en Ratchet & Clank original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97199",
+      "scan": 1,
+      "anchor": "Bomb Glove",
+      "prompt": "¿Qué arma de Ratchet & Clank original lanza pequeñas bombas explosivas?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97199",
+      "scan": 1,
+      "anchor": "Pyrocitor",
+      "prompt": "¿Qué arma de Ratchet & Clank original dispara llamas?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97199",
+      "scan": 1,
+      "anchor": "Swing Shot",
+      "prompt": "¿Qué gadget de Ratchet & Clank original permite engancharse y balancearse en objetivos adecuados?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97199",
+      "scan": 1,
+      "anchor": "Glove of Doom",
+      "prompt": "¿Qué arma de Ratchet & Clank original libera pequeños agentes robóticos explosivos?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97124",
+      "scan": 1,
+      "anchor": "Red Eco",
+      "prompt": "¿Qué efecto tiene el eco rojo en The Precursor Legacy?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97124",
+      "scan": 1,
+      "anchor": "Blue Eco",
+      "prompt": "¿Qué tipo de eco permite activar artefactos Precursor en The Precursor Legacy?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97124",
+      "scan": 1,
+      "anchor": "Yellow Eco",
+      "prompt": "¿Qué tipo de eco se puede disparar contra enemigos en The Precursor Legacy?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97124",
+      "scan": 1,
+      "anchor": "Dark Eco",
+      "prompt": "¿Qué tipo de eco advierte el manual que está lleno de peligro en The Precursor Legacy?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97124",
+      "scan": 1,
+      "anchor": "Scout Flies",
+      "prompt": "¿Qué hay en las cajas donde los Lurkers encerraron pequeños exploradores en The Precursor Legacy?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97198",
+      "scan": 29,
+      "anchor": "gangster movies",
+      "prompt": "¿Qué películas inspiraron la transformación de Muggshot en Sly Cooper?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97198",
+      "scan": 30,
+      "anchor": "summon the undead",
+      "prompt": "¿Qué habilidad sobrenatural se atribuye a Mz. Ruby en Sly Cooper?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97198",
+      "scan": 31,
+      "anchor": "fireworks",
+      "prompt": "¿Cuál era el oficio original de Panda King en Sly Cooper?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97198",
+      "scan": 26,
+      "anchor": "piracy",
+      "prompt": "¿Qué pasión llevó a Raleigh hacia el crimen en Sly Cooper?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97198",
+      "scan": 32,
+      "anchor": "masterminded",
+      "prompt": "¿Quién planeó el asalto a la casa Cooper según el manual del primer Sly Cooper?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20370",
+      "scan": 13,
+      "anchor": "Fairy Godmother",
+      "prompt": "¿A quién se entregan gemas para aprender ciertas invocaciones en Kingdom Hearts?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20370",
+      "scan": 14,
+      "anchor": "Ability Points",
+      "prompt": "¿Qué puntos requieren algunas habilidades para equiparse en Kingdom Hearts?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20370",
+      "scan": 17,
+      "anchor": "Traverse Town",
+      "prompt": "¿En qué ciudad está el taller de síntesis descrito en el manual de Kingdom Hearts?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20370",
+      "scan": 13,
+      "anchor": "scatters various items",
+      "prompt": "¿Qué invocación reparte objetos por el campo de batalla en Kingdom Hearts?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20370",
+      "scan": 19,
+      "anchor": "build or remodel",
+      "prompt": "¿Para qué sirve el Gummi Garage en Kingdom Hearts?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 8,
+      "anchor": "Zanarkand Abes",
+      "prompt": "¿En qué equipo juega Tidus al presentarse en Final Fantasy X?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 9,
+      "anchor": "coach and captain",
+      "prompt": "¿Quién es entrenador y capitán de los Besaid Aurochs en Final Fantasy X?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 9,
+      "anchor": "Lancet",
+      "prompt": "¿Qué habilidad permite a Kimahri aprender técnicas enemigas en Final Fantasy X?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 10,
+      "anchor": "commands are executed",
+      "prompt": "¿Cuándo transcurre el tiempo en las batallas CTB de Final Fantasy X?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 14,
+      "anchor": "unicorn",
+      "prompt": "¿Qué eón de Final Fantasy X tiene forma de unicornio de rayos?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21115",
+      "scan": 18,
+      "anchor": "REJUVENATION",
+      "prompt": "¿Qué poder restaura objetos rotos en Okami?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21115",
+      "scan": 18,
+      "anchor": "POWER SLASH",
+      "prompt": "¿Qué poder corta objetos con un trazo recto en Okami?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21115",
+      "scan": 19,
+      "anchor": "WATER LILY",
+      "prompt": "¿Qué poder crea un nenúfar para cruzar agua en Okami?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21115",
+      "scan": 27,
+      "anchor": "praise orbs",
+      "prompt": "¿Qué recurso permite mejorar los atributos divinos de Amaterasu en Okami?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21115",
+      "scan": 19,
+      "anchor": "CHERRY BOMB",
+      "prompt": "¿Qué poder de Okami abre caminos haciendo aparecer una bomba?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20946",
+      "scan": 7,
+      "anchor": "3 wildly different",
+      "prompt": "¿Cuántas ciudades principales tiene GTA: San Andreas?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20946",
+      "scan": 15,
+      "anchor": "Binco",
+      "prompt": "¿Qué tienda económica de ropa aparece en GTA: San Andreas?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20946",
+      "scan": 15,
+      "anchor": "Didier Sachs",
+      "prompt": "¿Qué marca de lujo se menciona en las tiendas de Rodeo de GTA: San Andreas?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20946",
+      "scan": 9,
+      "anchor": "appear on the radar",
+      "prompt": "¿Dónde aparece el punto de navegación que marcás en el mapa de GTA: San Andreas?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20946",
+      "scan": 19,
+      "anchor": "RADIO AUTO-TUNE",
+      "prompt": "¿Qué opción de audio recuerda la emisora al cambiar de vehículo en GTA: San Andreas?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 26,
+      "anchor": "Masashi Tsuboyama",
+      "prompt": "¿Quién dirigió Silent Hill 2 original según sus créditos?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 26,
+      "anchor": "Hiroyuki Owaku",
+      "prompt": "¿Quién figura como guionista de Silent Hill 2 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 26,
+      "anchor": "Akira Yamaoka",
+      "prompt": "¿Quién figura como director de sonido de Silent Hill 2 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97472",
+      "scan": 25,
+      "anchor": "Naoki Bando",
+      "prompt": "¿Quién interpreta la voz de Emon en Shadow of the Colossus original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97472",
+      "scan": 25,
+      "anchor": "Hitomi Nabatame",
+      "prompt": "¿Quién interpreta la voz de Mono en Shadow of the Colossus original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21134",
+      "scan": 7,
+      "anchor": "six years",
+      "prompt": "¿Cuántos años han pasado desde la destrucción de Raccoon City según el manual de Resident Evil 4?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21134",
+      "scan": 11,
+      "anchor": "Follow me",
+      "prompt": "¿Qué dos órdenes básicas puede dar Leon a Ashley en Resident Evil 4 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21134",
+      "scan": 21,
+      "anchor": "enough space",
+      "prompt": "¿Qué puede impedir comprar equipo aunque tengas dinero en Resident Evil 4 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21134",
+      "scan": 21,
+      "anchor": "capacity",
+      "prompt": "¿Qué conjunto enumera prestaciones mejorables de las armas de Resident Evil 4 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21134",
+      "scan": 24,
+      "anchor": "combining different",
+      "prompt": "¿Qué puede aumentar el dinero obtenido por ciertos tesoros en Resident Evil 4 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 8,
+      "anchor": "RIDDLE LEVEL",
+      "prompt": "¿Qué dos dificultades se eligen por separado en Silent Hill 2 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 24,
+      "anchor": "S-FORCE",
+      "prompt": "¿Qué tecnología de sonido tridimensional menciona el manual de Silent Hill 2 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 25,
+      "anchor": "pressure",
+      "prompt": "¿Qué puede variar según la presión sobre el botón de ataque en Silent Hill 2 de PS2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 13,
+      "anchor": "Three years",
+      "prompt": "Al recibir la carta, ¿cuánto tiempo cree James que pasó desde la muerte de Mary en Silent Hill 2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20228",
+      "scan": 19,
+      "anchor": "monsters to your position",
+      "prompt": "¿Qué desventaja puede tener usar la linterna en Silent Hill 2 original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97399",
+      "scan": 31,
+      "anchor": "six eyes",
+      "prompt": "¿Cuántos Gorgon Eyes hacen falta por cada aumento del medidor de salud en God of War de 2005?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97399",
+      "scan": 31,
+      "anchor": "six",
+      "prompt": "¿Cuántas Phoenix Feathers hacen falta por cada aumento de magia en God of War de 2005?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97399",
+      "scan": 14,
+      "anchor": "five levels",
+      "prompt": "¿Hasta qué nivel se pueden mejorar las Blades of Chaos en God of War de 2005?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97399",
+      "scan": 32,
+      "anchor": "two",
+      "prompt": "¿Cuántas Muse Keys existen según el manual de God of War de 2005?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97399",
+      "scan": 32,
+      "anchor": "HADES",
+      "prompt": "¿Qué dos escudos permiten avanzar por el Templo de Pandora en God of War de 2005?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20144",
+      "scan": 23,
+      "anchor": "Grip Gauge",
+      "prompt": "¿Qué ocurre si se vacía la barra Grip mientras el personaje cuelga de una barandilla en Sons of Liberty?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20144",
+      "scan": 31,
+      "anchor": "NORMAL",
+      "prompt": "En Normal o superior, ¿qué hay que hacer para habilitar el radar de una zona nueva de Big Shell?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20144",
+      "scan": 38,
+      "anchor": "crawling position",
+      "prompt": "¿Qué postura reduce el temblor al apuntar con el rifle de francotirador en Sons of Liberty?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20144",
+      "scan": 39,
+      "anchor": "attached",
+      "prompt": "¿Qué condición hace efectivo un suppressor en Sons of Liberty?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20144",
+      "scan": 38,
+      "anchor": "noise can distract",
+      "prompt": "¿Para qué se puede lanzar un cargador vacío en Sons of Liberty?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20915",
+      "scan": 34,
+      "anchor": "3 cages",
+      "prompt": "¿Cuántas jaulas tiene Snake para capturar animales vivos en Snake Eater?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20915",
+      "scan": 38,
+      "anchor": "deteriorate",
+      "prompt": "¿Qué pasa con un suppressor a medida que se usa en Snake Eater?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20915",
+      "scan": 42,
+      "anchor": "Splint",
+      "prompt": "¿Qué utensilio se utiliza para tratar un hueso roto en Snake Eater?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20915",
+      "scan": 42,
+      "anchor": "leeches",
+      "prompt": "¿Qué objeto médico reutilizable sirve para quitar sanguijuelas en Snake Eater?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20915",
+      "scan": 41,
+      "anchor": "Stationary objects",
+      "prompt": "¿Qué sensor solo muestra objetos en movimiento en Snake Eater?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 27,
+      "anchor": "Four pieces",
+      "prompt": "¿Cuántos fragmentos de Blue Orb forman un orbe completo en Devil May Cry original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 26,
+      "anchor": "three",
+      "prompt": "¿Cuántas unidades de D.T. como mínimo deben estar cargadas para activar Devil Trigger según el manual original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 26,
+      "anchor": "THUNDER",
+      "prompt": "¿Con qué elemento se asocia Alastor en Devil May Cry original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 26,
+      "anchor": "FIRE",
+      "prompt": "¿Con qué elemento se asocia Ifrit en Devil May Cry original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20216",
+      "scan": 27,
+      "anchor": "all enemies",
+      "prompt": "¿Qué efecto tiene Holy Water en Devil May Cry original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97113",
+      "scan": 7,
+      "anchor": "l2th",
+      "prompt": "¿Qué edad tiene Ico cuando se lo llevan de su aldea?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97113",
+      "scan": 18,
+      "anchor": "constant weight",
+      "prompt": "¿Qué requieren algunos interruptores de presión para mantener una puerta abierta en Ico?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97113",
+      "scan": 15,
+      "anchor": "Both",
+      "prompt": "¿Quiénes deben estar sentados para guardar la partida en un sofá de Ico?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97113",
+      "scan": 24,
+      "anchor": "materialize",
+      "prompt": "¿Cuándo se pueden golpear y destruir los espíritus que buscan a Yorda en Ico?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97113",
+      "scan": 25,
+      "anchor": "Light the fuse",
+      "prompt": "¿Qué debe hacerse con una bomba antes de lanzarla en Ico?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97472",
+      "scan": 25,
+      "anchor": "Fumito Ueda",
+      "prompt": "¿Quién figura como director de Shadow of the Colossus de PS2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97472",
+      "scan": 24,
+      "anchor": "Kow Otani",
+      "prompt": "¿Quién compuso y arregló la música de Shadow of the Colossus de PS2?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97472",
+      "scan": 25,
+      "anchor": "Dormin",
+      "prompt": "¿Qué personaje de Shadow of the Colossus tiene dos intérpretes acreditados para su voz?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97472",
+      "scan": 25,
+      "anchor": "Kenji Nojima",
+      "prompt": "¿Quién da voz a Wander en el reparto original de Shadow of the Colossus?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97472",
+      "scan": 11,
+      "anchor": "longer",
+      "prompt": "¿Qué modifica mantener pulsado más tiempo el salto en Shadow of the Colossus?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97199",
+      "scan": 1,
+      "anchor": "VELDIN",
+      "prompt": "¿En qué planeta trabaja Ratchet al comenzar Ratchet & Clank original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97199",
+      "scan": 1,
+      "anchor": "ROBOTIC IGNITION",
+      "prompt": "¿Qué sistema de Clank necesita Ratchet para poner en marcha su nave en el juego original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97199",
+      "scan": 1,
+      "anchor": "CAPTAIN QWARK",
+      "prompt": "¿A qué supuesto héroe buscan Ratchet y Clank al acordar colaborar en el juego original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97199",
+      "scan": 1,
+      "anchor": "Infobots",
+      "prompt": "¿Qué objetos reproducen mensajes y añaden información de planetas al ordenador de la nave en Ratchet & Clank original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97199",
+      "scan": 1,
+      "anchor": "ROBO SHACK",
+      "prompt": "¿Dónde se compran mejoras para las funciones robóticas de Clank en Ratchet & Clank original?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97124",
+      "scan": 1,
+      "anchor": "50 units",
+      "prompt": "¿Cuántas unidades de Small Eco dan un punto de salud según el manual de The Precursor Legacy?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97124",
+      "scan": 1,
+      "anchor": "100%",
+      "prompt": "¿Qué ocurre al permanecer en un Green Eco Vent en The Precursor Legacy?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97124",
+      "scan": 1,
+      "anchor": "conventional attacks",
+      "prompt": "¿Qué advierte el manual sobre las Strong Boxes de The Precursor Legacy?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97124",
+      "scan": 1,
+      "anchor": "Oracles",
+      "prompt": "¿Qué contienen las antiguas estatuas llamadas Oracles en The Precursor Legacy?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97124",
+      "scan": 1,
+      "anchor": "time left",
+      "prompt": "¿Qué mide el Eco Meter además del nivel de eco en The Precursor Legacy?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97198",
+      "scan": 26,
+      "anchor": "Welsh Triangle",
+      "prompt": "¿En qué triángulo marítimo está la base de Raleigh en Sly Cooper?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97198",
+      "scan": 26,
+      "anchor": "Isle",
+      "prompt": "¿Cómo se llama la isla asociada a Raleigh en Sly Cooper?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97198",
+      "scan": 29,
+      "anchor": "Mesa City",
+      "prompt": "¿En qué ciudad opera Muggshot en Sly Cooper?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97198",
+      "scan": 31,
+      "anchor": "Kunlun",
+      "prompt": "¿Qué cordillera alberga la base de Panda King en Sly Cooper?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SCUS97198",
+      "scan": 30,
+      "anchor": "Haitian Jungle",
+      "prompt": "¿Qué región aparece como ubicación de Mz. Ruby en Sly Cooper?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20370",
+      "scan": 11,
+      "anchor": "must all be in the party",
+      "prompt": "¿Qué tres personajes deben estar en el grupo para utilizar Trinity en Kingdom Hearts?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20370",
+      "scan": 13,
+      "anchor": "once per battle",
+      "prompt": "¿Cuántas veces se puede usar cada invocación en una misma batalla de Kingdom Hearts?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20370",
+      "scan": 11,
+      "anchor": "never disappear",
+      "prompt": "¿Qué distingue a todos los puntos de guardado de tipo A en Kingdom Hearts?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20370",
+      "scan": 13,
+      "anchor": "must be conscious",
+      "prompt": "¿Qué condición deben cumplir los dos aliados de Sora para abrir el menú Summon en Kingdom Hearts?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20370",
+      "scan": 19,
+      "anchor": "Drain-Gummi",
+      "prompt": "¿Qué accesorio Gummi recoge objetos distantes mediante un brazo mecánico en Kingdom Hearts?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 11,
+      "anchor": "takes damage",
+      "prompt": "¿Qué condición carga el Overdrive en modo Stoic en Final Fantasy X?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 11,
+      "anchor": "evades an attack",
+      "prompt": "¿Qué condición carga el Overdrive en modo Dancer en Final Fantasy X?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 17,
+      "anchor": "Kimahri (blue)",
+      "prompt": "¿Qué color deja Kimahri al activar nodos en la Esferógrafa de Final Fantasy X?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 12,
+      "anchor": "petrified",
+      "prompt": "¿Qué puede provocar Game Over aunque haya reservas capaces de luchar en Final Fantasy X?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20312",
+      "scan": 13,
+      "anchor": "current weapons and armor",
+      "prompt": "¿De dónde provienen las Auto-Abilities activas en Final Fantasy X?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21115",
+      "scan": 25,
+      "anchor": "three",
+      "prompt": "¿Cuántos Holy Artifacts se pueden equipar a la vez en Okami?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21115",
+      "scan": 25,
+      "anchor": "GOLDEN INK POT",
+      "prompt": "¿Qué accesorio acelera la recuperación del medidor del pincel en Okami?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21115",
+      "scan": 25,
+      "anchor": "PEACE BELL",
+      "prompt": "¿Qué artefacto permite escapar de Demon Scrolls que persiguen a Amaterasu en Okami?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21115",
+      "scan": 24,
+      "anchor": "Divine Retribution",
+      "prompt": "¿Cómo se llama el primer reflector que lleva equipado Amaterasu en Okami?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS21115",
+      "scan": 9,
+      "anchor": "Nagi",
+      "prompt": "¿De qué héroe legendario desciende Susano en Okami?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20946",
+      "scan": 7,
+      "anchor": "Gant Bridge",
+      "prompt": "¿Qué puente destaca la descripción del aeropuerto de San Fierro en GTA: San Andreas?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20946",
+      "scan": 19,
+      "anchor": "Reece",
+      "prompt": "¿Qué barbería de Los Santos recomienda el manual de GTA: San Andreas?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20946",
+      "scan": 22,
+      "anchor": "Leslie Benzies",
+      "prompt": "¿Quién figura como productor de Rockstar North en los créditos de GTA: San Andreas?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20946",
+      "scan": 22,
+      "anchor": "RICKY HARRIS",
+      "prompt": "¿Qué actor interpreta al DJ de Master Sounds según el manual de GTA: San Andreas?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    },
+    {
+      "manual": "ps2-SLUS20946",
+      "scan": 22,
+      "anchor": "James",
+      "prompt": "¿Qué trío aparece acreditado como guionista de GTA: San Andreas?",
+      "review": "Manual original: dato contextual revisado; localizador comprobado por OCR. Dificultad editorial, no calibrada con jugadores."
+    }
+  ]
+}

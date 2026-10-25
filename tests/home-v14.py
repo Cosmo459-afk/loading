@@ -40,9 +40,9 @@ with sync_playwright() as p:
     page.locator('#cosmeticCategory').select_option('theme');assert page.locator('.cosmetic-item').count()==4
     assert all(page.locator('.cosmetic-item button').evaluate_all('els=>els.map(e=>e.disabled)'))
     page.locator('#cosmeticCategory').select_option('background')
-    page.locator('.cosmetic-item').filter(has_text='Fondo · Espacio profundo').get_by_role('button').click();page.wait_for_function('profile.cosmetics.background==="deep-space"')
-    assert 'circle' in page.locator('#wardrobePreview img').get_attribute('src')
-    fixture('/_test/control',{'grantXP':14500});page.reload();page.wait_for_function('profile?.xp===14500')
+    page.locator('.cosmetic-item').filter(has_text='Fondo violeta').get_by_role('button').click();page.wait_for_function('profile.cosmetics.background==="violet-grid"')
+    assert page.locator('#wardrobePreview img').get_attribute('src')!=before
+    fixture('/_test/control',{'grantXP':100000});page.reload();page.wait_for_function('profile?.xp===100000')
     page.evaluate('openWardrobe()');page.wait_for_selector('#wardrobe:not(.hidden)')
     for name,slot,item in [('Aurora boreal','background','aurora'),('Auriculares retro','hat','retro-headphones'),('Visor cyber','glasses','cyber-visor'),('Pulso neón','frame','pulse-frame'),('Fantasmita','badge','ghost-badge'),('Océano eléctrico','theme','ocean-theme'),('Tipografía · Arcade','font','pixel-font')]:
         page.locator('.cosmetic-item').filter(has_text=name).get_by_role('button').click();page.wait_for_function('([slot,id])=>profile.cosmetics[slot]===id',arg=[slot,item])
@@ -64,7 +64,7 @@ with sync_playwright() as p:
         games=fixture('/rest/v1/arcade_games',token=alice['access_token']);game=games[0]
         assert game['quiz_id']=='ps2-'+tier+'-01'
         keys=fixture('/_test/answers',{'gameId':game['id']})
-        for key in keys:page.locator('.choice').nth(key).click();page.locator('#nextBtn').click()
+        for key in keys:page.locator('.choice').nth(key).click();page.wait_for_timeout(500)
         page.wait_for_selector('#result:not(.hidden)')
     assert 'OTRA CONSOLA' in page.locator('#continueQuizBtn').inner_text()
     page.locator('#continueQuizBtn').click();page.wait_for_selector('#menu:not(.hidden)');assert page.locator('#category').input_value()=='ps1'
@@ -73,8 +73,8 @@ with sync_playwright() as p:
         for screen in ['home','menu','wardrobe','rewards']:
             page.evaluate('(id)=>go(id)',screen);page.wait_for_timeout(30)
             assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),(width,screen)
-    page.wait_for_selector('#levelToast[hidden]',state='attached');page.set_viewport_size({'width':390,'height':844});page.evaluate("go('home')");page.screenshot(path='/workspace/loading/design/inicio-v14-mobile.png',full_page=True)
-    page.set_viewport_size({'width':1280,'height':1000});page.screenshot(path='/workspace/loading/design/inicio-v14-desktop.png',full_page=True)
+    page.wait_for_selector('#levelToast[hidden]',state='attached');page.set_viewport_size({'width':390,'height':844});page.evaluate("go('home')");page.screenshot(path='/workspace/loading/design/inicio-v15-mobile.png',full_page=True)
+    page.set_viewport_size({'width':1280,'height':1000});page.screenshot(path='/workspace/loading/design/inicio-v15-desktop.png',full_page=True)
     page.evaluate('openWardrobe()');page.wait_for_selector('#wardrobe:not(.hidden)');page.screenshot(path='/tmp/loading-v14-cosmetics.png',full_page=True)
     assert not errors,errors;browser.close()
 print('PASS v0.14 home: embedded logo; horizontal milestones; real opt-in community, refresh/removal/persistence; 31 previews and seven cosmetic slots; XP locks; saved theme/font; reduced-motion frames; automatic easy→medium→hard with one-click next and no titles/selectors; readable questions; responsive home/route/wardrobe/progress.')

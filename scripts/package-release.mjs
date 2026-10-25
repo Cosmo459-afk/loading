@@ -26,6 +26,10 @@ for(const file of new Set(catalog.cards.map(c=>c.imageFile))){
  const bytes=await readFile(new URL('assets/cards/re4/'+file,root));
  if(!html.includes(bytes.toString('base64')))throw new Error('Artwork not embedded: '+file);
 }
+const coupon=await readFile(new URL('assets/rewards/coupon-level5.png',root));
+const rewardArt=JSON.parse(await readFile(new URL('assets/rewards/provenance.json',root),'utf8'));
+if(createHash('sha256').update(coupon).digest('hex')!==rewardArt.sha256||!html.includes(coupon.toString('base64')))throw new Error('Coupon artwork changed or not embedded');
+if(html.includes('manual_sha256')||html.includes('ps1-easy-v15-01'))throw new Error('Private trivia bank must not be bundled');
 const result=spawnSync('python',['-c',`from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 root=Path(${JSON.stringify(root.pathname)})

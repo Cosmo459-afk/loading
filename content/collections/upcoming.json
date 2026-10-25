@@ -1,0 +1,5 @@
+[
+ {"id":"mgs","title":"Metal Gear Solid","edition":"Original · PlayStation 1","status":"waiting-images","planned":{"common":8,"epic":4,"legendary":2}},
+ {"id":"sh2","title":"Silent Hill 2","edition":"Original · PlayStation 2","status":"waiting-images","planned":{"common":8,"epic":4,"legendary":2}},
+ {"id":"pe2","title":"Parasite Eve II","edition":"Original · PlayStation 1","status":"waiting-images","planned":{"common":8,"epic":4,"legendary":2}}
+]

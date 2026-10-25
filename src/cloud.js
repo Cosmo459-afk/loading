@@ -7,6 +7,8 @@ import {collectionDefinitions,collectionCards} from './collections.js';
 import {installAudio} from './audio.js';
 import {decorateAvatar,badges,slotNames} from './cosmetics.js';
 import brandLogo from '../assets/brand/loading-arcade.png';
+import couponArt from '../assets/rewards/coupon-level5.png';
+import {installRewardUI} from './reward-ui.js';
 const lockup=document.querySelector('header > div');lockup.className='brand-lockup';lockup.innerHTML='<img class="brand-logo" src="'+brandLogo+'" alt="LOADING ARCADE" width="1966" height="804">';
 const audio=installAudio();
 // Replace the provisional catalog with the confirmed RE4 collection.
@@ -18,8 +20,10 @@ const returning=new URLSearchParams(location.search).has('code');
 const client=createClient(config.url,config.publishableKey,{
   auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
 });
-const state={session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false,owned:[],chests:[],chestBusy:false,community:null,communityBusy:false,communityError:false,visibilityBusy:false};
+const state={session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false,owned:[],chests:[],chestBusy:false,community:null,communityBusy:false,communityError:false,visibilityBusy:false,coupon:null,couponError:false,ownedCosmetics:[],lastResult:null};
 profile=null; // Never turn a local profile into a verified cloud account.
+const rewardUI=installRewardUI({profile:()=>profile,coupon:()=>state.coupon,couponError:()=>state.couponError,uid:()=>state.uid,requestRedemption:async id=>{const {data,error}=await client.rpc('arcade_request_coupon_redemption',{p_coupon_id:id});if(!error&&data?.player_id===state.uid)state.coupon=data;},avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),brand:brandLogo,art:couponArt});
+
 
 function message(text){$('cloudNotice').textContent=text;$('cloudNotice').hidden=!text;}
 function authMessage(text){$('authMessage').textContent=text;}
@@ -43,19 +47,21 @@ function applyPersonalStyle(){
  document.body.dataset.theme=['ocean-theme','amber-theme','violet-theme','jade-theme'].includes(c.theme)?c.theme:'';
  document.body.dataset.personalFont=['pixel-font','terminal-font'].includes(c.font)?c.font:'';
 }
+function cosmeticOwned(item){return !!profile&&(profile.xp>=item.required_xp||state.ownedCosmetics.includes(item.id));}
+function stepEarned(step){return step.kind==='Cosmético'?cosmeticOwned(step):(profile?.xp||0)>=step.at;}
 function renderProgressTrack(target){
  if(!target||!profile)return;
- const xp=profile.xp,steps=rewardSteps(),next=steps.find(s=>s.at>xp);
+ const xp=profile.xp,steps=rewardSteps(),next=steps.find(s=>s.at>xp&&!stepEarned(s));
  target.replaceChildren();
  const list=document.createElement('ol');list.className='progress-route';list.tabIndex=0;list.setAttribute('aria-label','Ruta horizontal de progreso. Desplazá para ver las recompensas.');
  for(const step of steps){
-  const item=document.createElement('li');item.className='progress-stop'+(xp>=step.at?' earned':'')+(step===next?' next':'');
-  const button=document.createElement('button');button.type='button';button.className='progress-prize secondary';button.setAttribute('aria-label',step.name+' · '+step.at+' XP · '+(xp>=step.at?'Desbloqueado':'Pendiente'));
-  const icon=document.createElement('span');icon.className='progress-prize-icon';icon.setAttribute('aria-hidden','true');icon.textContent=step.kind==='Cofre'?'▣':({background:'▧',frame:'◇',badge:'✦',font:'Aa',theme:'◒',hat:'♜',glasses:'⌐■-■'})[step.slot]||'✦';
+  const item=document.createElement('li');item.className='progress-stop'+(stepEarned(step)?' earned':'')+(step===next?' next':'');
+  const button=document.createElement('button');button.type='button';button.className='progress-prize secondary';button.setAttribute('aria-label',step.name+' · '+step.at+' XP · '+(stepEarned(step)?'Desbloqueado':'Pendiente'));
+  const icon=document.createElement('span');icon.className='progress-prize-icon';icon.setAttribute('aria-hidden','true');icon.textContent=step.kind==='Cofre'?'▣':step.kind==='Cupón'?'%':({background:'▧',frame:'◇',badge:'✦',font:'Aa',theme:'◒',hat:'♜',glasses:'⌐■-■'})[step.slot]||'✦';
   const title=document.createElement('strong');title.textContent=step.name;
   const value=document.createElement('small');value.textContent=step.at+' XP';
-  const status=document.createElement('small');status.className='progress-stop-status';status.textContent=xp>=step.at?'✓ Desbloqueado':step===next?'Próximo · '+(step.at-xp)+' XP':'Pendiente';
-  button.append(icon,title,value,status);button.onclick=()=>step.kind==='Cofre'?openChests():openWardrobe();item.appendChild(button);list.appendChild(item);
+  const status=document.createElement('small');status.className='progress-stop-status';status.textContent=stepEarned(step)?'✓ Desbloqueado':step===next?'Próximo · '+(step.at-xp)+' XP':'Pendiente';
+  button.append(icon,title,value,status);button.onclick=()=>step.kind==='Cofre'?openChests():step.kind==='Cupón'?openBenefits():openWardrobe();item.appendChild(button);list.appendChild(item);
  }
  target.appendChild(list);
  requestAnimationFrame(()=>centerProgress(list));
@@ -151,12 +157,12 @@ function accountUI(){
   panel.innerHTML='<div class="profile-top">'+avatarHTML(profile)+'<div><div class="eyebrow">TU JUGADOR</div><h2>'+esc(profile.name)+'</h2><p>Nivel '+level+' · '+(isTemporary()?'Sin correo vinculado':'Acceso protegido')+'</p></div><button class="secondary home-exit" onclick="logout()" aria-label="Cerrar sesión" title="Cerrar sesión">↪</button></div>'+
     '<div class="home-mini-stats"><span><strong>'+xp+'</strong> XP totales</span><span><strong>'+profile.unlocked.length+'</strong> coleccionables</span></div>'+
     '<button class="home-play" onclick="openPlayer()">CONTINUAR RUTA →</button>'+
-    '<div class="home-shortcuts"><button class="secondary" onclick="showCollections()">MI COLECCIÓN</button><button class="secondary" onclick="openWardrobe()">MI ESTILO</button><button class="secondary" onclick="showHistory()">HISTORIAL</button><button class="secondary" onclick="showProfile()">EDITAR PERFIL</button></div>'+
+    '<div class="home-shortcuts"><button class="secondary" onclick="showCollections()">MI COLECCIÓN</button><button class="secondary" onclick="openWardrobe()">MI ESTILO</button><button class="secondary" onclick="showHistory()">HISTORIAL</button><button class="secondary" onclick="openBenefits()">CUPÓN</button><button class="secondary" onclick="showProfile()">EDITAR PERFIL</button></div>'+
     (isTemporary()?'<button class="text-button home-link" onclick="openLinkAccount()">Vincular correo para proteger mi acceso</button>':'');
   $('homeProgress').hidden=false;
-  $('homeProgress').innerHTML='<div class="home-route-heading"><div><div class="eyebrow">PROGRESO</div><h2>Próximo cofre · Nivel '+(level+1)+'</h2></div><span class="home-chest-icon" aria-hidden="true">▣</span></div>'+
+  $('homeProgress').innerHTML='<div class="home-route-heading"><div><div class="eyebrow">PROGRESO</div><h2>'+(level+1===5?'Cupón del 10% · Nivel 5':'Próximo cofre · Nivel '+(level+1))+'</h2></div><span class="home-chest-icon" aria-hidden="true">▣</span></div>'+
     '<p class="home-xp-left">Te faltan <strong>'+remaining+' XP</strong></p>'+
-    '<div class="bar" role="progressbar" aria-label="Experiencia hacia el próximo cofre" aria-valuemin="0" aria-valuemax="1800" aria-valuenow="'+(xp%1800)+'"><div class="fill" style="width:'+percent+'%"></div></div>'+
+    '<div class="bar" role="progressbar" aria-label="Experiencia hacia el próximo nivel" aria-valuemin="0" aria-valuemax="1800" aria-valuenow="'+(xp%1800)+'"><div class="fill" style="width:'+percent+'%"></div></div>'+
     '<div class="progress-text"><small>Nivel '+level+'</small><small>'+(xp%1800)+' / 1800 XP</small></div>'+
     '<div id="homeRewardTrack"></div>'+
     (unopened?'<button class="home-open-chest" onclick="openChests()">ABRIR '+unopened+' '+(unopened===1?'COFRE':'COFRES')+' →</button>':'<button class="secondary" onclick="openChests()">MIS COFRES</button>');
@@ -191,18 +197,21 @@ function adopt(row){
 async function loadProfile(uid,version){
   state.profileLoading=true;state.profileError=false;accountUI();
   try{
-    const [player,catalog,cosmetics,owned,chests]=await Promise.all([
+    const [player,catalog,cosmetics,owned,chests,ownedCosmetics,coupon]=await Promise.all([
       client.from('arcade_profiles').select('*').eq('id',uid).maybeSingle(),
       client.from('arcade_cards').select('id,name,kind,rarity,collection_id,description'),
       client.from('arcade_cosmetics').select('id,slot,name,required_xp'),
       client.from('arcade_owned_cards').select('card_id'),
-      client.from('arcade_chests').select('id,level,opened_at,prize_kind,card_id').order('level',{ascending:false})
+      client.from('arcade_chests').select('id,level,opened_at,prize_kind,card_id').order('level',{ascending:false}),
+      client.from('arcade_owned_cosmetics').select('item_id'),
+      client.rpc('arcade_get_coupon')
     ]);
     if(version!==state.version)return;
     if(player.error)throw player.error;
     if(catalog.error)throw catalog.error;
     if(cosmetics.error)throw cosmetics.error;
     if(owned.error)throw owned.error;if(chests.error)throw chests.error;
+    state.ownedCosmetics=(ownedCosmetics.data||[]).map(o=>o.item_id);state.coupon=coupon.data?.id?coupon.data:null;state.couponError=!!coupon.error;
     state.cosmetics=cosmetics.data;state.owned=owned.data.map(x=>x.card_id);state.chests=chests.data;
     for(const c of catalog.data){const local=cards.find(x=>x.id===c.id);if(local){local.name=c.name;local.kind=c.kind;local.collection=c.collection_id;local.description=c.description;local.rarityKey=c.rarity;local.rarity=({common:'Común',rare:'Rara',epic:'Épica',legendary:'Legendaria'})[c.rarity]||'Por definir';}}
     adopt(player.data);void refreshCommunity(version);
@@ -226,7 +235,7 @@ async function useSession(session){
   state.cosmetics=[];state.owned=[];state.chests=[];state.chestBusy=false;state.catalog=null;state.catalogLoading=false;state.catalogError=false;state.catalogPromise=null;
   state.community=null;state.communityBusy=false;state.communityError=false;wardrobeSlot='all';
   state.uid=uid;state.profileLoading=!!uid;state.profileError=false;state.game=null;state.answers=[];state.pending=null;profile=null;mode='player';
-  audio.cancelEffects();
+  audio.cancelEffects();rewardUI.clear();state.coupon=null;state.couponError=false;state.ownedCosmetics=[];state.lastResult=null;
   $('recoverGame').hidden=true;
   selectedCollection=null;
   if($('cardDetail').open)$('cardDetail').close();$('cardDetailArt').replaceChildren();
@@ -382,7 +391,7 @@ toggleFeatured=async function(id){
 };
 const tierNames={easy:'Fácil',medium:'Medio',hard:'Difícil',normal:'Fácil',expert:'Difícil'};
 function orderedQuizzes(rows){return [...rows].sort((a,b)=>['easy','medium','hard'].indexOf(a.difficulty)-['easy','medium','hard'].indexOf(b.difficulty)||(a.sort_order||0)-(b.sort_order||0)||a.id.localeCompare(b.id));}
-function groupQuizzes(cat,level){return orderedQuizzes((state.catalog||[]).filter(q=>q.category===cat&&q.difficulty===level));}
+function groupQuizzes(cat,level){return orderedQuizzes((state.catalog||[]).filter(q=>!q.legacy&&q.category===cat&&q.difficulty===level));}
 function nextRouteQuiz(cat){return (state.catalog||[]).find(q=>q.in_progress)||orderedQuizzes((state.catalog||[]).filter(q=>q.category===cat&&!q.completed))[0];}
 function renderQuizCatalog(){
   const cat=$('category').value,progress=$('quizProgress'),overview=$('difficultyOverview');overview.replaceChildren();
@@ -401,7 +410,7 @@ function renderQuizCatalog(){
   else if(!next)progress.textContent='¡Completaste todas las trivias disponibles de esta consola! Podés jugar en la otra consola mientras llegan nuevos desafíos.';
   else{
     const rows=groupQuizzes(next.category,next.difficulty),position=rows.findIndex(q=>q.id===next.id)+1;
-    progress.textContent=(next.in_progress?'Retomá tu trivia en curso. ':'')+'Trivia '+position+' de '+rows.length+' · '+tierNames[next.difficulty]+'. Aprobá con 3 de 5 para avanzar. Sin límite de tiempo.';
+    progress.textContent=next.legacy?'Retomá tu partida de la edición anterior. Tus puntos se conservan.':(next.in_progress?'Retomá tu trivia en curso. ':'')+'Trivia '+position+' de '+rows.length+' · '+tierNames[next.difficulty]+'. Aprobá con 3 de 5 para avanzar. Sin límite de tiempo.';
   }
   $('beginBtn').disabled=state.busy||!state.uid||!profile||state.catalogLoading||state.catalogError||!next||next.unlocked===false;
   $('beginBtn').textContent=!next?'RUTA COMPLETADA ✓':next.in_progress?'RETOMAR TRIVIA →':'JUGAR SIGUIENTE TRIVIA →';
@@ -453,9 +462,10 @@ answer=function(i){
   audio.play('select');
   answered=true;state.answers[idx]=i;
   document.querySelectorAll('.choice').forEach((button,n)=>{button.disabled=true;if(n===i)button.classList.add('selected-answer');});
-  $('feedback').textContent='Respuesta elegida. Necesitás 3 de 5 para aprobar. Las soluciones se muestran al aprobar.';
-  $('nextBtn').classList.remove('hidden');
-  $('nextBtn').textContent=idx===questions.length-1?'GUARDAR Y VER RESULTADO →':'SIGUIENTE →';
+  $('feedback').textContent=idx===questions.length-1?'Guardando tu resultado…':'';
+  $('nextBtn').classList.add('hidden');
+  const position=idx,game=state.game.id,version=state.version;
+  setTimeout(()=>{if(version===state.version&&state.game?.id===game&&idx===position&&!$('quiz').classList.contains('hidden'))nextQuestion();},350);
 };
 nextQuestion=function(){
   if(!answered||state.busy)return;
@@ -483,7 +493,7 @@ finish=async function(){
 async function submitPending(){
   const pending=state.pending;
   if(state.busy||!pending||pending.owner!==state.uid)return;
-  state.busy=true;const version=state.version;const oldXP=profile?.xp||0;
+  state.busy=true;const version=state.version;const oldXP=profile?.xp||0;const oldOwned=new Set(state.cosmetics.filter(c=>cosmeticOwned(c)).map(c=>c.id));
   $('nextBtn').disabled=true;$('recoverGame').disabled=true;
   message('Guardando la partida…');
   try{
@@ -496,18 +506,19 @@ async function submitPending(){
     await refreshQuizzes();
     if(version!==state.version)return;
     const completed=(state.catalog||[]).find(q=>q.id===pending.quizId);
+    $('triviaResultProgress').textContent='Partida de la edición anterior · Progreso conservado';
     if(completed){const group=groupQuizzes(completed.category,completed.difficulty);$('triviaResultProgress').textContent=group.filter(q=>q.completed).length+' de '+group.length+' trivias completadas · '+completed.category.toUpperCase()+' · '+tierNames[completed.difficulty];}
-    correct=data.correct;
+    correct=data.correct;state.lastResult={correct:data.correct,score:data.score,passed:data.passed,console:completed?.category||$('category').value,difficulty:tierNames[completed?.difficulty||$('difficulty').value]};
     $('scoreTitle').textContent=pending.quizId?(data.passed?'¡TRIVIA APROBADA!':'VOLVÉ A INTENTARLO'): 'PRÁCTICA FINALIZADA';
     $('scoreSummary').textContent=data.correct+' de 5 respuestas correctas';
     $('xpSummary').textContent='+'+data.score+' XP · Total: '+profile.xp+' XP · Guardado en tu cuenta';
     $('resultDetail').textContent=!pending.quizId?'La práctica no entrega XP ni recompensas.':data.passed?'Ganaste 200 XP por aprobar, 100 por acierto y 200 extra si fue perfecta. Esta trivia ya no se puede repetir.':'Necesitás al menos 3 respuestas correctas. No se revelan las soluciones y este intento no entrega XP. Podés volver a intentarlo.';
-    const earned=rewardSteps().filter(r=>r.at>oldXP&&r.at<=profile.xp);
+    const earned=rewardSteps().filter(r=>r.at>oldXP&&r.at<=profile.xp&&!oldOwned.has(r.id));
     if(earned.length)$('resultDetail').textContent+=' ¡Desbloqueaste: '+earned.map(r=>r.name).join(', ')+'!';
     $('progress').style.width='100%';
     if(data.review?.length)renderReview(data.review,pending.questions);else $('resultReview').replaceChildren();
     updateContinueButton();
-    celebrateProgress(oldXP);
+    celebrateProgress(oldXP,oldOwned);
     if(!earned.length)audio.play(data.passed?'success':'retry');
     forgetPending();state.game=null;state.answers=[];mode='player';message('¡Partida guardada!');base.go('result');
   }catch(e){
@@ -531,20 +542,17 @@ window.showHistory=async function(){
     $('historyList').appendChild(box);
   }
 };
-// Guest sharing remains available even when clipboard permissions are denied.
-shareScore=async function(){
-  const text='Conseguí '+correct+'/5 en LOADING ARCADE 🎮 ¿Podés superarme?';
-  try{
-    if(navigator.share){await navigator.share({title:'LOADING ARCADE',text});return;}
-    if(navigator.clipboard){await navigator.clipboard.writeText(text);message('Resultado copiado.');return;}
-  }catch(e){if(e.name==='AbortError')return;}
-  prompt('Copiá tu resultado:',text);
+shareScore=()=>rewardUI.shareResult(state.lastResult);
+window.openBenefits=async function(){
+ await ready;if(!profile){await enterPlayer(true);return;}base.go('benefits');$('couponContent').textContent='Cargando tu cupón…';
+ const version=state.version,{data,error}=await client.rpc('arcade_get_coupon');if(version!==state.version)return;
+ state.couponError=!!error;state.coupon=data?.id?data:null;await rewardUI.showCoupon();
 };
 
 
 function rewardSteps(){
  const levels=Math.max(Math.floor((profile?.xp||0)/1800)+2,Math.ceil(Math.max(0,...state.cosmetics.map(c=>c.required_xp))/1800));
- return [...state.cosmetics.map(c=>({...c,at:c.required_xp,kind:'Cosmético'})),...Array.from({length:levels},(_,i)=>({id:'chest-level-'+(i+2),at:(i+1)*1800,name:'Cofre · Nivel '+(i+2),kind:'Cofre'}))].sort((a,b)=>a.at-b.at||a.name.localeCompare(b.name));
+ return [...state.cosmetics.map(c=>({...c,at:c.required_xp,kind:'Cosmético'})),...Array.from({length:levels},(_,i)=>({id:'chest-level-'+(i+2),at:(i+1)*1800,name:i+2===5?'Cupón 10% · Tienda Nube':'Cofre · Nivel '+(i+2),kind:i+2===5?'Cupón':'Cofre'}))].sort((a,b)=>a.at-b.at||a.name.localeCompare(b.name));
 }
 // Inventory is authoritative: XP never unlocks cards directly.
 syncUnlocks=function(){
@@ -570,7 +578,7 @@ function renderWardrobe(){
   $('wardrobePreview').innerHTML=avatarHTML(profile);
   $('wardrobeItems').replaceChildren();
   for(const item of [...state.cosmetics].filter(c=>wardrobeSlot==='all'||c.slot===wardrobeSlot).sort((a,b)=>a.required_xp-b.required_xp)){
-    const owned=profile.xp>=item.required_xp,selected=profile.cosmetics[item.slot]===item.id;
+    const owned=cosmeticOwned(item),selected=profile.cosmetics[item.slot]===item.id;
     const box=document.createElement('div');box.className='panel cosmetic-item';
     const label=document.createElement('strong');label.textContent=item.name;
     const detail=document.createElement('p');detail.className='muted';detail.textContent=item.required_xp+' XP · '+(owned?'Desbloqueado':'Te faltan '+(item.required_xp-profile.xp)+' XP');
@@ -590,7 +598,7 @@ async function equipCosmetic(slot,id){
   finally{state.cosmeticBusy=false;renderWardrobe();}
 }
 renderRewards=function(){
- const xp=profile?.xp||0,steps=rewardSteps(),next=steps.find(x=>x.at>xp);
+ const xp=profile?.xp||0,steps=rewardSteps(),next=steps.find(x=>x.at>xp&&!stepEarned(x));
  if(profile)void acknowledgeRewards(xp);
  $('rewardProgress').textContent='Nivel '+(Math.floor(xp/1800)+1)+' · '+(xp%1800)+'/1800 XP · '+state.chests.filter(c=>!c.opened_at).length+' cofres disponibles. '+(next?'Próximo desbloqueo: '+next.name+' ('+(next.at-xp)+' XP restantes)':'Completaste las recompensas actuales.');
  renderProgressTrack($('rewardTrack'));
@@ -606,9 +614,9 @@ function rewardInboxUI(){
  if(!show)$('levelToast').hidden=true;
 }
 let toastTimer;
-function celebrateProgress(oldXP){
+function celebrateProgress(oldXP,oldOwned=new Set()){
  const xp=profile.xp,level=Math.floor(xp/1800)+1;
- const gained=rewardSteps().filter(r=>r.at>oldXP&&r.at<=xp);
+ const gained=rewardSteps().filter(r=>r.at>oldXP&&r.at<=xp&&!oldOwned.has(r.id));
  if(Math.floor(oldXP/1800)<Math.floor(xp/1800)||gained.length){
   audio.play(Math.floor(oldXP/1800)<Math.floor(xp/1800)?'level':'cosmetic');
   $('levelToast').textContent=(Math.floor(oldXP/1800)<Math.floor(xp/1800)?'¡Subiste al nivel '+level+'! ':'¡Nueva recompensa! ')+(gained.length?gained.map(r=>r.name).join(' · ')+'. ':'')+'Revisá tus recompensas y cofres.';
@@ -651,6 +659,7 @@ renderAlbum=function(){
  if(!profile){$('albumStatus').textContent='Creá tu jugador para guardar coleccionables.';return;}
  syncUnlocks();
  for(const collection of collectionDefinitions){
+  if(collection.status==='waiting-images'){const note=document.createElement('div');note.className='collection-summary secondary';const title=document.createElement('strong');title.textContent=collection.title;const detail=document.createElement('p');detail.textContent='Próximamente · '+collection.edition;note.append(title,detail);$('collectionOverview').appendChild(note);continue;}
   const items=cards.filter(c=>c.collection===collection.id),owned=items.filter(c=>profile.unlocked.includes(c.id));
   const button=document.createElement('button');button.className='collection-summary secondary';button.dataset.collection=collection.id;button.setAttribute('aria-expanded',String(selectedCollection===collection.id));button.setAttribute('aria-controls','collectionContent');
   const mark=document.createElement('span');mark.className='collection-mark';mark.textContent='?';mark.setAttribute('aria-hidden','true');

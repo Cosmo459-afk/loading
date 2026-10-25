@@ -41,7 +41,7 @@ with sync_playwright() as p:
         correct=fixture('/_test/answers',{'gameId':g['id']})
         assert page.evaluate('questions.every(q=>q.ok===undefined)')
         for i,a in enumerate(correct):
-            page.locator('.choice').nth(a if i<n else (a+1)%4).click();page.locator('#nextBtn').click()
+            page.locator('.choice').nth(a if i<n else (a+1)%4).click();page.wait_for_timeout(500)
         if fail:
             page.wait_for_selector('#recoverGame:not([hidden])');page.reload();page.wait_for_selector('#recoverGame:not([hidden])');page.locator('#recoverGame').click()
         page.wait_for_selector('#result:not(.hidden)')
@@ -66,7 +66,7 @@ with sync_playwright() as p:
     assert page.locator('#homeProgress').get_by_role('button',name='ABRIR 1 COFRE').count()==1
     page.wait_for_selector('#levelToast[hidden]',state='attached')
     page.screenshot(path='/tmp/loading-v12-home-player.png',full_page=True)
-    page.evaluate("go('menu')");page.locator('#category').select_option('ps1');assert page.locator('#difficulty').input_value()=='easy';assert page.locator('#beginBtn').is_enabled()
+    page.evaluate("go('menu')");page.locator('#category').select_option('ps1');assert page.locator('#difficulty').input_value()=='easy';page.wait_for_function('!document.getElementById("beginBtn").disabled')
     page.evaluate('openWardrobe()');page.wait_for_selector('#wardrobe:not(.hidden)');assert page.locator('#wardrobeItems .cosmetic-item').count()==31
     page.locator('#wardrobeItems .cosmetic-item').filter(has_text='Gafas neón').get_by_role('button').click();page.wait_for_function('profile.cosmetics.glasses==="pink-glasses"')
     page.evaluate('showCollections()');page.wait_for_selector('#collection:not(.hidden)')
