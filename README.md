@@ -1,16 +1,27 @@
-# LOADING ARCADE 0.22
+# LOADING ARCADE 0.23
 
-Pulido visual completo: títulos Space Grotesk, textos Inter, botones consistentes, superficies oscuras con acentos cian/rosa, transiciones breves y estados de carga/error con un estilo común.
+La publicación inicial se presenta como una sola pieza: categoría, título, autor y texto. Los comentarios se agrupan debajo con su contador y una marca «AUTOR» cuando responde el creador. Un pulgar arriba permite aprobar y quitar la aprobación de publicaciones y comentarios de otros jugadores.
 
-## Actualizar desde 0.21
+## Actualizar desde 0.22
 
-**Esta versión no requiere SQL.** Conserva jugadores, XP, cartas, cofres, cupones, mensajes y permisos.
+1. En **Supabase → SQL Editor → New query**, pegar y ejecutar **todo** [supabase/upgrade-v23.sql](https://github.com/Cosmo459-afk/loading/blob/supabase-setup/supabase/upgrade-v23.sql).
+2. Descargar **loading-arcade-v23.zip**, descomprimir y subir **loading-arcade/sitio completa** a una nueva implementación de Cloudflare Pages, conservando `_headers` y `assets/media`.
+3. Recargar y confirmar **Versión 0.23**. Abrir una conversación y probar el pulgar de un comentario ajeno; tocar otra vez lo retira. La elección persiste al recargar.
 
-1. Descargar **loading-arcade-v22.zip** y descomprimir.
-2. Subir la carpeta **loading-arcade/sitio completa** a una nueva implementación de Cloudflare Pages: `index.html`, `_headers` y `assets/media`.
-3. Recargar y confirmar **Versión 0.22**.
+No borra publicaciones, XP, cartas, cupones ni permisos. No requiere volver a habilitar al administrador. Si todavía no se instaló v21, ejecutar primero su SQL de reparación; las versiones 22 y 23 usan esa base.
 
-Si todavía no se instaló v21, completar primero su [actualización SQL](https://github.com/Cosmo459-afk/loading/blob/supabase-setup/supabase/upgrade-v21.sql); v22 usa la misma base de datos. No ejecutar reinicios antiguos ni volver a habilitar al administrador.
+## Conversaciones y reacciones
+
+- La publicación inicial permanece arriba al recorrer páginas de comentarios. Un mensaje inicial retirado u oculto nunca se sustituye por la primera respuesta: se informa que fue retirado o no está disponible.
+- Los comentarios mantienen el orden de publicación; esta versión no agrega respuestas anidadas ni orden por popularidad.
+- Cada jugador puede dar una aprobación por mensaje ajeno y quitarla. No hay votos negativos ni autoaprobaciones. No otorga XP ni recompensas.
+- La tabla de reacciones es privada, con RLS y sin acceso directo para clientes. Las funciones devuelven solamente contador y la elección propia, no quiénes aprobaron. Reintentar el mismo estado no duplica ni alterna accidentalmente el voto.
+- Los mensajes ocultos, retirados o dentro de temas ocultos no admiten nuevas reacciones. Los textos ocultos siguen sin exponerse. Se conservan reportes, retirada propia, moderación y cierre de conversaciones.
+- El contador cambia después de la confirmación del servidor; un fallo permite reintentar. La selección se anuncia a lectores de pantalla sin insertar un panel grande por cada aprobación.
+
+## Validación de esta versión
+
+`supabase/tests/forum-v23.mjs` verifica permisos, idempotencia, autoaprobación bloqueada, moderación, retirada, privacidad, paginación y repetición segura del SQL. `tests/forum-v23.py` verifica estructura, contador, selección persistente, retiro de aprobación, error/reintento y tamaños de 320/390/768/1280 px. También se mantienen las pruebas de publicaciones y acciones previas del foro. Todo se ejecuta contra una base local, sin modificar Supabase real.
 
 ## Diseño, en el orden trabajado
 
@@ -102,6 +113,6 @@ El paquete solo contiene el sitio público, estas instrucciones y licencias. No 
 
 ## Historial y pendientes
 
-El historial anterior está en `docs/releases-through-v21.md`, `docs/releases-through-v20.md` y `docs/releases-through-v19.md`. Para 0.22 se sube **sitio completo**. No ejecutar reinicios viejos.
+El historial anterior está en `docs/releases-through-v22.md` y `docs/releases-through-v21.md`, `docs/releases-through-v20.md` y `docs/releases-through-v19.md`. Para 0.23 se sube **sitio completo**. No ejecutar reinicios viejos.
 
 Siguen pendientes el desafío semanal real, su ranking y carta exclusiva; las imágenes de Metal Gear Solid, Silent Hill 2 y Parasite Eve II; y la automatización de canjes en Tienda Nube. Esta versión no agrega intercambios de cartas ni nuevos premios.

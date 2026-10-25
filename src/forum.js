@@ -2,9 +2,9 @@ const categories={charlas:'Charlas retro',ayuda:'Ayuda y recomendaciones',arcade
 const errorText=e=>['PGRST202','42703','42P01'].includes(e?.code)?'La Comunidad necesita actualizarse para cargar esta sección. Las publicaciones guardadas se conservan.':/Wait 10/.test(e?.message)?'Esperá 10 segundos antes de enviar otro mensaje.':/Wait 60/.test(e?.message)?'Esperá un minuto antes de crear otro tema.':/locked/i.test(e?.message)?'Este tema está cerrado para nuevas respuestas.':/Thread unavailable|Message unavailable|Player unavailable/i.test(e?.message)?'Este contenido ya no está disponible.':'No pudimos completar la acción. Podés reintentar sin duplicar el mensaje.';
 export function installForum({rpc,identity,go,visit,avatar}){
  const $=id=>document.getElementById(id);
- const state={scope:'all',author:null,authorName:'',category:'',offset:0,list:null,thread:null,threadId:null,postOffset:0,readBusy:false,writeBusy:false,epoch:0,request:0,nonce:null,payload:null};
+ const state={scope:'all',author:null,authorName:'',category:'',offset:0,list:null,thread:null,threadId:null,postOffset:0,readBusy:false,writeBusy:false,epoch:0,request:0,nonce:null,payload:null,likeBusy:null};
  async function call(name,args){const {data,error}=await rpc(name,args);if(error)throw error;return data;}
- function reset(){state.epoch++;state.request++;Object.assign(state,{scope:'all',author:null,authorName:'',category:'',offset:0,list:null,thread:null,threadId:null,postOffset:0,readBusy:false,writeBusy:false,nonce:null,payload:null});for(const id of ['forumTopics','forumMessages','forumNotice','forumThreadNotice','forumThreadTitle','forumThreadCategory'])$(id).replaceChildren();$('forumTopicForm').reset();$('forumReplyForm').reset();$('forumCategory').value='';$('forumTopicSubmit').disabled=false;$('forumReplySubmit').disabled=false;}
+ function reset(){state.epoch++;state.request++;Object.assign(state,{scope:'all',author:null,authorName:'',category:'',offset:0,list:null,thread:null,threadId:null,postOffset:0,readBusy:false,writeBusy:false,nonce:null,payload:null,likeBusy:null});for(const id of ['forumTopics','forumMessages','forumNotice','forumThreadNotice','forumThreadTitle','forumThreadCategory','forumOpening','forumReactionNotice'])$(id).replaceChildren();$('forumTopicForm').reset();$('forumReplyForm').reset();$('forumCategory').value='';$('forumTopicSubmit').disabled=false;$('forumReplySubmit').disabled=false;}
  function route(){const params=new URLSearchParams();if(state.scope==='mine')params.set('ver','mis-temas');if(state.scope==='replies')params.set('ver','mis-respuestas');if(state.scope==='author_replies')params.set('ver','respuestas');if(state.category)params.set('categoria',state.category);const base=state.author?'#publicaciones/'+state.author:'#comunidad';const query=params.toString();return base+(query?'?'+query:'');}
  async function open(scope='all',author=null,name='',category=''){if(!identity())return;Object.assign(state,{scope,author,authorName:name,category:Object.prototype.hasOwnProperty.call(categories,category)?category:'',list:null,offset:0});$('forumTopics').replaceChildren();$('forumCategory').value=category;go('community');await list(0);}
  async function resume(){if(!identity())return;go('community');await list();}
@@ -35,21 +35,37 @@ export function installForum({rpc,identity,go,visit,avatar}){
  async function openThread(id,offset=0,targetPost=null){
   if(!identity())return;const changed=state.threadId!==id;if(changed){$('forumReplyForm').reset();state.thread=null;}
   state.threadId=id;const epoch=state.epoch,request=++state.request;go('forumThread');$('forumThreadNotice').textContent='Cargando conversación…';$('forumReplySubmit').disabled=true;$('forumRecovery').hidden=true;
-  $('forumMessages').replaceChildren();$('forumThreadTitle').textContent='Conversación';$('forumThreadCategory').textContent='';$('forumReplyForm').hidden=true;
+  $('forumMessages').replaceChildren();$('forumOpening').replaceChildren();$('forumCommentCount').textContent='Comentarios';$('forumThreadTitle').textContent='Conversación';$('forumThreadCategory').textContent='';$('forumReplyForm').hidden=true;
   try{
    if(targetPost)offset=await call('arcade_forum_locate',{p_thread:id,p_post:targetPost});
-   const data=await call('arcade_forum_thread',{p_thread:id,p_offset:offset});if(epoch!==state.epoch||request!==state.request)return;state.thread=data;state.postOffset=offset;renderThread();$('forumThreadNotice').textContent='';
+   const data=await call('arcade_forum_conversation',{p_thread:id,p_offset:offset});if(epoch!==state.epoch||request!==state.request)return;state.thread=data;state.postOffset=offset;renderThread();$('forumThreadNotice').textContent='';
    if(targetPost)requestAnimationFrame(()=>document.getElementById('post-'+targetPost)?.scrollIntoView({block:'center'}));
   }catch(e){if(epoch===state.epoch&&request===state.request){state.thread=null;$('forumMessages').replaceChildren();$('forumThreadNotice').textContent=errorText(e)+' Si acabás de publicar, el mensaje confirmado sigue guardado en Mis publicaciones.';$('forumReplyForm').hidden=true;$('forumRecovery').hidden=false;}}
  }
+ function renderMessage(m,opening=false){
+  const row=document.createElement('article');row.className=opening?'forum-post forum-opening':'forum-post forum-comment';row.id='post-'+m.id;
+  const meta=document.createElement('div');meta.className='forum-message-meta';const author=document.createElement('button');author.className='forum-author secondary';const art=document.createElement('span');art.innerHTML=avatar(m);const name=document.createElement('strong');name.textContent=m.author;author.append(art,name);author.onclick=()=>visit(m.author_public_id);meta.appendChild(author);
+  if(!opening&&m.author_public_id===state.thread.opening?.author_public_id){const op=document.createElement('span');op.className='forum-op';op.textContent='AUTOR';meta.appendChild(op);}
+  const date=document.createElement('small');date.textContent=new Date(m.created_at).toLocaleString('es-AR');meta.appendChild(date);const body=document.createElement('p');body.className='forum-body';body.textContent=m.deleted?'Mensaje retirado por su autor.':m.body;row.append(meta,body);
+  if(!m.deleted){const actions=document.createElement('div');actions.className='forum-message-actions';const like=button('',()=>react(m));like.className='secondary mini forum-post-like';like.setAttribute('aria-pressed',String(!!m.liked));like.setAttribute('aria-label',(m.liked?'Quitar aprobación':'Aprobar '+(opening?'publicación':'comentario'))+' de '+m.author+' · '+(m.likes||0)+' aprobaciones');like.title=m.is_mine?'No podés aprobar tu propio mensaje':m.liked?'Quitar aprobación':'Aprobar comentario';const icon=document.createElement('span');icon.setAttribute('aria-hidden','true');icon.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 10v11H3V10zm0 1 5-8c2 0 3 1 2 5h5a2 2 0 0 1 2 2l-2 9a2 2 0 0 1-2 2H7" stroke-linejoin="round"/></svg>';const count=document.createElement('span');count.textContent=m.likes||0;like.append(icon,count);like.disabled=state.writeBusy||!!state.likeBusy||m.is_mine;like.dataset.postId=m.id;
+   const action=button(m.is_mine?'RETIRAR MENSAJE':m.reported?'REPORTADO':'REPORTAR',()=>act(m));action.disabled=state.writeBusy||m.reported;actions.append(like,action);row.appendChild(actions);}
+  return row;
+ }
  function renderThread(){
   const t=state.thread;if(!t)return;$('forumThreadTitle').textContent=t.title;$('forumThreadCategory').textContent=categories[t.category];$('forumReplyForm').hidden=t.locked;$('forumReplySubmit').disabled=state.writeBusy;
-  const root=$('forumMessages');root.replaceChildren();if(state.postOffset>0)root.appendChild(button('VER PUBLICACIÓN INICIAL',()=>openThread(t.id)));
-  if(!t.posts.length){const empty=document.createElement('p');empty.textContent='Esta conversación no tiene mensajes visibles.';root.appendChild(empty);}
-  for(const m of t.posts){const row=document.createElement('article');row.className='forum-post';row.id='post-'+m.id;const author=document.createElement('button');author.className='forum-author secondary';const art=document.createElement('span');art.innerHTML=avatar(m);const name=document.createElement('strong');name.textContent=m.author;author.append(art,name);author.onclick=()=>visit(m.author_public_id);const date=document.createElement('small');date.textContent=new Date(m.created_at).toLocaleString('es-AR');const body=document.createElement('p');body.className='forum-body';body.textContent=m.deleted?'Mensaje retirado por su autor.':m.body;row.append(author,date,body);
-   if(!m.deleted){const action=button(m.is_mine?'RETIRAR MENSAJE':m.reported?'REPORTADO':'REPORTAR',()=>act(m));action.disabled=state.writeBusy||m.reported;row.appendChild(action);}root.appendChild(row);}
-  if(t.locked){const locked=document.createElement('p');locked.textContent='Tema cerrado. Podés leer la conversación.';root.appendChild(locked);}
+  const opening=$('forumOpening');opening.replaceChildren();if(t.opening)opening.appendChild(renderMessage(t.opening,true));else{const note=document.createElement('p');note.className='forum-original-unavailable';note.textContent='La publicación inicial no está disponible.';opening.appendChild(note);}
+  $('forumCommentCount').textContent=(t.reply_count||0)+' '+(t.reply_count===1?'comentario':'comentarios');
+  const root=$('forumMessages');root.replaceChildren();const comments=t.posts.filter(m=>m.id!==t.opening_id);
+  if(!comments.length){const empty=document.createElement('p');empty.className='forum-empty';empty.textContent=state.postOffset===0?(t.reply_count?'Los comentarios continúan en la siguiente página.':'Todavía no hay comentarios. Podés ser el primero en responder.'):'No hay comentarios en esta página.';root.appendChild(empty);}
+  for(const m of comments)root.appendChild(renderMessage(m));
+  if(t.locked){const locked=document.createElement('p');locked.className='forum-empty';locked.textContent='Tema cerrado. Podés leer la conversación.';root.appendChild(locked);}
   paging(root,state.postOffset,t.has_more,30,n=>openThread(t.id,n));
+ }
+ async function react(m){
+  if(state.likeBusy||state.writeBusy||m.is_mine)return;const epoch=state.epoch,id=state.threadId,thread=state.thread;state.likeBusy=m.id;$('forumThreadNotice').textContent='';renderThread();
+  try{const data=await call('arcade_set_post_like',{p_post:m.id,p_liked:!m.liked});if(epoch!==state.epoch||state.thread!==thread)return;for(const item of [thread.opening,...thread.posts])if(item?.id===m.id){item.likes=data.likes;item.liked=data.liked;}$('forumReactionNotice').textContent=data.liked?'Aprobación guardada.':'Aprobación retirada.';}
+  catch(e){if(epoch===state.epoch&&state.thread===thread)$('forumThreadNotice').textContent=errorText(e);}
+  finally{if(epoch===state.epoch){state.likeBusy=null;if(state.thread===thread){renderThread();if(!$('forumThread').classList.contains('hidden'))document.querySelector('.forum-post-like[data-post-id="'+m.id+'"]:not(:disabled)')?.focus({preventScroll:true});}}}
  }
  async function act(m){
   if(state.writeBusy)return;if(m.is_mine&&!confirm('¿Retirar tu mensaje? Su texto dejará de mostrarse.'))return;
