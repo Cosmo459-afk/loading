@@ -19,21 +19,23 @@ with sync_playwright() as p:
     ctx.route(HOST+'/**',lambda r:r.fulfill(response=r.fetch(url='http://127.0.0.1:8082'+r.request.url[len(HOST):])))
     ctx.add_init_script('if(!localStorage.getItem('+json.dumps(STORE)+'))localStorage.setItem('+json.dumps(STORE)+','+json.dumps(json.dumps(alice))+');')
     page=ctx.new_page();page.on('pageerror',lambda e:errors.append(str(e)));page.goto(BASE+'/dist/index.html');page.wait_for_function('profile?.xp===5400')
-    page.wait_for_selector('#homeCommunity button:not([disabled])');assert '0 jugadores' in page.locator('.community-count').inner_text()
+    page.wait_for_selector('#homeCommunity button:not([disabled])');assert '2 jugadores' in page.locator('.community-count').inner_text()
     assert page.locator('#homeProgress .progress-route').is_visible()
     assert page.locator('#homeProgress .progress-stop').count()>31
     assert page.locator('#homeProgress .progress-route').evaluate('(e)=>e.scrollWidth>e.clientWidth')
     assert page.locator('#rewardInbox').is_hidden() # Route is already visible on home.
     assert page.locator('.brand-logo').get_attribute('alt')=='LOADING ARCADE'
     assert page.locator('.brand-logo').evaluate('(i)=>i.decode().then(()=>i.naturalWidth>1000)')
-    page.get_by_role('button',name='SUMARME A LA COMUNIDAD').click();page.wait_for_function('document.querySelectorAll(".community-players li").length===1')
-    assert 'Alice · Vos' in page.locator('.community-players').inner_text()
-    fixture('/rest/v1/rpc/arcade_set_community_visibility',{'p_visible':True},bob['access_token'])
-    page.get_by_role('button',name='ACTUALIZAR',exact=True).click();page.wait_for_function('document.querySelectorAll(".community-players li").length===2')
+    assert page.locator('.community-players li').count()==2
+    assert 'Alice · Vos' in page.locator('.community-players li').first.inner_text()
+    assert '#1' in page.locator('.community-players li').first.inner_text()
+    assert page.get_by_role('button',name='SUMARME A LA COMUNIDAD').count()==0
+    assert page.get_by_role('button',name='OCULTAR MI JUGADOR').count()==0
+    page.get_by_role('button',name='ACTUALIZAR RANKING',exact=True).click()
     assert '@' not in page.locator('#homeCommunity').inner_text()
-    page.get_by_role('button',name='OCULTAR MI JUGADOR').click();page.wait_for_function('document.querySelectorAll(".community-players li").length===1')
-    assert 'Bob' in page.locator('.community-players').inner_text() and 'Alice' not in page.locator('.community-players').inner_text()
-    page.reload();page.wait_for_function('profile?.xp===5400');assert not page.evaluate('profile.communityVisible')
+    assert page.locator('#homeProgress').bounding_box()['height']<230
+    assert page.locator('#homeProgress .progress-prize').first.bounding_box()['height']<=80
+    page.reload();page.wait_for_function('profile?.xp===5400')
     page.evaluate('openWardrobe()');page.wait_for_selector('#wardrobe:not(.hidden)');assert page.locator('.cosmetic-item').count()==31
     before=page.locator('#wardrobePreview img').get_attribute('src')
     assert page.locator('.cosmetic-preview').count()==31 and page.locator('#wardrobePreview img').get_attribute('src')==before
@@ -73,8 +75,8 @@ with sync_playwright() as p:
         for screen in ['home','menu','wardrobe','rewards']:
             page.evaluate('(id)=>go(id)',screen);page.wait_for_timeout(30)
             assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),(width,screen)
-    page.wait_for_selector('#levelToast[hidden]',state='attached');page.set_viewport_size({'width':390,'height':844});page.evaluate("go('home')");page.screenshot(path='/workspace/loading/design/inicio-v15-mobile.png',full_page=True)
-    page.set_viewport_size({'width':1280,'height':1000});page.screenshot(path='/workspace/loading/design/inicio-v15-desktop.png',full_page=True)
+    page.wait_for_selector('#levelToast[hidden]',state='attached');page.set_viewport_size({'width':390,'height':844});page.evaluate("go('home')");page.screenshot(path='/workspace/loading/design/inicio-v16-mobile.png',full_page=True)
+    page.set_viewport_size({'width':1280,'height':1000});page.screenshot(path='/workspace/loading/design/inicio-v16-desktop.png',full_page=True)
     page.evaluate('openWardrobe()');page.wait_for_selector('#wardrobe:not(.hidden)');page.screenshot(path='/tmp/loading-v14-cosmetics.png',full_page=True)
     assert not errors,errors;browser.close()
-print('PASS v0.14 home: embedded logo; horizontal milestones; real opt-in community, refresh/removal/persistence; 31 previews and seven cosmetic slots; XP locks; saved theme/font; reduced-motion frames; automatic easy→medium→hard with one-click next and no titles/selectors; readable questions; responsive home/route/wardrobe/progress.')
+print('PASS v0.16 home: embedded logo; horizontal milestones; automatic XP ranking, refresh and own highlight; 31 previews and seven cosmetic slots; XP locks; saved theme/font; reduced-motion frames; automatic easy→medium→hard with one-click next and no titles/selectors; readable questions; responsive home/route/wardrobe/progress.')

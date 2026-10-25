@@ -63,7 +63,8 @@ with sync_playwright() as p:
     page.evaluate("go('home')")
     assert 'Nivel 2' in page.locator('#homeAccount').inner_text()
     assert '1800 XP' in page.locator('#homeProgress').inner_text()
-    assert page.locator('#homeProgress').get_by_role('button',name='ABRIR 1 COFRE').count()==1
+    assert page.locator('#homeProgress .home-open-chest').count()==0
+    page.evaluate('showProfile()');page.wait_for_selector('#profile:not(.hidden)');assert page.locator('#profileInventory').get_by_role('button',name='MIS COFRES',exact=False).locator('.pending-dot').inner_text()=='1'
     page.wait_for_selector('#levelToast[hidden]',state='attached')
     page.screenshot(path='/tmp/loading-v12-home-player.png',full_page=True)
     page.evaluate("go('menu')");page.locator('#category').select_option('ps1');assert page.locator('#difficulty').input_value()=='easy';page.wait_for_function('!document.getElementById("beginBtn").disabled')
@@ -103,17 +104,18 @@ with sync_playwright() as p:
     page.wait_for_function('profile.unlocked.length===1')
     assert page.locator('#chestPrize .game-card').count()==1
     awarded=page.locator('#chestPrize h3').inner_text()
-    page.locator('#chestReturn').click();page.wait_for_selector('#chests:not(.hidden)')
-    page.get_by_role('button',name='VER PREMIO',exact=True).click()
-    assert page.locator('#chestPrize h3').inner_text()==awarded
+    page.locator('#chestReturn').click();page.wait_for_selector('#profile:not(.hidden)')
+    assert page.locator('#profileInventory').get_by_role('button',name='MIS COFRES',exact=False).locator('.pending-dot').count()==0
+    assert page.locator('#profileInventory').get_by_role('button',name='MI COLECCIÓN').locator('.pending-dot').inner_text()=='1'
+    page.evaluate('openChests()');page.wait_for_selector('#chests:not(.hidden)');assert page.locator('#chestList .chest-row').count()==0
+    assert page.get_by_role('button',name='VER PREMIO',exact=True).count()==0
     assert len(page.evaluate('profile.unlocked'))==1
-    page.locator('#chestPrize .game-card').evaluate('(e)=>Promise.all(e.getAnimations().map(a=>a.finished))')
-    page.screenshot(path='/tmp/loading-re4-chest-preview.png',full_page=True)
     page.evaluate('showCollections()');page.wait_for_selector('#collection:not(.hidden)')
     assert '1 de 14' in page.locator('#collectionOverview').inner_text()
     assert page.locator('#collectionContent').is_hidden()
     page.screenshot(path='/tmp/re4-v11-overview.png',full_page=True)
     page.locator('#collectionOverview button').click()
+    assert page.locator('#profileInventory').get_by_role('button',name='MI COLECCIÓN',exact=True).locator('.pending-dot').count()==0
     assert page.locator('#album .game-card').count()==1
     assert page.locator('#album svg image').count()==1
     assert page.locator('#album h3').inner_text()==awarded

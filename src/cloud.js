@@ -73,38 +73,47 @@ function centerProgress(list){
 async function refreshCommunity(version=state.version){
  if(!state.uid||state.communityBusy)return;
  state.communityBusy=true;state.communityError=false;renderCommunity();
- try{const {data,error}=await client.rpc('arcade_community');if(error)throw error;if(version===state.version)state.community=data;}
+ try{const {data,error}=await client.rpc('arcade_community');if(error)throw error;if(!data||!('me' in data))throw new Error('Community update required');if(version===state.version)state.community=data;}
  catch{if(version===state.version)state.communityError=true;}
  finally{if(version===state.version){state.communityBusy=false;renderCommunity();}}
 }
 function renderCommunity(){
  const panel=$('homeCommunity');if(!panel)return;
  panel.hidden=!profile;panel.replaceChildren();if(!profile)return;
- const header=document.createElement('div');header.className='eyebrow';header.textContent='COMUNIDAD';const title=document.createElement('h2');title.textContent='Jugadores del arcade';panel.append(header,title);
- const note=document.createElement('p');note.className='muted';note.textContent='Compartimos el recorrido. Sin puestos ni competencia: acá aparecen quienes eligen mostrar su jugador.';panel.appendChild(note);
- if(state.communityError){const text=document.createElement('p');text.textContent='La comunidad no está disponible por el momento.';panel.appendChild(text);}
+ const header=document.createElement('div');header.className='eyebrow';header.textContent='COMUNIDAD';const title=document.createElement('h2');title.textContent='Ranking de progreso';panel.append(header,title);
+ const note=document.createElement('p');note.className='muted';note.textContent='Por experiencia total. A igual XP, mismo puesto.';panel.appendChild(note);
+ if(state.communityError){const text=document.createElement('p');text.textContent='No pudimos cargar el ranking. Volvé a intentarlo.';panel.appendChild(text);}
  else if(state.communityBusy&&!state.community){const text=document.createElement('p');text.textContent='Cargando jugadores…';panel.appendChild(text);}
  else{
-  const count=document.createElement('p');count.className='community-count';const n=state.community?.total||0;count.textContent=n+' '+(n===1?'jugador comparte':'jugadores comparten')+' su perfil';panel.appendChild(count);
-  const list=document.createElement('ul');list.className='community-players';
-  for(const p of state.community?.players||[]){
-   const item=document.createElement('li');item.innerHTML=avatarHTML({avatar:p.avatar,cosmetics:p.cosmetics||{}});
-   const text=document.createElement('div'),name=document.createElement('strong'),level=document.createElement('small');name.textContent=p.nickname+(p.is_me?' · Vos':'');level.textContent='Nivel '+p.level;text.append(name,level);item.appendChild(text);list.appendChild(item);
-  }
-  panel.appendChild(list);
-  if(!n){const empty=document.createElement('p');empty.textContent='Todavía no hay jugadores visibles. Podés ser el primero en sumarte.';panel.appendChild(empty);}
+  const count=document.createElement('p');count.className='community-count';const n=state.community?.total||0;count.textContent=n+' '+(n===1?'jugador':'jugadores')+' en el arcade';panel.appendChild(count);
+  const list=document.createElement('ol');list.className='community-players';list.setAttribute('aria-label','Ranking por experiencia');
+  const row=p=>{
+   const item=document.createElement('li');item.classList.toggle('is-me',p.is_me);const rank=document.createElement('span');rank.className='community-position';rank.textContent='#'+p.position;
+   const avatar=document.createElement('span');avatar.innerHTML=avatarHTML({avatar:p.avatar,cosmetics:p.cosmetics||{}});
+   const text=document.createElement('div'),name=document.createElement('strong'),level=document.createElement('small');name.textContent=p.nickname+(p.is_me?' · Vos':'');level.textContent='Nivel '+p.level+' · '+p.xp+' XP';text.append(name,level);item.append(rank,avatar,text);return item;
+  };
+  for(const p of state.community?.players||[])list.appendChild(row(p));panel.appendChild(list);
+  if(state.community?.me&&!state.community.players.some(p=>p.is_me)){const own=document.createElement('ol');own.className='community-players community-own';own.setAttribute('aria-label','Tu puesto');own.appendChild(row(state.community.me));panel.appendChild(own);}
+  if(!n){const empty=document.createElement('p');empty.textContent='El ranking aparecerá cuando se creen los primeros jugadores.';panel.appendChild(empty);}
  }
- const consent=document.createElement('p');consent.className='muted';consent.textContent='Al sumarte se muestran tu apodo, avatar y nivel. Podés ocultarlos cuando quieras.';
- const actions=document.createElement('div');actions.className='actions';
- const join=document.createElement('button');join.type='button';join.disabled=state.visibilityBusy||state.communityError;join.textContent=profile.communityVisible?'OCULTAR MI JUGADOR':'SUMARME A LA COMUNIDAD';join.onclick=()=>setCommunityVisibility(!profile.communityVisible);
- const refresh=document.createElement('button');refresh.type='button';refresh.className='secondary';refresh.disabled=state.communityBusy;refresh.textContent='ACTUALIZAR';refresh.onclick=()=>refreshCommunity();actions.append(join,refresh);panel.append(consent,actions);
+ const refresh=document.createElement('button');refresh.type='button';refresh.className='secondary mini';refresh.disabled=state.communityBusy;refresh.textContent='ACTUALIZAR RANKING';refresh.onclick=()=>refreshCommunity();panel.appendChild(refresh);
 }
-async function setCommunityVisibility(visible){
- if(!profile||state.visibilityBusy)return;
- const version=state.version;state.visibilityBusy=true;renderCommunity();
- try{const {data,error}=await client.rpc('arcade_set_community_visibility',{p_visible:visible});if(error)throw error;if(version!==state.version)return;adopt(data);await refreshCommunity(version);}
- catch(e){if(version===state.version)message(publicError(e));}
- finally{if(version===state.version){state.visibilityBusy=false;renderCommunity();}}
+function unseenCards(){
+ if(!state.uid)return [];
+ let seen=[];try{seen=JSON.parse(localStorage.getItem('loading_arcade_cards_seen_'+state.uid)||'[]');}catch{}
+ if(!Array.isArray(seen))seen=[];
+ return state.owned.filter(id=>!seen.includes(id));
+}
+function badge(n,label){return n?'<span class="pending-dot" aria-label="'+n+' '+label+'">'+n+'</span>':'';}
+function renderProfileInventory(){
+ const panel=$('profileInventory');if(!panel)return;panel.hidden=!profile;panel.replaceChildren();if(!profile)return;
+ const chests=state.chests.filter(c=>!c.opened_at).length,newCards=unseenCards().length,coupon=state.coupon?.id&&!state.coupon.redeemed_at?1:0;
+ panel.innerHTML='<h3>Tu inventario</h3><div class="profile-inventory-actions">'+
+ '<button class="secondary" onclick="openChests()">MIS COFRES'+badge(chests,'cofres por abrir')+'</button>'+
+ '<button class="secondary" onclick="showCollections()">MI COLECCIÓN'+badge(newCards,'coleccionables nuevos')+'</button>'+
+ '<button class="secondary" onclick="openWardrobe()">MI ESTILO</button>'+
+ '<button class="secondary" onclick="openBenefits()">MI CUPÓN'+badge(coupon,'cupón disponible')+'</button>'+
+ '<button class="secondary" onclick="showHistory()">MIS PARTIDAS</button></div>';
 }
 function updateContinueButton(){
  const next=nextRouteQuiz($('category').value),button=$('continueQuizBtn');
@@ -124,6 +133,7 @@ const homeObserver=new MutationObserver(()=>{
 });
 homeObserver.observe($('home'),{attributes:true,attributeFilter:['class']});
 function accountUI(){
+  renderProfileInventory();
   applyPersonalStyle();renderCommunity();
   protectionUI();
   rewardInboxUI();
@@ -157,15 +167,15 @@ function accountUI(){
   panel.innerHTML='<div class="profile-top">'+avatarHTML(profile)+'<div><div class="eyebrow">TU JUGADOR</div><h2>'+esc(profile.name)+'</h2><p>Nivel '+level+' · '+(isTemporary()?'Sin correo vinculado':'Acceso protegido')+'</p></div><button class="secondary home-exit" onclick="logout()" aria-label="Cerrar sesión" title="Cerrar sesión">↪</button></div>'+
     '<div class="home-mini-stats"><span><strong>'+xp+'</strong> XP totales</span><span><strong>'+profile.unlocked.length+'</strong> coleccionables</span></div>'+
     '<button class="home-play" onclick="openPlayer()">CONTINUAR RUTA →</button>'+
-    '<div class="home-shortcuts"><button class="secondary" onclick="showCollections()">MI COLECCIÓN</button><button class="secondary" onclick="openWardrobe()">MI ESTILO</button><button class="secondary" onclick="showHistory()">HISTORIAL</button><button class="secondary" onclick="openBenefits()">CUPÓN</button><button class="secondary" onclick="showProfile()">EDITAR PERFIL</button></div>'+
+    '<div class="home-shortcuts"><button class="secondary" onclick="showProfile()">MI PERFIL'+badge(unopened+unseenCards().length+(state.coupon?.id&&!state.coupon.redeemed_at?1:0),'pendientes en tu perfil')+'</button><button class="secondary" onclick="showCollections()">MI COLECCIÓN'+badge(unseenCards().length,'coleccionables nuevos')+'</button><button class="secondary" onclick="openWardrobe()">MI ESTILO</button></div>'+
     (isTemporary()?'<button class="text-button home-link" onclick="openLinkAccount()">Vincular correo para proteger mi acceso</button>':'');
   $('homeProgress').hidden=false;
   $('homeProgress').innerHTML='<div class="home-route-heading"><div><div class="eyebrow">PROGRESO</div><h2>'+(level+1===5?'Cupón del 10% · Nivel 5':'Próximo cofre · Nivel '+(level+1))+'</h2></div><span class="home-chest-icon" aria-hidden="true">▣</span></div>'+
     '<p class="home-xp-left">Te faltan <strong>'+remaining+' XP</strong></p>'+
     '<div class="bar" role="progressbar" aria-label="Experiencia hacia el próximo nivel" aria-valuemin="0" aria-valuemax="1800" aria-valuenow="'+(xp%1800)+'"><div class="fill" style="width:'+percent+'%"></div></div>'+
     '<div class="progress-text"><small>Nivel '+level+'</small><small>'+(xp%1800)+' / 1800 XP</small></div>'+
-    '<div id="homeRewardTrack"></div>'+
-    (unopened?'<button class="home-open-chest" onclick="openChests()">ABRIR '+unopened+' '+(unopened===1?'COFRE':'COFRES')+' →</button>':'<button class="secondary" onclick="openChests()">MIS COFRES</button>');
+    '<div id="homeRewardTrack"></div>';
+
   renderProgressTrack($('homeRewardTrack'));
 }
 function publicError(error){
@@ -214,7 +224,7 @@ async function loadProfile(uid,version){
     state.ownedCosmetics=(ownedCosmetics.data||[]).map(o=>o.item_id);state.coupon=coupon.data?.id?coupon.data:null;state.couponError=!!coupon.error;
     state.cosmetics=cosmetics.data;state.owned=owned.data.map(x=>x.card_id);state.chests=chests.data;
     for(const c of catalog.data){const local=cards.find(x=>x.id===c.id);if(local){local.name=c.name;local.kind=c.kind;local.collection=c.collection_id;local.description=c.description;local.rarityKey=c.rarity;local.rarity=({common:'Común',rare:'Rara',epic:'Épica',legendary:'Legendaria'})[c.rarity]||'Por definir';}}
-    adopt(player.data);void refreshCommunity(version);
+    adopt(player.data);renderProfileInventory();void refreshCommunity(version);
   }catch(e){if(version===state.version)state.profileError=true;throw e;}
   finally{if(version===state.version){state.profileLoading=false;accountUI();}}
 }
@@ -283,7 +293,7 @@ async function enterPlayer(edit=false){
   }catch(e){message(publicError(e));}
 }
 window.openPlayer=()=>enterPlayer(false);
-showProfile=()=>enterPlayer(true);
+showProfile=async()=>{await enterPlayer(true);renderProfileInventory();};
 window.openAccountPage=async function(id){
   await ready;if(!state.uid){base.go('auth');return;}
   if(!profile){await enterPlayer(true);return;}
@@ -672,6 +682,8 @@ renderAlbum=function(){
  const collection=collectionDefinitions.find(c=>c.id===selectedCollection);if(!collection)return;
  $('collectionContent').hidden=false;$('collectionHeading').textContent=collection.title;
  const items=cards.filter(c=>c.collection===selectedCollection),discovered=items.filter(c=>profile.unlocked.includes(c.id)),missing=items.length-discovered.length;
+ try{let seen=JSON.parse(localStorage.getItem('loading_arcade_cards_seen_'+state.uid)||'[]');if(!Array.isArray(seen))seen=[];localStorage.setItem('loading_arcade_cards_seen_'+state.uid,JSON.stringify([...new Set([...seen,...discovered.map(c=>c.id)])]));}catch{}
+ accountUI();renderProfileInventory();
  list.classList.toggle('single-card',discovered.length===1);
  $('albumStatus').textContent=discovered.length+' de '+items.length+' descubiertos · '+profile.featured.length+' de 3 destacados';
  if(missing){
@@ -703,11 +715,12 @@ window.openChests=async function(){
 function renderChests(){
  $('chestBalance').textContent=state.chests.filter(c=>!c.opened_at).length+' cofres por abrir';
  $('chestList').replaceChildren();
- if(!state.chests.length){$('chestList').textContent='Tu primer cofre llega al nivel 2: necesitás 1800 XP, equivalentes a dos trivias perfectas.';return;}
- for(const chest of state.chests){
+ const pending=state.chests.filter(c=>!c.opened_at);
+ if(!pending.length){$('chestList').textContent='No tenés cofres pendientes. Los próximos llegan al subir de nivel. Tus cartas obtenidas están en Mi colección.';return;}
+ for(const chest of pending){
   const box=document.createElement('div');box.className='panel chest-row';
   const title=document.createElement('strong');title.textContent='Cofre del nivel '+chest.level;
-  const button=document.createElement('button');button.disabled=state.chestBusy||(!chest.opened_at&&state.owned.length>=cards.length);button.textContent=chest.opened_at?'VER PREMIO':state.owned.length>=cards.length?'COLECCIÓN COMPLETA':'ABRIR COFRE';button.onclick=()=>chest.opened_at?revealChest(chest):openChest(chest.id);
+  const button=document.createElement('button');button.disabled=state.chestBusy||(!chest.opened_at&&state.owned.length>=cards.length);button.textContent=state.owned.length>=cards.length?'COLECCIÓN COMPLETA':'ABRIR COFRE';button.onclick=()=>openChest(chest.id);
   box.append(title,button);$('chestList').appendChild(box);
  }
 }

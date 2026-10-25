@@ -1,6 +1,24 @@
-# LOADING ARCADE 0.15 — nuevas trivias, cupón y logros
+# LOADING ARCADE 0.16 — inicio compacto e inventario en el perfil
 
-**Desde 0.14: ejecutar solo `supabase/upgrade-v15.sql` en Supabase SQL Editor → New query → Run; después subir el `index.html` del ZIP v15 a Cloudflare.** Conserva cuentas, XP, partidas, cofres y premios anteriores. No ejecuta cambios remotos desde el entorno de desarrollo.
+**Desde 0.15: ejecutar solo `supabase/upgrade-v16.sql` en Supabase SQL Editor → New query → Run; después subir el `index.html` del ZIP v16 a Cloudflare.** No reinicia cuentas, XP, partidas, cartas, cofres ni cupones.
+
+## Cambios de 0.16
+
+- Ruta de inicio compacta: tarjetas de 78 px frente a los 150 px anteriores, texto y barra más pequeños; conserva desplazamiento horizontal y próximo premio destacado. La página Progreso conserva la vista completa.
+- **Mis cofres dentro del perfil**, con círculo y cantidad de cofres pendientes. Se elimina el botón grande de cofres del inicio y la lista de aperturas pasadas. Los premios ya obtenidos siguen en Mi colección; no se borran datos del servidor.
+- **Mi perfil** agrupa cofres, colección, estilo, cupón y partidas. El acceso al perfil avisa de pendientes. Las cartas nuevas tienen su propio indicador, que se limpia al abrir la colección correspondiente y ver las cartas obtenidas. Ese estado de lectura se guarda por jugador en este navegador; en otro dispositivo puede aparecer otra vez. El cupón disponible también tiene indicador hasta ser canjeado.
+- **Ranking de progreso automático** de todos los jugadores. Orden por XP total (el nivel se muestra junto con la XP), puestos compartidos para idéntica experiencia. Primeros doce y tu propio puesto si estás fuera de esa lista. No es el ranking semanal ni promete premios competitivos.
+- No hay opción de unirse u ocultarse. El antiguo campo de visibilidad queda sin efecto y se retira el permiso para usar su RPC. Al crear/editar el personaje se explica que apodo, avatar y nivel aparecen en comunidad. El servidor solo entrega apodo, avatar/cosméticos, nivel, XP, puesto y la marca «Vos»; no entrega correos, UUID ni historial. El ranking requiere sesión.
+
+## Instalar 0.16
+
+1. Con 0.15 instalada, abrir [`upgrade-v16.sql`](https://github.com/Cosmo459-afk/loading/blob/supabase-setup/supabase/upgrade-v16.sql), copiar todo a **Supabase → SQL Editor → New query → Run**. Se puede reejecutar sin reiniciar progreso.
+2. Descargar `loading-arcade-v16.zip`, descomprimir y subir **solo `index.html`** a **Cloudflare → Workers & Pages → loading-arcade → New deployment → Deploy**.
+3. Confirmar «Versión 0.16» al pie. Abrir Mi perfil → Mis cofres y comprobar el ranking. Si falta el SQL nuevo se muestra un error de carga del ranking; no se inventan puestos con datos de la API antigua.
+
+Si aún estás en 0.14, aplicar primero 0.15 siguiendo el apartado histórico de abajo y luego 0.16. No repetir los reinicios antiguos.
+
+## Registro de 0.15
 
 ## Nuevo en 0.15
 
@@ -54,9 +72,9 @@ Solo se elige consola. Se quitaron el selector de trivias, sus títulos y la sel
 
 La comprobación de orden se hace en servidor, con bloqueo por perfil. Un intento activo se retoma, incluso si venía de la versión anterior; si fallás, la misma trivia sigue pendiente. Una aprobada no se repite. Al terminar, «Siguiente trivia» comienza directamente la siguiente; al acabar esa consola invita a elegir la otra. Las trivias de progreso no tienen tiempo. El desafío semanal sigue pendiente y será el único con cronómetro.
 
-## Comunidad sin competencia
+## Comunidad y reconocimiento
 
-Vista real de hasta doce jugadores que eligen compartir apodo, avatar con cosméticos y nivel; ordenada por actividad reciente, sin puestos, puntos competitivos, jugadores inventados ni indicador falso de conexión. La cantidad corresponde únicamente a perfiles visibles. La visibilidad comienza desactivada y se puede activar/retirar desde el panel, con explicación clara de lo que se comparte. Actualización manual y después de cargar el jugador. Nunca se muestran correos, UUID ni historial. No reemplaza el futuro ranking semanal.
+Desde 0.16 todos los jugadores aparecen automáticamente en el ranking de progreso, con la XP como criterio y los empates compartidos. El ranking semanal sigue pendiente y separado. Ver arriba las reglas y campos expuestos.
 
 ## Personalización ampliada
 
@@ -124,7 +142,7 @@ Los artes de producción están en `assets/cards/re4/art-v13/`: cuatro láminas 
 
 El build incrusta cada lámina una sola vez, junto con Silkscreen Bold (OFL) y los estilos; sin CDN ni fuentes externas. El HTML final es independiente y está dentro del límite de tamaño de assets estáticos. El build falla si falta arte. `npm run build:preview` solo sirve para desarrollo y no debe empaquetarse.
 
-`loading-arcade-v15.zip` contiene el HTML independiente, README y licencias. No subir al Worker los JSON con respuestas, SQL, tests, fixture ni node_modules. Para reconstruir: `npm run build` y `node scripts/package-release.mjs`. Los ZIP previos se conservan como versiones históricas. No aplicar de nuevo la migración 0.9 al actualizar solo la interfaz.
+`loading-arcade-v16.zip` contiene el HTML independiente, README y licencias. No subir al Worker los JSON con respuestas, SQL, tests, fixture ni node_modules. Para reconstruir: `npm run build` y `node scripts/package-release.mjs`. Los ZIP previos se conservan como versiones históricas. No aplicar de nuevo la migración 0.9 al actualizar solo la interfaz.
 
 ## Desarrollo y validación
 
@@ -160,3 +178,5 @@ Validación 0.14: toda la suite SQL anterior más `route-community.mjs` comprueb
 
 
 Validación 0.15: `v15.mjs` comprueba 96/480, catálogo anterior archivado, reanudación, orden, ausencia de soluciones, cupón único, separación nivel 5/6, permisos de canje, propiedad de cosméticos y reejecución sin pérdida de XP. `rewards-v15.py` prueba exportación PNG, privacidad entre cuentas, enlaces y texto preparado, consumo exclusivo por dueño y avance automático sin saltos por doble toque. `node scripts/assemble-v15.mjs` reconstruye el SQL completo desde el lote revisado.
+
+Validación 0.16: `community-v16.mjs` comprueba inclusión automática, orden por XP, empates, top doce/puesto propio, privacidad, permisos y reejecución. Las pruebas de interfaz comprueban altura compacta, cofres pendientes en perfil, ausencia de historial de aperturas, indicadores de cartas nuevas y continuidad del juego/cupón.

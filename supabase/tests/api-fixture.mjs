@@ -11,6 +11,7 @@ await db.exec(readFileSync(new URL('../upgrade-v08.sql',import.meta.url),'utf8')
 await db.exec(readFileSync(new URL('../upgrade-v09.sql',import.meta.url),'utf8'));
 await db.exec(readFileSync(new URL('../upgrade-v14.sql',import.meta.url),'utf8'));
 await db.exec(readFileSync(new URL('../upgrade-v15-schema.sql',import.meta.url),'utf8'));
+await db.exec(readFileSync(new URL('../upgrade-v16.sql',import.meta.url),'utf8'));
 const alice='11111111-1111-4111-8111-111111111111',bob='22222222-2222-4222-8222-222222222222',temp='33333333-3333-4333-8333-333333333333';
 await db.query('insert into auth.users values ($1),($2)',[alice,bob]);
 let queue=Promise.resolve(),failSubmit=false,failChest=false,failProfile=false,otpRequests=[],linked=false,pendingEmail=null;
@@ -30,7 +31,7 @@ async function handle(req,res){
  const body=text?JSON.parse(text):{};
  const url=new URL(req.url,'http://localhost');
  if(url.pathname==='/_test/reset'){await db.exec(`reset role; truncate auth.users cascade; delete from arcade_private.quiz_questions where quiz_id like '%v15%'; delete from public.arcade_quizzes where id like '%v15%'; delete from arcade_private.questions where source->>'manual_id' is not null; update public.arcade_quizzes set published=true where id in ('ps1-easy-01','ps1-medium-01','ps1-hard-01','ps2-easy-01','ps2-medium-01','ps2-hard-01')`);await db.query('insert into auth.users values ($1),($2)',[alice,bob]);failSubmit=false;failChest=false;failProfile=false;otpRequests=[];linked=false;pendingEmail=null;send(200,{});return;}
- if(url.pathname==='/_test/seed-v15'){await db.exec('reset role');await db.exec(readFileSync(new URL('../upgrade-v15.sql',import.meta.url),'utf8'));send(200,{});return;}
+ if(url.pathname==='/_test/seed-v15'){await db.exec('reset role');await db.exec(readFileSync(new URL('../upgrade-v15.sql',import.meta.url),'utf8'));await db.exec(readFileSync(new URL('../upgrade-v16.sql',import.meta.url),'utf8'));send(200,{});return;}
  if(url.pathname==='/_test/redeem-coupon'){await db.exec('reset role');send(200,(await db.query('select public.arcade_redeem_coupon($1,null) as data',[body.code])).rows[0].data);return;}
  if(url.pathname==='/_test/answers'){await db.exec('reset role');send(200,(await db.query('select correct_index from arcade_private.game_questions where game_id=$1 order by position',[body.gameId])).rows.map(q=>q.correct_index));return;}
  if(url.pathname==='/_test/session'){send(200,session(url.searchParams.get('user')==='temp'?temp:url.searchParams.get('user')==='bob'?bob:alice));return;}
