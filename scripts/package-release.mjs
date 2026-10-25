@@ -18,28 +18,32 @@ for(const image of originals.images){
 const art=JSON.parse(await readFile(new URL('content/collections/re4-art-provenance-v13.json',root),'utf8'));
 for(const board of art.boards){const bytes=await readFile(new URL('assets/cards/re4/'+board.file,root));if(createHash('sha256').update(bytes).digest('hex')!==board.sha256)throw new Error('Artwork changed: '+board.file);}
 const catalog=JSON.parse(await readFile(new URL('content/collections/re4.json',root),'utf8'));
-const logo=await readFile(new URL('assets/brand/loading-arcade.png',root));
-const brand=JSON.parse(await readFile(new URL('assets/brand/provenance.json',root),'utf8'));
-if(createHash('sha256').update(logo).digest('hex')!==brand.sha256||!html.includes(logo.toString('base64')))throw new Error('Brand logo changed or not embedded');
 if(catalog.cards.length!==14)throw new Error('Expected 14 RE4 collectibles');
-for(const file of new Set(catalog.cards.map(c=>c.imageFile))){
- const bytes=await readFile(new URL('assets/cards/re4/'+file,root));
- if(!html.includes(bytes.toString('base64')))throw new Error('Artwork not embedded: '+file);
+if(Buffer.byteLength(html)>750*1024)throw new Error('Initial HTML exceeds the lightweight budget');
+const manifest=JSON.parse(await readFile(new URL('dist/asset-manifest.json',root),'utf8'));
+for(const asset of manifest){
+ const bytes=await readFile(new URL('dist/'+asset.url,root));
+ if(createHash('sha256').update(bytes).digest('hex')!==asset.sha256||!html.includes(asset.url))throw new Error('Missing/changed external asset: '+asset.url);
+ if(html.includes(bytes.toString('base64')))throw new Error('Heavy image embedded in HTML: '+asset.url);
 }
-const coupon=await readFile(new URL('assets/rewards/coupon-level5.png',root));
-const rewardArt=JSON.parse(await readFile(new URL('assets/rewards/provenance.json',root),'utf8'));
-if(createHash('sha256').update(coupon).digest('hex')!==rewardArt.sha256||!html.includes(coupon.toString('base64')))throw new Error('Coupon artwork changed or not embedded');
+for(const source of ['assets/brand/loading-arcade.png','assets/rewards/coupon-level5.png',...new Set(catalog.cards.map(c=>'assets/cards/re4/'+c.imageFile))])if(!manifest.some(a=>a.source===source))throw new Error('Missing deployed artwork: '+source);
+for(const [file,record] of [['assets/brand/loading-arcade.png','assets/brand/provenance.json'],['assets/rewards/coupon-level5.png','assets/rewards/provenance.json']]){const bytes=await readFile(new URL(file,root)),meta=JSON.parse(await readFile(new URL(record,root),'utf8'));if(createHash('sha256').update(bytes).digest('hex')!==meta.sha256)throw new Error('Approved artwork changed: '+file);}
 if(html.includes('manual_sha256')||html.includes('ps1-easy-v15-01'))throw new Error('Private trivia bank must not be bundled');
 const result=spawnSync('python',['-c',`from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 root=Path(${JSON.stringify(root.pathname)})
 archive=${JSON.stringify(archive)}
 with ZipFile(root/archive,'w',ZIP_DEFLATED) as z:
- for source,target in [('dist/index.html','index.html'),('README.md','README.md'),('THIRD_PARTY_NOTICES.txt','THIRD_PARTY_NOTICES.txt')]:
-  z.write(root/source,'loading-arcade/'+target)
+ for file in sorted((root/'dist').rglob('*')):
+  if file.is_file() and file.name!='asset-manifest.json':
+   z.write(file,'loading-arcade/sitio/'+str(file.relative_to(root/'dist')))
+ for file in ['README.md','THIRD_PARTY_NOTICES.txt']:
+  z.write(root/file,'loading-arcade/'+file)
 with ZipFile(root/archive) as z:
  assert z.testzip() is None
- assert z.read('loading-arcade/index.html')==(root/'dist/index.html').read_bytes()
-print('Release ZIP verified: '+archive+'; 14 collectible artworks embedded; standalone HTML, instructions and licenses only.')
+ assert z.read('loading-arcade/sitio/index.html')==(root/'dist/index.html').read_bytes()
+ assert len([n for n in z.namelist() if '/assets/media/' in n])==6
+ assert not any(n.endswith('.sql') or n.endswith('.json') for n in z.namelist())
+print('Release ZIP verified: upload entire sitio folder; lightweight HTML and six hashed images, instructions and licenses only.')
 `],{stdio:'inherit'});
 if(result.status!==0)throw new Error('Package verification failed');

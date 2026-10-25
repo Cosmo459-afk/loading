@@ -1,0 +1,38 @@
+[
+  {
+    "url": "assets/media/loading-arcade-70e3c56a50eacc3a.png",
+    "bytes": 1278596,
+    "sha256": "70e3c56a50eacc3a676783eab3fcdb1ae79cfbfbe4727d631f7dc136f62a9cda",
+    "source": "assets/brand/loading-arcade.png"
+  },
+  {
+    "url": "assets/media/coupon-level5-eb5cd82d55d774d0.png",
+    "bytes": 3018681,
+    "sha256": "eb5cd82d55d774d0fb7658c8f923ad5c30ca25d412d1613c07ad30c1c3b7c91e",
+    "source": "assets/rewards/coupon-level5.png"
+  },
+  {
+    "url": "assets/media/common-a-980f2fa4ee6f0bc3.png",
+    "bytes": 2151213,
+    "sha256": "980f2fa4ee6f0bc38b658cbdffc9f0a8534bafa6c2aac6b41c3ad330bef6984f",
+    "source": "assets/cards/re4/art-v13/common-a.png"
+  },
+  {
+    "url": "assets/media/common-b-84dedba939a28fb8.png",
+    "bytes": 2274801,
+    "sha256": "84dedba939a28fb8bb1b5115efbb6bad8014b5fd96a0d6a3a6a81615a5e289a8",
+    "source": "assets/cards/re4/art-v13/common-b.png"
+  },
+  {
+    "url": "assets/media/epic-b42a1d89b07fadc9.png",
+    "bytes": 2271098,
+    "sha256": "b42a1d89b07fadc9e7dceafe573d630057983f94c573f104be12f21df4bce9de",
+    "source": "assets/cards/re4/art-v13/epic.png"
+  },
+  {
+    "url": "assets/media/legendary-41cc07132037715a.png",
+    "bytes": 2636667,
+    "sha256": "41cc07132037715a3f472b71d9706c7b2eff5d3c02072c87232e44954c529a72",
+    "source": "assets/cards/re4/art-v13/legendary.png"
+  }
+]

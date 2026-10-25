@@ -11,7 +11,10 @@ import couponArt from '../assets/rewards/coupon-level5.png';
 import {installRewardUI} from './reward-ui.js';
 import {installForum} from './forum.js';
 import {streakBadge} from './streaks.js';
-const lockup=document.querySelector('header > div');lockup.className='brand-lockup';lockup.innerHTML='<img class="brand-logo" src="'+brandLogo+'" alt="LOADING ARCADE" width="1966" height="804">';
+import {installAdmin} from './admin.js';
+import {installLazyCardImages} from './lazy-images.js';
+installLazyCardImages();
+const lockup=document.querySelector('header > div');lockup.className='brand-lockup';lockup.innerHTML='<img class="brand-logo" src="'+brandLogo+'" alt="LOADING ARCADE" width="1966" height="804" decoding="async" fetchpriority="high">';
 const audio=installAudio();
 // Replace the provisional catalog with the confirmed RE4 collection.
 cards.splice(0,cards.length,...collectionCards);
@@ -22,9 +25,12 @@ const returning=new URLSearchParams(location.search).has('code');
 const client=createClient(config.url,config.publishableKey,{
   auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
 });
-const state={session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false,owned:[],chests:[],chestBusy:false,community:null,communityOffset:0,visitData:null,visitTarget:null,visitReturn:'community',visitRequest:0,visitBusy:false,visitError:false,likeBusy:false,communityBusy:false,communityError:false,visibilityBusy:false,coupon:null,couponError:false,ownedCosmetics:[],lastResult:null};
+const state={isAdmin:false,session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false,owned:[],chests:[],chestBusy:false,community:null,communityOffset:0,visitData:null,visitTarget:null,visitReturn:'community',visitRequest:0,visitBusy:false,visitError:false,likeBusy:false,communityBusy:false,communityError:false,visibilityBusy:false,coupon:null,couponError:false,ownedCosmetics:[],lastResult:null};
 profile=null; // Never turn a local profile into a verified cloud account.
 const rewardUI=installRewardUI({profile:()=>profile,coupon:()=>state.coupon,couponError:()=>state.couponError,uid:()=>state.uid,requestRedemption:async id=>{const {data,error}=await client.rpc('arcade_request_coupon_redemption',{p_coupon_id:id});if(!error&&data?.player_id===state.uid)state.coupon=data;},avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),brand:brandLogo,art:couponArt});
+const admin=installAdmin({rpc:(name,args)=>client.rpc(name,args),allowed:()=>state.isAdmin,go:id=>base.go(id),onDenied:()=>{state.isAdmin=false;$('adminEntry').hidden=true;}});
+window.openAdmin=async()=>{await ready;await admin.open();};
+
 const forum=installForum({rpc:(name,args)=>client.rpc(name,args),identity:()=>state.uid&&profile,go:id=>base.go(id),visit:id=>visitPlayer(id),avatar:p=>avatarHTML(p)});
 window.openForum=async()=>{await ready;if(!profile){await enterPlayer(true);return;}await forum.open();};
 
@@ -253,14 +259,15 @@ function adopt(row){
 async function loadProfile(uid,version){
   state.profileLoading=true;state.profileError=false;accountUI();
   try{
-    const [player,catalog,cosmetics,owned,chests,ownedCosmetics,coupon]=await Promise.all([
+    const [player,catalog,cosmetics,owned,chests,ownedCosmetics,coupon,adminRole]=await Promise.all([
       client.from('arcade_profiles').select('*').eq('id',uid).maybeSingle(),
       client.from('arcade_cards').select('id,name,kind,rarity,collection_id,description'),
       client.from('arcade_cosmetics').select('id,slot,name,required_xp'),
       client.from('arcade_owned_cards').select('card_id'),
       client.from('arcade_chests').select('id,level,opened_at,prize_kind,card_id').order('level',{ascending:false}),
       client.from('arcade_owned_cosmetics').select('item_id'),
-      client.rpc('arcade_get_coupon')
+      client.rpc('arcade_get_coupon'),
+      client.rpc('arcade_is_admin')
     ]);
     if(version!==state.version)return;
     if(player.error)throw player.error;
@@ -268,6 +275,7 @@ async function loadProfile(uid,version){
     if(cosmetics.error)throw cosmetics.error;
     if(owned.error)throw owned.error;if(chests.error)throw chests.error;
     state.ownedCosmetics=(ownedCosmetics.data||[]).map(o=>o.item_id);state.coupon=coupon.data?.id?coupon.data:null;state.couponError=!!coupon.error;
+    state.isAdmin=adminRole.data===true;$('adminEntry').hidden=!state.isAdmin;
     state.cosmetics=cosmetics.data;state.owned=owned.data.map(x=>x.card_id);state.chests=chests.data;
     for(const c of catalog.data){const local=cards.find(x=>x.id===c.id);if(local){local.name=c.name;local.kind=c.kind;local.collection=c.collection_id;local.description=c.description;local.rarityKey=c.rarity;local.rarity=({common:'Común',rare:'Rara',epic:'Épica',legendary:'Legendaria'})[c.rarity]||'Por definir';}}
     adopt(player.data);renderProfileInventory();void refreshCommunity(version);
@@ -291,7 +299,7 @@ async function useSession(session){
   state.cosmetics=[];state.owned=[];state.chests=[];state.chestBusy=false;state.catalog=null;state.catalogLoading=false;state.catalogError=false;state.catalogPromise=null;
   state.community=null;state.communityOffset=0;state.visitData=null;state.visitTarget=null;state.visitReturn='community';state.visitRequest++;state.visitBusy=false;state.visitError=false;state.likeBusy=false;$('visitedPlayer').replaceChildren();state.communityBusy=false;state.communityError=false;wardrobeSlot='all';
   state.uid=uid;state.profileLoading=!!uid;state.profileError=false;state.game=null;state.answers=[];state.pending=null;profile=null;mode='player';
-  audio.cancelEffects();forum.reset();rewardUI.clear();state.coupon=null;state.couponError=false;state.ownedCosmetics=[];state.lastResult=null;
+  audio.cancelEffects();state.isAdmin=false;$('adminEntry').hidden=true;admin.reset();forum.reset();rewardUI.clear();state.coupon=null;state.couponError=false;state.ownedCosmetics=[];state.lastResult=null;
   $('recoverGame').hidden=true;
   selectedCollection=null;selectedCard=null;$('cardDetailActions').replaceChildren();$('cardDetailStatus').textContent='';
   if($('cardDetail').open)$('cardDetail').close();$('cardDetailArt').replaceChildren();
@@ -699,7 +707,7 @@ function cardMarkup(c,locked=false){
  let artwork;
  if(c.image){
   const [w,h]=c.referenceSize,box=c.crop||[0,0,w,h];
-  artwork='<svg class="card-image" viewBox="'+box.join(' ')+'" role="img" aria-label="'+esc(c.name)+'"><defs><clipPath id="crop-'+c.id+'"><rect x="'+box[0]+'" y="'+box[1]+'" width="'+box[2]+'" height="'+box[3]+'"/></clipPath></defs><image clip-path="url(#crop-'+c.id+')" href="'+c.image+'" width="'+w+'" height="'+h+'" preserveAspectRatio="none"/></svg>';
+  artwork='<svg class="card-image" viewBox="'+box.join(' ')+'" role="img" aria-label="'+esc(c.name)+'"><defs><clipPath id="crop-'+c.id+'"><rect x="'+box[0]+'" y="'+box[1]+'" width="'+box[2]+'" height="'+box[3]+'"/></clipPath></defs><image clip-path="url(#crop-'+c.id+')" data-card-src="'+c.image+'" width="'+w+'" height="'+h+'" preserveAspectRatio="none"/></svg>';
  }else artwork='<span class="pending-art">Imagen original pendiente</span>';
  return '<article class="game-card rarity-'+rarity+(locked?' card-locked':'')+'"><div class="card-top"><span class="card-brand">LOADING<small>ARCHIVO RETRO</small></span><span class="card-number">'+String(c.ordinal||0).padStart(3,'0')+'</span></div><div class="card-art">'+artwork+'</div><div class="card-caption"><h3>'+esc(c.name)+'</h3><span class="card-game">'+esc(c.game)+'</span><p>'+esc(c.description||c.game)+'</p></div><div class="card-footer"><span class="rarity-label">'+esc(c.rarity)+(locked?' 🔒':'')+'</span><span class="card-serial">'+String(c.ordinal||0).padStart(2,'0')+'/14</span></div></article>';
 }
@@ -793,7 +801,7 @@ window.openChest=async function(id){
  $('chestStage').className='chest-stage opening';delete $('chestStage').dataset.rarity;$('chestPrize').replaceChildren();$('chestOpeningTitle').textContent='Abriendo tu cofre…';$('chestOpeningStatus').textContent='¿Qué habrá adentro?';$('chestReturn').hidden=true;$('chestRetry').hidden=true;base.go('chestOpening');
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
  try{
-  const [response]=await Promise.all([client.rpc('arcade_open_chest',{p_chest_id:id}),new Promise(resolve=>setTimeout(resolve,reduced?0:1500))]);
+  const [response]=await Promise.all([client.rpc('arcade_open_chest',{p_chest_id:id}).then(response=>{if(version===state.version&&!response.error){const card=cards.find(c=>c.id===response.data?.card_id);if(card?.image){const preview=new Image();preview.decoding='async';preview.src=card.image;}}return response;}),new Promise(resolve=>setTimeout(resolve,reduced?0:1500))]);
   if(version!==state.version)return;if(response.error)throw response.error;
   revealChest(response.data,true);
   try{await loadProfile(state.uid,version);}catch(e){if(version===state.version)message('Tu premio está guardado. Volvé a Mis cofres para actualizar tus cofres y la colección.');}

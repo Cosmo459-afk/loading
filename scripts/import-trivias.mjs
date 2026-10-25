@@ -14,7 +14,7 @@ try{
  for(const q of batch.quizzes){
   if(typeof q.id!=='string'||!/^[-a-z0-9]{3,80}$/.test(q.id)||seen.has(q.id))fail('ID inválido o duplicado: '+q.id);seen.add(q.id);
   if(!['ps1','ps2'].includes(q.category)||!['easy','medium','hard'].includes(q.difficulty))fail('Consola o dificultad inválida: '+q.id);
-  if(typeof q.title!=='string'||q.title.trim().length<3||q.title.length>120)fail('Título inválido: '+q.id);
+  if(typeof q.title!=='string'||q.title.trim().length<3||q.title.length>100)fail('Título inválido: '+q.id);
   if(!Number.isInteger(q.sort_order)||q.sort_order<1)fail('sort_order debe ser entero positivo: '+q.id);
   if(!Array.isArray(q.questions)||q.questions.length!==5)fail('Cada trivia necesita exactamente 5 preguntas: '+q.id);
   sql.push(`insert into public.arcade_quizzes(id,category,difficulty,title,sort_order,published) values (${[q.id,q.category,q.difficulty,q.title].map(quote).join(',')},${q.sort_order},false);`);

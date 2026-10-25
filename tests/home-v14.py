@@ -77,8 +77,8 @@ with sync_playwright() as p:
         for screen in ['home','menu','wardrobe','rewards']:
             page.evaluate('(id)=>go(id)',screen);page.wait_for_timeout(30)
             assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),(width,screen)
-    page.wait_for_selector('#levelToast[hidden]',state='attached');page.set_viewport_size({'width':390,'height':844});page.evaluate("go('home')");page.screenshot(path='/workspace/loading/design/inicio-v19-mobile.png',full_page=True)
-    page.set_viewport_size({'width':1280,'height':1000});page.screenshot(path='/workspace/loading/design/inicio-v19-desktop.png',full_page=True)
+    page.wait_for_selector('#levelToast[hidden]',state='attached');page.set_viewport_size({'width':390,'height':844});page.evaluate("go('home')");page.screenshot(path='/workspace/loading/design/inicio-v20-mobile.png',full_page=True)
+    page.set_viewport_size({'width':1280,'height':1000});page.screenshot(path='/workspace/loading/design/inicio-v20-desktop.png',full_page=True)
     page.evaluate('openWardrobe()');page.wait_for_selector('#wardrobe:not(.hidden)');page.screenshot(path='/tmp/loading-v14-cosmetics.png',full_page=True)
     assert not errors,errors;browser.close()
 print('PASS v0.18 home: embedded logo; horizontal milestones; separate alphabetical community, automatic inclusion, clickable profiles and refresh; 31 previews and seven cosmetic slots; XP locks; saved theme/font; reduced-motion frames; automatic easy→medium→hard with one-click next and no titles/selectors; readable questions; responsive home/route/wardrobe/progress.')

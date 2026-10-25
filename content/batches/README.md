@@ -1,4 +1,10 @@
-# Carga de trivias sin actualizar la web
+# Carga desde Administración (0.20)
+
+El dueño puede crear una trivia desde formulario o importar un JSON desde **Administración → Trivias**. Las cargas quedan en borrador, se revisan las cinco preguntas y sus fuentes, y luego se publican. No requiere modificar HTML ni ejecutar SQL por cada lote. Se pueden editar borradores sin partidas; nunca se sobrescriben trivias ya jugadas.
+
+Los lotes usan el formato descrito abajo, hasta 100 trivias/2 MB. `publish:true` se ignora en el panel: siempre exige revisión y publicación posterior. No subir estos JSON con soluciones a la carpeta pública `sitio`.
+
+## Flujo manual de desarrollo
 
 La app obtiene el catálogo desde Supabase. No hace falta subir un HTML nuevo por cada lote.
 
