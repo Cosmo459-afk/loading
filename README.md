@@ -1,14 +1,72 @@
-# LOADING ARCADE 0.24
+# LOADING ARCADE 0.25
 
-Compartir sitio, perfiles públicos, resultados confirmados y cartas obtenidas. Imágenes para publicaciones (1080 × 1350) e historias (1080 × 1920), texto preparado, enlaces limpios y alternativas cuando el navegador no admite compartir archivos.
+Avance sin mínimo de aciertos, primer desafío semanal administrable de Resident Evil 4 original, top 10 y carta Exclusiva de Ada Wong con marco esmeralda por 20/20. Incluye todas las opciones de compartir de v24 y nueva navegación Inicio / Trivia / Comunidad / Perfil.
 
-## Actualizar desde 0.23
+## Instalar directamente desde 0.23 (también sirve desde 0.24)
 
-1. Ejecutar **todo** [supabase/upgrade-v24.sql](https://github.com/Cosmo459-afk/loading/blob/supabase-setup/supabase/upgrade-v24.sql) en una nueva consulta de Supabase SQL Editor. Añade la lectura del perfil público por enlace sin exigir registro; no borra nada ni abre acceso directo a tablas.
-2. Descargar **loading-arcade-v24.zip**, descomprimir y subir **loading-arcade/sitio completa** a Cloudflare, incluidos `_headers` y `assets/media`.
-3. Recargar y confirmar **Versión 0.24**. Probar Compartir mi perfil desde Perfil y abrir su enlace en una ventana sin sesión.
+1. Ejecutar **todo** [supabase/upgrade-v25.sql](https://github.com/Cosmo459-afk/loading/blob/supabase-setup/supabase/upgrade-v25.sql) en una consulta nueva de Supabase. Ya incorpora la función de compartir de v24; **no ejecutar v24 después**. No reinicia datos, XP ni permisos.
+2. Descargar **loading-arcade-v25.zip**, descomprimir y subir **loading-arcade/sitio completa** a Cloudflare, con `_headers` y `assets/media`.
+3. Recargar y comprobar **Versión 0.25**. Administración sigue dentro de Perfil y conserva la cuenta habilitada.
+4. Activar la primera semanal siguiendo los pasos de abajo. La instalación no publica una edición sin revisión del dueño.
 
-Conserva progreso, cartas, cofres, cupones, mensajes y permisos. No requiere volver a habilitar al administrador.
+## Activar Resident Evil 4 · La misión de Leon
+
+Dentro del ZIP hay dos carpetas: **sitio**, que se despliega, y **banco-semanal**, que contiene `re4-first-week.encrypted.json` para importar desde Administración. El banco tiene 20 preguntas basadas en el manual estadounidense del RE4 original de PS2, con referencias y evidencias para revisar.
+
+1. Entrar con la cuenta administradora → **Perfil → Administración → Semanal**.
+2. En **Importar banco privado**, elegir `banco-semanal/re4-first-week.encrypted.json`. Introducir la clave de contenido entregada al dueño en el chat. La clave no viene dentro del sitio, el repositorio ni el ZIP.
+3. Pulsar **Guardar borrador** y después **Revisar**. Leer las 20 preguntas, opciones, respuestas marcadas y fuentes.
+4. Elegir inicio y cierre; los campos usan la zona horaria del navegador y se guardan como instantes UTC. La propuesta es siete días y 20 segundos por pregunta. Marcar la confirmación de revisión y pulsar **Activar / programar edición**.
+5. Volver a Inicio para ver el desafío. Si el inicio está en el futuro, queda programado; si ya llegó, admite nuevos intentos. Se puede cerrar anticipadamente desde Administración.
+
+Una edición publicada no se puede editar ni reabrir. Para una nueva semana se prepara otro ID y otro banco. Solo puede haber una edición publicada vigente/programada. Los resultados anteriores quedan conservados; no usar el mismo banco como si fuera una edición nueva.
+
+**La clave es del contenido de preguntas, no una contraseña de Supabase ni de administración.** No publicarla junto con el banco. El cifrado permite distribuir el archivo en el repositorio sin exponer la lista semanal completa; después de importar, las soluciones se guardan en el esquema privado y solo Administración puede leerlas. Los clientes reciben una pregunta por vez, nunca el banco completo.
+
+## Reglas de progreso normal
+
+- Toda trivia de catálogo terminada permite avanzar, incluso con 0/5.
+- +200 XP por terminar, +100 por acierto y +200 extra por 5/5: entre 200 y 900 XP.
+- Cada trivia se completa una vez; no se repite para sumar puntos.
+- Se mantiene el orden fácil → medio → difícil dentro de cada consola, PS1 y PS2 independientes.
+- Los intentos terminados antes de actualizar también cuentan para avanzar, incluidos los que antes quedaron desaprobados. Sus XP históricos no se recalculan ni se borran.
+- Una partida vencida o ya completada en otro dispositivo deja de bloquear el guardado pendiente y permite volver a la ruta.
+- Las soluciones se pueden revisar al terminar. La insignia de racha normal sigue premiando 5/5; una partida no perfecta corta la racha.
+
+## Reglas de la semanal y top 10
+
+- 20 preguntas; 20 segundos por pregunta por defecto (editable entre 10 y 60 mientras es borrador).
+- Un intento por jugador y edición. Empezar requiere confirmación antes de consumirlo.
+- El servidor fija los plazos, valida la opción y solo entrega la pregunta actual. El cliente no envía puntos ni tiempos para que se acepten como ciertos.
+- Una respuesta recibida después del plazo cuenta como omitida; aporta 0 puntos y 0 XP. Respuesta incorrecta: 0. Correcta: 100 puntos y 100 XP. Máximo 2000 XP, sin bonus por terminar. Los XP se entregan una vez al finalizar y sirven para el progreso normal.
+- Al vencer el plazo, la interfaz avanza automáticamente. El reloj sigue al salir o perder conexión; al retomar, el servidor convierte los intervalos vencidos en omisiones. Una interrupción no reinicia ni pausa el intento.
+- Orden del ranking: más aciertos, menor suma de tiempos de respuesta (incluye el tiempo completo de las omisiones), y finalización más temprana. Empates exactos comparten puesto. Se muestran 10 jugadores y la posición propia aunque quede fuera de esos 10.
+- Los resultados solo entran al ranking cuando el intento termina. Si alguien abandona sin regresar, su intento puede quedar pendiente hasta retomar; no hay tarea programada que liquide abandonos en segundo plano en esta versión.
+- Una edición cerrada rechaza nuevos intentos. Quien retome uno pendiente conserva los aciertos ya confirmados y las preguntas restantes vencen.
+- Las fuentes/soluciones no se muestran durante el intento. El cronómetro dificulta consultar fuera, pero no garantiza ausencia de ayuda externa, cuentas múltiples o diferencias de latencia. El tiempo válido es el recibido por el servidor; conviene una conexión estable.
+- La regla es un intento por jugador, no una verificación de persona única. Vincular correo sigue siendo opcional.
+
+## Exclusiva de Ada Wong
+
+Categoría **Exclusivas**, fuera de comunes/épicas/legendarias. Marco **verde esmeralda**, vestido rojo del RE4 original y arte nuevo basado en la referencia del dueño. Se obtiene únicamente con **20/20 en esa edición**. No sale en cofres ni se compra. La concesión se verifica en el servidor y no se duplica al reintentar el guardado.
+
+Las exclusivas aparecen en **Perfil → Mi colección → Exclusivas semanales**, con su edición, detalle y opción de compartir. No consumen ni alteran los tres espacios de exhibición normal; esta primera implementación no agrega esas exclusivas a la vitrina pública de tres cartas. El archivo de arte es público y se muestra como premio del desafío; lo que se valida es su posesión en el juego, no la imposibilidad de descargar la imagen.
+
+El premio visual disponible en esta versión es Ada Wong de RE4; para nuevas recompensas de personajes se debe incorporar el arte correspondiente.
+
+## Navegación
+
+**Inicio** pasa al primer lugar del menú. Se conservan Trivia y Comunidad como secciones independientes y Perfil queda al final. Las páginas sustituyen los accesos Inicio por Volver, y las vueltas contextuales del foro se conservan.
+
+La portada reduce el bloque del jugador y prioriza Continuar trivia y el desafío semanal. La ruta de progreso está visible dentro de Perfil, debajo de la identidad. Se mantienen los indicadores de cofres/cartas/cupón pendientes.
+
+## Pruebas de esta versión
+
+`supabase/tests/weekly-v25.mjs`: 0/5 avanza y otorga 200 XP una sola vez; bloqueo de repetición; desbloqueo de dificultad; permisos de administración; publicación inmutable; una pregunta por vez; vencimientos; reintentos sin duplicación; un intento; concesión de Ada por 20/20; XP una sola vez; top 10 y posición fuera del top; aislamiento y reejecución segura.
+
+`tests/weekly-v25.py`: navegación de cuatro secciones y Volver, progreso en Perfil, partida 0/5, importación cifrada/revisión/activación por la interfaz, intento de 20 preguntas, ranking, vencimiento tras recargar, premio esmeralda y exportación de la exclusiva. Usa una edición sintética, sin publicar las preguntas reales ni su clave. También se comprobó localmente la importación del banco real de 20 preguntas. Las pruebas solo escriben en la fixture local.
+
+Construir con `npm run build`; paquete con `node scripts/package-release.mjs`; suite SQL con `npm run test:database`. `npm run test:browser` ejecuta la regresión v25 con servidor local 8085 y fixture 8082. El ZIP incorpora ocho imágenes cacheadas y un banco cifrado fuera de sitio; ningún SQL ni banco de respuestas en claro se despliega.
 
 ## Dónde compartir
 
@@ -50,7 +108,7 @@ No se enviaron mensajes, correos ni publicaciones a redes durante las pruebas. L
 4. **Movimiento:** entradas de pantalla de 220 ms, diálogos de 180 ms, respuesta táctil y barra de progreso suave. No agregan demoras para jugar. Se conserva el evento de apertura de cofres y los efectos de sonido, sin música. La preferencia del sistema de reducir movimiento elimina las animaciones.
 5. **Acabados:** indicadores de carga y paneles de error/confirmación derivados de los mensajes reales, estados vacíos consistentes, campos legibles y foco de teclado visible. No se simulan porcentajes de carga. El contenido de las publicaciones no se interpreta como estado del sistema.
 
-El HTML sigue por debajo del límite de 750 KB y los siete archivos de imágenes mantienen la carga bajo demanda y la caché por hash. La carpeta completa sigue siendo necesaria para desplegar.
+El HTML sigue por debajo del límite de 750 KB y los ocho archivos de imágenes mantienen la carga bajo demanda y la caché por hash. La carpeta completa sigue siendo necesaria para desplegar.
 
 ## Validación
 
@@ -132,6 +190,6 @@ El paquete solo contiene el sitio público, estas instrucciones y licencias. No 
 
 ## Historial y pendientes
 
-El historial anterior está en `docs/releases-through-v22.md` y `docs/releases-through-v21.md`, `docs/releases-through-v20.md` y `docs/releases-through-v19.md`. Para 0.24 se sube **sitio completo**. No ejecutar reinicios viejos.
+El historial anterior está en `docs/releases-through-v22.md` y `docs/releases-through-v21.md`, `docs/releases-through-v20.md` y `docs/releases-through-v19.md`. Para 0.25 se sube **sitio completo**. No ejecutar reinicios viejos.
 
 Siguen pendientes el desafío semanal real, su ranking y carta exclusiva; las imágenes de Metal Gear Solid, Silent Hill 2 y Parasite Eve II; y la automatización de canjes en Tienda Nube. Esta versión no agrega intercambios de cartas ni nuevos premios.

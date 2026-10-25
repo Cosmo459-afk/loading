@@ -1,10 +1,12 @@
+import {installWeeklyAdmin} from './weekly-admin.js';
 // This UI carries no privileged key. Every read and write is checked by server RPCs.
-const labels={overview:'Resumen',forum:'Foro',coupons:'Cupones',quizzes:'Trivias'};
+const labels={overview:'Resumen',forum:'Foro',coupons:'Cupones',quizzes:'Trivias',weekly:'Semanal'};
 export function installAdmin({rpc,allowed,go,onDenied}){
  const $=id=>document.getElementById(id);let epoch=0,request=0,tab='overview',busy=false,offset=0,couponFilter='',draftId=null,nonce=null,payloadKey=null;
  function el(tag,text,cls){const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(cls)node.className=cls;return node;}
  function button(text,fn,cls='secondary mini'){const node=el('button',text,cls);node.type='button';node.onclick=fn;node.disabled=busy;return node;}
- function reset(){epoch++;request++;busy=false;draftId=null;nonce=null;payloadKey=null;offset=0;couponFilter='';$('adminBody').replaceChildren();$('adminNotice').textContent='';$('adminTabs').replaceChildren();}
+ const weeklyAdmin=installWeeklyAdmin({rpc,allowed,active:()=>tab==='weekly',notice:text=>notice(text)});
+ function reset(){weeklyAdmin.reset();epoch++;request++;busy=false;draftId=null;nonce=null;payloadKey=null;offset=0;couponFilter='';$('adminBody').replaceChildren();$('adminNotice').textContent='';$('adminTabs').replaceChildren();}
  function notice(text){$('adminNotice').textContent=text;}
  function error(e){if(e?.code==='42501'){reset();onDenied();notice('Esta cuenta no tiene acceso de administración.');return;}const m=String(e?.message||'');notice(/immutable|exists/i.test(m)?'No se sobrescribió nada: ese ID ya existe o la trivia tiene partidas. Revisá el listado.':/Five|Four|Invalid|Duplicate|Source|Explanation|Correct|question|choice/i.test(m)?'Revisá el formulario: hacen falta cinco preguntas válidas, cuatro opciones distintas y fuentes completas.':/Coupon not found/i.test(m)?'No encontramos ese código. Comprobalo antes de confirmar el canje.':'No pudimos completar la acción. Volvé a intentarlo; los cambios confirmados se conservan.');}
  async function call(name,args={}){if(!allowed())throw {code:'42501'};const r=await rpc(name,args);if(r.error)throw r.error;return r.data;}
@@ -13,7 +15,7 @@ export function installAdmin({rpc,allowed,go,onDenied}){
  async function show(next=tab,keepOffset=false){
   if(!allowed()){onDenied();return;}if(busy)return;
   tab=next;if(!keepOffset)offset=0;const e=epoch,r=++request;tabs();$('adminBody').replaceChildren(el('p','Cargando…'));notice('');
-  try{if(tab==='overview'){const data=await call('arcade_admin_overview');if(e!==epoch||r!==request)return;overview(data);}
+  try{if(tab==='weekly'){await weeklyAdmin.open();return;}if(tab==='overview'){const data=await call('arcade_admin_overview');if(e!==epoch||r!==request)return;overview(data);}
    if(tab==='forum'){const [reports,topics]=await Promise.all([call('arcade_admin_reports'),call('arcade_admin_forum_topics',{p_offset:offset})]);if(e!==epoch||r!==request)return;forum(reports,topics);}
    if(tab==='coupons'){const data=await call('arcade_admin_coupons',{p_code:couponFilter||null});if(e!==epoch||r!==request)return;coupons(data);}
    if(tab==='quizzes'){const data=await call('arcade_admin_quizzes',{p_offset:offset});if(e!==epoch||r!==request)return;quizzes(data);}}

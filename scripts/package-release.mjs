@@ -17,6 +17,7 @@ for(const image of originals.images){
 }
 const art=JSON.parse(await readFile(new URL('content/collections/re4-art-provenance-v13.json',root),'utf8'));
 for(const board of art.boards){const bytes=await readFile(new URL('assets/cards/re4/'+board.file,root));if(createHash('sha256').update(bytes).digest('hex')!==board.sha256)throw new Error('Artwork changed: '+board.file);}
+const weeklyArt=await readFile(new URL('assets/cards/weekly/ada-wong-exclusive.png',root)),weeklyMeta=JSON.parse(await readFile(new URL('assets/cards/weekly/provenance.json',root),'utf8'));if(createHash('sha256').update(weeklyArt).digest('hex')!==weeklyMeta.sha256)throw new Error('Weekly art differs from provenance');
 const catalog=JSON.parse(await readFile(new URL('content/collections/re4.json',root),'utf8'));
 if(catalog.cards.length!==14)throw new Error('Expected 14 RE4 collectibles');
 if(Buffer.byteLength(html)>750*1024)throw new Error('Initial HTML exceeds the lightweight budget');
@@ -37,13 +38,16 @@ with ZipFile(root/archive,'w',ZIP_DEFLATED) as z:
  for file in sorted((root/'dist').rglob('*')):
   if file.is_file() and file.name!='asset-manifest.json':
    z.write(file,'loading-arcade/sitio/'+str(file.relative_to(root/'dist')))
+ z.write(root/'content/weekly/re4-first-week.encrypted.json','loading-arcade/banco-semanal/re4-first-week.encrypted.json')
  for file in ['README.md','THIRD_PARTY_NOTICES.txt']:
   z.write(root/file,'loading-arcade/'+file)
 with ZipFile(root/archive) as z:
  assert z.testzip() is None
  assert z.read('loading-arcade/sitio/index.html')==(root/'dist/index.html').read_bytes()
- assert len([n for n in z.namelist() if '/assets/media/' in n])==7
- assert not any(n.endswith('.sql') or n.endswith('.json') for n in z.namelist())
-print('Release ZIP verified: upload entire sitio folder; lightweight HTML and seven hashed images, instructions and licenses only.')
+ assert len([n for n in z.namelist() if '/assets/media/' in n])==8
+ assert not any(n.endswith('.sql') or (n.endswith('.json') and '/banco-semanal/' not in n) for n in z.namelist())
+ assert b'ciphertext' in z.read('loading-arcade/banco-semanal/re4-first-week.encrypted.json')
+ assert b'correct_index' not in z.read('loading-arcade/banco-semanal/re4-first-week.encrypted.json')
+print('Release ZIP verified: upload entire sitio folder; lightweight HTML and eight hashed images, encrypted weekly bank outside sitio, instructions and licenses.')
 `],{stdio:'inherit'});
 if(result.status!==0)throw new Error('Package verification failed');

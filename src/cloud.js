@@ -15,6 +15,8 @@ import {decorateAvatar,badges,slotNames} from './cosmetics.js';
 import brandLogo from '../assets/brand/loading-arcade.png';
 import couponArt from '../assets/rewards/coupon-level5.png';
 import {installRewardUI} from './reward-ui.js';
+import {installWeekly} from './weekly.js';
+import adaArt from '../assets/cards/weekly/ada-wong-exclusive.png';
 import {installSharing} from './sharing.js';
 import siteArt from '../assets/social/preview-v24.png';
 import {installForum} from './forum.js';
@@ -33,12 +35,14 @@ const returning=new URLSearchParams(location.search).has('code');
 const client=createClient(config.url,config.publishableKey,{
   auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
 });
-const state={isAdmin:false,session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false,owned:[],chests:[],chestBusy:false,community:null,communityOffset:0,visitData:null,visitTarget:null,visitReturn:'community',visitRequest:0,visitBusy:false,visitError:false,likeBusy:false,communityBusy:false,communityError:false,visibilityBusy:false,coupon:null,couponError:false,ownedCosmetics:[],lastResult:null};
+const state={isAdmin:false,session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false,owned:[],chests:[],chestBusy:false,community:null,communityOffset:0,visitData:null,visitTarget:null,visitReturn:'community',visitRequest:0,visitBusy:false,visitError:false,likeBusy:false,communityBusy:false,communityError:false,visibilityBusy:false,coupon:null,couponError:false,ownedCosmetics:[],exclusives:[],lastResult:null};
 profile=null; // Never turn a local profile into a verified cloud account.
 const rewardUI=installRewardUI({profile:()=>profile,coupon:()=>state.coupon,couponError:()=>state.couponError,uid:()=>state.uid,requestRedemption:async id=>{const {data,error}=await client.rpc('arcade_request_coupon_redemption',{p_coupon_id:id});if(!error&&data?.player_id===state.uid)state.coupon=data;},avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),brand:brandLogo,art:couponArt});
-const sharing=installSharing({profile:()=>profile,avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),brand:brandLogo,siteArt,owned:id=>!!profile?.unlocked?.includes(id)});
+const sharing=installSharing({profile:()=>profile,avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),brand:brandLogo,siteArt,owned:id=>!!profile?.unlocked?.includes(id)||state.exclusives.some(e=>'weekly-'+e.challenge_id===id)});
 window.shareArcade=()=>sharing.shareSite();
 window.shareMyProfile=()=>sharing.shareProfile();
+const weekly=installWeekly({rpc:(name,args)=>client.rpc(name,args),identity:()=>state.uid,profile:()=>profile,go:id=>base.go(id),visit:id=>visitPlayer(id),onFinish:async()=>{const v=state.version,oldXP=profile?.xp||0,oldOwned=new Set(state.cosmetics.filter(c=>cosmeticOwned(c)).map(c=>c.id));await loadProfile(state.uid,v);if(v===state.version)celebrateProgress(oldXP,oldOwned);},share:result=>sharing.shareResult(result),art:adaArt});
+window.openWeekly=()=>weekly.open();
 const admin=installAdmin({rpc:(name,args)=>client.rpc(name,args),allowed:()=>state.isAdmin,go:id=>base.go(id),onDenied:()=>{state.isAdmin=false;$('adminEntry').hidden=true;}});
 window.openAdmin=async()=>{await ready;await admin.open();};
 
@@ -129,7 +133,7 @@ window.visitPlayer=async function(id){
  const origin=[...document.querySelectorAll('main>section')].find(s=>!s.classList.contains('hidden'))?.id;
  if(origin!=='playerVisit')state.visitReturn=['community','players','forumCompose','forumThread'].includes(origin)?origin:'community';
  if(!profile)state.visitReturn='home';
- $('visitBack').textContent=!profile?'← INICIO':state.visitReturn==='forumThread'?'← VOLVER A LA CONVERSACIÓN':state.visitReturn==='community'?'← VOLVER A PUBLICACIONES':'← VOLVER A COMUNIDAD';
+ $('visitBack').textContent=!profile?'← VOLVER':state.visitReturn==='forumThread'?'← VOLVER A LA CONVERSACIÓN':state.visitReturn==='community'?'← VOLVER A PUBLICACIONES':'← VOLVER A COMUNIDAD';
  const version=state.version,request=++state.visitRequest;state.visitTarget=id;state.visitData=null;state.visitBusy=true;state.visitError=false;base.go('playerVisit');renderVisitedPlayer();
  try{const {data,error}=await client.rpc(profile?'arcade_visit_player':'arcade_share_profile',{p_public_id:id});if(error)throw error;if(version===state.version&&request===state.visitRequest)state.visitData=data;}
  catch{if(version===state.version&&request===state.visitRequest)state.visitError=true;}
@@ -254,6 +258,7 @@ function accountUI(){
 function publicError(error){
   if(/Collection complete/i.test(String(error?.message||'')))return 'Ya completaste las cartas disponibles. Tu cofre sigue guardado para futuras colecciones.';
   if(/Chest not found/i.test(String(error?.message||'')))return 'Este cofre no está disponible para tu jugador.';
+  if(/Game expired/i.test(String(error?.message||'')))return 'Esta partida venció. Podés volver a empezarla; tu progreso anterior sigue guardado.';
   if(/Game not found/i.test(String(error?.message||'')))return 'La partida ya no existe; puede pertenecer a la prueba anterior del prototipo.';
   if(error?.code==='PGRST202')return 'Falta actualizar el catálogo de trivias en la base de datos. La cuenta y el progreso están conservados.';
   const text=String(error?.message||'');
@@ -261,7 +266,7 @@ function publicError(error){
   if(/already.*registered|already.*exists|email.*exists/i.test(text))return 'Ese correo ya tiene una cuenta. No podemos fusionar sus progresos automáticamente. Conservá esta sesión mientras decidimos cómo recuperar tu cuenta anterior.';
   if(/rate|seconds|too many/i.test(text))return 'Esperá unos segundos antes de volver a intentarlo.';
   if(/expired|jwt|refresh token/i.test(text))return 'Tu sesión o enlace venció. Volvé a ingresar con tu correo.';
-  if(/Quiz already completed/i.test(text))return 'Ya aprobaste esta trivia. Elegí una nueva para seguir avanzando.';
+  if(/Quiz already completed/i.test(text))return 'Ya completaste esta trivia. Elegí una nueva para seguir avanzando.';
   if(/Finish active quiz/i.test(text))return 'Tenés una trivia en curso. Volvé a tu ruta para retomarla.';
   if(/Quiz out of order/i.test(text))return 'Primero completá la trivia pendiente. Actualizá tu ruta para continuar.';
   if(/Difficulty locked/i.test(text))return 'Esta dificultad está bloqueada. Completá primero el nivel anterior de esa misma consola.';
@@ -280,7 +285,7 @@ function adopt(row){
 async function loadProfile(uid,version){
   state.profileLoading=true;state.profileError=false;accountUI();
   try{
-    const [player,catalog,cosmetics,owned,chests,ownedCosmetics,coupon,adminRole]=await Promise.all([
+    const [player,catalog,cosmetics,owned,chests,ownedCosmetics,coupon,adminRole,exclusives]=await Promise.all([
       client.from('arcade_profiles').select('*').eq('id',uid).maybeSingle(),
       client.from('arcade_cards').select('id,name,kind,rarity,collection_id,description'),
       client.from('arcade_cosmetics').select('id,slot,name,required_xp'),
@@ -288,7 +293,8 @@ async function loadProfile(uid,version){
       client.from('arcade_chests').select('id,level,opened_at,prize_kind,card_id').order('level',{ascending:false}),
       client.from('arcade_owned_cosmetics').select('item_id'),
       client.rpc('arcade_get_coupon'),
-      client.rpc('arcade_is_admin')
+      client.rpc('arcade_is_admin'),
+      client.from('arcade_weekly_exclusives').select('challenge_id,name,edition,earned_at')
     ]);
     if(version!==state.version)return;
     if(player.error)throw player.error;
@@ -296,10 +302,10 @@ async function loadProfile(uid,version){
     if(cosmetics.error)throw cosmetics.error;
     if(owned.error)throw owned.error;if(chests.error)throw chests.error;
     state.ownedCosmetics=(ownedCosmetics.data||[]).map(o=>o.item_id);state.coupon=coupon.data?.id?coupon.data:null;state.couponError=!!coupon.error;
-    state.isAdmin=adminRole.data===true;$('adminEntry').hidden=!state.isAdmin;
+    state.exclusives=exclusives.data||[];state.isAdmin=adminRole.data===true;$('adminEntry').hidden=!state.isAdmin;
     state.cosmetics=cosmetics.data;state.owned=owned.data.map(x=>x.card_id);state.chests=chests.data;
     for(const c of catalog.data){const local=cards.find(x=>x.id===c.id);if(local){local.name=c.name;local.kind=c.kind;local.collection=c.collection_id;local.description=c.description;local.rarityKey=c.rarity;local.rarity=({common:'Común',rare:'Rara',epic:'Épica',legendary:'Legendaria'})[c.rarity]||'Por definir';}}
-    adopt(player.data);renderProfileInventory();void refreshCommunity(version);
+    adopt(player.data);renderProfileInventory();void refreshCommunity(version);void weekly.refresh();
   }catch(e){if(version===state.version)state.profileError=true;throw e;}
   finally{if(version===state.version){state.profileLoading=false;accountUI();}}
 }
@@ -320,7 +326,7 @@ async function useSession(session){
   state.cosmetics=[];state.owned=[];state.chests=[];state.chestBusy=false;state.catalog=null;state.catalogLoading=false;state.catalogError=false;state.catalogPromise=null;
   state.community=null;state.communityOffset=0;state.visitData=null;state.visitTarget=null;state.visitReturn='community';state.visitRequest++;state.visitBusy=false;state.visitError=false;state.likeBusy=false;$('visitedPlayer').replaceChildren();state.communityBusy=false;state.communityError=false;wardrobeSlot='all';
   state.uid=uid;state.profileLoading=!!uid;state.profileError=false;state.game=null;state.answers=[];state.pending=null;profile=null;mode='player';
-  audio.cancelEffects();state.isAdmin=false;$('adminEntry').hidden=true;admin.reset();forum.reset();sharing.clear();rewardUI.clear();state.coupon=null;state.couponError=false;state.ownedCosmetics=[];state.lastResult=null;
+  audio.cancelEffects();state.isAdmin=false;$('adminEntry').hidden=true;admin.reset();forum.reset();weekly.reset();sharing.clear();rewardUI.clear();state.coupon=null;state.couponError=false;state.ownedCosmetics=[];state.exclusives=[];state.lastResult=null;
   $('recoverGame').hidden=true;
   selectedCollection=null;selectedCard=null;$('cardDetailActions').replaceChildren();$('cardDetailStatus').textContent='';
   if($('cardDetail').open)$('cardDetail').close();$('cardDetailArt').replaceChildren();
@@ -495,7 +501,7 @@ function renderQuizCatalog(){
   else if(!next)progress.textContent='¡Completaste todas las trivias disponibles de esta consola! Podés jugar en la otra consola mientras llegan nuevos desafíos.';
   else{
     const rows=groupQuizzes(next.category,next.difficulty),position=rows.findIndex(q=>q.id===next.id)+1;
-    progress.textContent=next.legacy?'Retomá tu partida de la edición anterior. Tus puntos se conservan.':(next.in_progress?'Retomá tu trivia en curso. ':'')+'Trivia '+position+' de '+rows.length+' · '+tierNames[next.difficulty]+'. Aprobá con 3 de 5 para avanzar. Sin límite de tiempo.';
+    progress.textContent=next.legacy?'Retomá tu partida de la edición anterior. Tus puntos se conservan.':(next.in_progress?'Retomá tu trivia en curso. ':'')+'Trivia '+position+' de '+rows.length+' · '+tierNames[next.difficulty]+'. Completala para avanzar, sin mínimo de aciertos. Sin límite de tiempo.';
   }
   $('beginBtn').disabled=state.busy||!state.uid||!profile||state.catalogLoading||state.catalogError||!next||next.unlocked===false;
   $('beginBtn').textContent=!next?'RUTA COMPLETADA ✓':next.in_progress?'RETOMAR TRIVIA →':'JUGAR SIGUIENTE TRIVIA →';
@@ -594,10 +600,10 @@ async function submitPending(){
     $('triviaResultProgress').textContent='Partida de la edición anterior · Progreso conservado';
     if(completed){const group=groupQuizzes(completed.category,completed.difficulty);$('triviaResultProgress').textContent=group.filter(q=>q.completed).length+' de '+group.length+' trivias completadas · '+completed.category.toUpperCase()+' · '+tierNames[completed.difficulty];}
     correct=data.correct;state.lastResult={correct:data.correct,score:data.score,passed:data.passed,console:completed?.category||$('category').value,difficulty:tierNames[completed?.difficulty||$('difficulty').value]};
-    $('scoreTitle').textContent=pending.quizId?(data.passed?'¡TRIVIA APROBADA!':'VOLVÉ A INTENTARLO'): 'PRÁCTICA FINALIZADA';
+    $('scoreTitle').textContent=pending.quizId?(data.passed?'¡TRIVIA COMPLETADA!':'TRIVIA FINALIZADA'): 'PRÁCTICA FINALIZADA';
     $('scoreSummary').textContent=data.correct+' de 5 respuestas correctas';
     $('xpSummary').textContent='+'+data.score+' XP · Total: '+profile.xp+' XP · Guardado en tu cuenta';
-    $('resultDetail').textContent=!pending.quizId?'La práctica no entrega XP ni recompensas.':data.passed?'Ganaste 200 XP por aprobar, 100 por acierto y 200 extra si fue perfecta. Esta trivia ya no se puede repetir.':'Necesitás al menos 3 respuestas correctas. No se revelan las soluciones y este intento no entrega XP. Podés volver a intentarlo.';
+    $('resultDetail').textContent=!pending.quizId?'La práctica no entrega XP ni recompensas.':data.passed?'Ganaste 200 XP por completar, 100 por acierto y 200 extra si fue perfecta. Esta trivia ya no se puede repetir.':'Partida registrada. Podés continuar por la ruta.';
     if(profile.bestPerfectStreak>oldBest)$('resultDetail').textContent+=' ¡Nueva insignia: '+profile.bestPerfectStreak+' trivias perfectas seguidas!';
     const earned=rewardSteps().filter(r=>r.at>oldXP&&r.at<=profile.xp&&!oldOwned.has(r.id));
     if(earned.length)$('resultDetail').textContent+=' ¡Desbloqueaste: '+earned.map(r=>r.name).join(', ')+'!';
@@ -608,15 +614,15 @@ async function submitPending(){
     if(!earned.length)audio.play(data.passed?'success':'retry');
     forgetPending();state.game=null;state.answers=[];mode='player';message('¡Partida guardada!');base.go('result');
   }catch(e){
-    if(version===state.version){if(/Game not found/i.test(String(e?.message||''))){forgetPending();state.game=null;state.answers=[];message(publicError(e)+' Elegí una nueva trivia.');base.go('menu');}else{message(publicError(e)+' Tu partida sigue pendiente: tocá REINTENTAR GUARDADO.');$('recoverGame').hidden=false;}}
-  }finally{state.busy=false;$('nextBtn').disabled=false;$('recoverGame').disabled=false;}
+    if(version===state.version){if(/Game not found|Game expired|Quiz already completed/i.test(String(e?.message||''))){forgetPending();state.game=null;state.answers=[];await refreshQuizzes();if(version!==state.version)return;message(publicError(e));base.go('menu');}else{message(publicError(e)+' Tu partida sigue pendiente: tocá REINTENTAR GUARDADO.');$('recoverGame').hidden=false;}}
+  }finally{state.busy=false;$('nextBtn').disabled=false;$('recoverGame').disabled=false;if(!$('menu').classList.contains('hidden'))renderQuizCatalog();}
 }
 window.retryCloudGame=async function(){await ready;await submitPending();};
 window.showHistory=async function(){
   await ready;if(!state.uid)return;
   mode='player';const version=state.version;base.go('history');$('historyList').textContent='Cargando tus últimas partidas…';
   await refreshQuizzes();if(version!==state.version)return;
-  const {data,error}=await client.from('arcade_games').select('id,quiz_id,category,difficulty,started_at,finished_at,correct,score,passed').eq('player_id',state.uid).order('started_at',{ascending:false}).limit(20);
+  const {data,error}=await client.from('arcade_games').select('id,quiz_id,category,difficulty,started_at,finished_at,correct,score,passed,weekly_id').eq('player_id',state.uid).order('started_at',{ascending:false}).limit(20);
   if(version!==state.version)return;
   $('historyList').replaceChildren();
   if(error){$('historyList').textContent=publicError(error);return;}
@@ -624,8 +630,8 @@ window.showHistory=async function(){
   for(const game of data){
     const box=document.createElement('div');box.className='review-item';
     const date=new Date(game.started_at).toLocaleString('es-AR');
-    box.textContent=date+' · '+game.category.toUpperCase()+' · '+(state.catalog?.find(q=>q.id===game.quiz_id)?tierNames[state.catalog.find(q=>q.id===game.quiz_id).difficulty]:(game.quiz_id?'Trivia de catálogo':game.difficulty==='expert'?'Experto (partida libre)':'Normal (partida libre)'))+' · '+(game.finished_at?game.score+' puntos · '+game.correct+'/5':'Sin finalizar');
-    if(game.finished_at&&game.quiz_id){const share=document.createElement('button');share.className='secondary mini history-share';share.textContent='COMPARTIR LOGRO';share.onclick=()=>sharing.shareResult({correct:game.correct,score:game.score,passed:game.passed,console:game.category,difficulty:tierNames[state.catalog?.find(q=>q.id===game.quiz_id)?.difficulty]||tierNames[game.difficulty]||'Catálogo'});box.appendChild(share);}
+    box.textContent=date+' · '+game.category.toUpperCase()+' · '+(game.weekly_id?'Desafío semanal':state.catalog?.find(q=>q.id===game.quiz_id)?tierNames[state.catalog.find(q=>q.id===game.quiz_id).difficulty]:(game.quiz_id?'Trivia de catálogo':game.difficulty==='expert'?'Experto (partida libre)':'Normal (partida libre)'))+' · '+(game.finished_at?game.score+' puntos · '+game.correct+'/'+(game.weekly_id?20:5):'Sin finalizar');
+    if(game.finished_at&&(game.quiz_id||game.weekly_id)){const share=document.createElement('button');share.className='secondary mini history-share';share.textContent='COMPARTIR LOGRO';share.onclick=()=>sharing.shareResult({correct:game.correct,total:game.weekly_id?20:5,score:game.score,passed:game.passed,console:game.category,difficulty:game.weekly_id?'Desafío semanal':tierNames[state.catalog?.find(q=>q.id===game.quiz_id)?.difficulty]||tierNames[game.difficulty]||'Catálogo'});box.appendChild(share);}
     $('historyList').appendChild(box);
   }
 };
@@ -731,7 +737,7 @@ function cardMarkup(c,locked=false){
   const [w,h]=c.referenceSize,box=c.crop||[0,0,w,h];
   artwork='<svg class="card-image" viewBox="'+box.join(' ')+'" role="img" aria-label="'+esc(c.name)+'"><defs><clipPath id="crop-'+c.id+'"><rect x="'+box[0]+'" y="'+box[1]+'" width="'+box[2]+'" height="'+box[3]+'"/></clipPath></defs><image clip-path="url(#crop-'+c.id+')" data-card-src="'+c.image+'" width="'+w+'" height="'+h+'" preserveAspectRatio="none"/></svg>';
  }else artwork='<span class="pending-art">Imagen original pendiente</span>';
- return '<article class="game-card rarity-'+rarity+(locked?' card-locked':'')+'"><div class="card-top"><span class="card-brand">LOADING<small>ARCHIVO RETRO</small></span><span class="card-number">'+String(c.ordinal||0).padStart(3,'0')+'</span></div><div class="card-art">'+artwork+'</div><div class="card-caption"><h3>'+esc(c.name)+'</h3><span class="card-game">'+esc(c.game)+'</span><p>'+esc(c.description||c.game)+'</p></div><div class="card-footer"><span class="rarity-label">'+esc(c.rarity)+(locked?' 🔒':'')+'</span><span class="card-serial">'+String(c.ordinal||0).padStart(2,'0')+'/14</span></div></article>';
+ return '<article class="game-card rarity-'+rarity+(locked?' card-locked':'')+'"><div class="card-top"><span class="card-brand">LOADING<small>ARCHIVO RETRO</small></span><span class="card-number">'+(c.exclusive?'EX':String(c.ordinal||0).padStart(3,'0'))+'</span></div><div class="card-art">'+artwork+'</div><div class="card-caption"><h3>'+esc(c.name)+'</h3><span class="card-game">'+esc(c.game)+'</span><p>'+esc(c.description||c.game)+'</p></div><div class="card-footer"><span class="rarity-label">'+esc(c.rarity)+(locked?' 🔒':'')+'</span><span class="card-serial">'+(c.exclusive?'20/20':String(c.ordinal||0).padStart(2,'0')+'/14')+'</span></div></article>';
 }
 cardHTML=function(c,equipped=false,locked=false){if(locked||!profile?.unlocked?.includes(c.id))return mysteryCardMarkup();return '<div class="featured-card'+(equipped?' equipped':'')+'">'+cardMarkup(c)+'</div>';};
 window.showCollections=async function(){
@@ -740,6 +746,7 @@ window.showCollections=async function(){
 };
 window.selectCollection=function(id){
  if(id===null){selectedCollection=null;base.go('collection');return;}
+ if(id==='weekly-exclusives'&&profile){selectedCollection=id;renderAlbum();base.go('collectionAlbum');return;}
  const collection=collectionDefinitions.find(c=>c.id===id&&c.status!=='waiting-images');if(!collection||!profile)return;
  selectedCollection=id;renderAlbum();base.go('collectionAlbum');
 };
@@ -755,6 +762,8 @@ renderAlbum=function(){
   const count=document.createElement('span');count.className='collection-count';count.textContent=owned.length+' de '+items.length+' descubiertos';
   const action=document.createElement('small');action.textContent='ABRIR ÁLBUM →';button.append(title,count,action);button.onclick=()=>selectCollection(collection.id);$('collectionOverview').appendChild(button);
  }
+ const exclusiveButton=document.createElement('button');exclusiveButton.className='collection-summary secondary collection-exclusive';exclusiveButton.innerHTML='<strong>Exclusivas semanales</strong><span class="collection-count">'+state.exclusives.length+' obtenidas · Perfect Score</span><small>ABRIR ÁLBUM →</small>';exclusiveButton.onclick=()=>selectCollection('weekly-exclusives');$('collectionOverview').appendChild(exclusiveButton);
+ if(selectedCollection==='weekly-exclusives'){$('collectionHeading').textContent='EXCLUSIVAS';$('albumStatus').textContent=state.exclusives.length+' obtenidas · Desafíos semanales · 20/20';$('collectionMystery').textContent='No salen en cofres. Cada edición tiene su exclusiva y solo se consigue con Perfect Score durante ese desafío.';const grid=document.createElement('div');grid.className='album-mini-grid';for(const e of state.exclusives){const card=exclusiveCard('weekly-'+e.challenge_id),button=document.createElement('button');button.className='album-thumb';button.setAttribute('aria-label','Abrir exclusiva: '+card.name);button.innerHTML=cardMarkup(card);button.onclick=()=>showCollectible(card.id);grid.appendChild(button);}list.appendChild(grid);if(!state.exclusives.length){const empty=document.createElement('p');empty.className='forum-empty';empty.textContent='Todavía no conseguiste exclusivas. El próximo Perfect Score puede ser tuyo.';list.appendChild(empty);}return;}
  const collection=collectionDefinitions.find(c=>c.id===selectedCollection);if(!collection)return;
  $('collectionHeading').textContent=collection.title;
  const items=cards.filter(c=>c.collection===selectedCollection),discovered=items.filter(c=>profile.unlocked.includes(c.id)),missing=items.length-discovered.length;
@@ -777,14 +786,16 @@ renderAlbum=function(){
   section.append(heading,counter,grid);list.appendChild(section);
  }
 };
+function exclusiveCard(id){const e=state.exclusives.find(x=>'weekly-'+x.challenge_id===id);return e?{id,name:'Ada Wong',rarity:'Exclusiva',rarityKey:'exclusive',collection:'weekly-exclusives',game:'Resident Evil 4 · Original',description:'Perfect Score · 20/20 en '+(e.edition||'el desafío semanal')+'. Solo obtenible en esa edición.',image:adaArt,referenceSize:[1254,1254],ordinal:0,exclusive:true,edition:e.edition}:null;}
 function renderCardActions(){
  const actions=$('cardDetailActions');actions.replaceChildren();$('cardDetailStatus').textContent='';
+ const exclusive=exclusiveCard(selectedCard);if(exclusive){const share=document.createElement('button');share.textContent='COMPARTIR EXCLUSIVA';share.onclick=()=>{$('cardDetail').close();sharing.shareCard(exclusive);};actions.appendChild(share);$('cardDetailStatus').textContent='Exclusiva de Perfect Score · '+exclusive.edition;return;}
  if(!selectedCard||!profile?.unlocked.includes(selectedCard))return;
  const featured=profile.featured.includes(selectedCard),button=document.createElement('button');button.textContent=featured?'QUITAR DEL PERFIL':'EXHIBIR';button.disabled=state.featureBusy;button.setAttribute('aria-pressed',String(featured));const id=selectedCard;button.onclick=()=>toggleFeatured(id);actions.appendChild(button);const share=document.createElement('button');share.className='secondary';share.textContent='COMPARTIR CARTA';share.onclick=()=>{const card=cards.find(c=>c.id===id);if(!profile?.unlocked.includes(id))return;$('cardDetail').close();sharing.shareCard(card);};actions.appendChild(share);
  $('cardDetailStatus').textContent=featured?'Esta carta está exhibida en tu perfil.':profile.featured.length+' de 3 espacios de exhibición ocupados.';
 }
 window.showCollectible=function(id){
- const c=cards.find(c=>c.id===id);if(!c||!profile?.unlocked?.includes(id))return;
+ const c=cards.find(c=>c.id===id)||exclusiveCard(id);if(!c||(!profile?.unlocked?.includes(id)&&!c.exclusive))return;
  selectedCard=id;$('cardDetailArt').innerHTML=cardMarkup(c);renderCardActions();if(!$('cardDetail').open)$('cardDetail').showModal();
 };
 
@@ -832,30 +843,33 @@ window.openChest=async function(id){
  }finally{if(version===state.version)state.chestBusy=false;}
 };
 
-// Three explicit app sections, with stable links for conversations and browser back.
+// Four explicit app sections, with stable links for conversations and browser back.
 let navigationReady=false,restoringRoute=false;
-let pendingRoute=/^#(?:tema\/|publicaciones\/|comunidad|perfil|trivia|admin|jugador\/)/.test(location.hash)?location.hash:'';
+let pendingRoute=/^#(?:tema\/|publicaciones\/|comunidad|perfil|trivia|semanal|admin|jugador\/)/.test(location.hash)?location.hash:'';
 const rawGo=base.go;
+if(!history.state?.arcade)history.replaceState({arcade:true,depth:0},'',location.href);
+window.goBack=()=>{if(history.state?.arcade&&history.state.depth>0)history.back();else base.go('home');};
 function currentSection(){return [...document.querySelectorAll('main>section')].find(s=>!s.classList.contains('hidden'))?.id;}
-function sectionGroup(id){if(['community','players','forumCompose','forumThread','playerVisit'].includes(id))return 'community';if(['player','profile','collection','collectionAlbum','wardrobe','benefits','history','chests','chestOpening','linkAccount','admin'].includes(id))return 'profile';return 'trivia';}
+function sectionGroup(id){if(id==='home')return 'home';if(['community','players','forumCompose','forumThread','playerVisit'].includes(id))return 'community';if(['player','profile','collection','collectionAlbum','wardrobe','benefits','history','chests','chestOpening','linkAccount','admin'].includes(id))return 'profile';return 'trivia';}
 function syncPrimaryNav(){
  if(!$('appNav'))return;$('appNav').hidden=!profile;
- const group=sectionGroup(currentSection());for(const [id,key] of [['navTrivia','trivia'],['navProfile','profile'],['navCommunity','community']]){if(group===key)$(id).setAttribute('aria-current','page');else $(id).removeAttribute('aria-current');}
+ const group=sectionGroup(currentSection());for(const [id,key] of [['navHome','home'],['navTrivia','trivia'],['navProfile','profile'],['navCommunity','community']]){if(group===key)$(id).setAttribute('aria-current','page');else $(id).removeAttribute('aria-current');}
  const count=profile?state.chests.filter(c=>!c.opened_at).length+unseenCards().length+(state.coupon?.id&&!state.coupon.redeemed_at?1:0):0;
  $('navProfileBadge').hidden=!count;$('navProfileBadge').textContent=count||'';$('navProfileBadge').setAttribute('aria-label',count+' pendientes en tu perfil');
 }
 function sectionRoute(id){
  if(id==='community')return forum.route();if(id==='forumThread'&&forum.threadId())return '#tema/'+forum.threadId();if(id==='playerVisit'&&state.visitTarget)return '#jugador/'+state.visitTarget;
  if(id==='collectionAlbum'&&selectedCollection)return '#perfil/coleccion/'+selectedCollection;
- return ({home:'#inicio',menu:'#trivia',player:'#perfil',profile:'#perfil/editar',players:'#comunidad/jugadores',forumCompose:'#comunidad/nuevo',collection:'#perfil/colecciones',wardrobe:'#perfil/estilo',benefits:'#perfil/cupon',history:'#perfil/partidas',chests:'#perfil/cofres',rewards:'#trivia/progreso',admin:'#admin'})[id]||null;
+ return ({weekly:'#semanal',weeklyPlay:'#semanal/jugando',quiz:'#trivia/jugando',result:'#trivia/resultado',home:'#inicio',menu:'#trivia',player:'#perfil',profile:'#perfil/editar',players:'#comunidad/jugadores',forumCompose:'#comunidad/nuevo',collection:'#perfil/colecciones',wardrobe:'#perfil/estilo',benefits:'#perfil/cupon',history:'#perfil/partidas',chests:'#perfil/cofres',chestOpening:'#perfil/cofre/abriendo',rewards:'#trivia/progreso',admin:'#admin'})[id]||null;
 }
-base.go=function(id){const suppressHistory=restoringRoute;restoringRoute=false;rawGo(id);syncPrimaryNav();const route=sectionRoute(currentSection()||id);if(navigationReady&&profile&&!suppressHistory&&route&&location.hash!==route)history.pushState(null,'',route);};
+base.go=function(id){const suppressHistory=restoringRoute;restoringRoute=false;rawGo(id);syncPrimaryNav();const route=sectionRoute(currentSection()||id);if(navigationReady&&profile&&!suppressHistory&&route&&location.hash!==route)history.pushState({arcade:true,depth:(history.state?.arcade?history.state.depth||0:0)+1},'',route);if(navigationReady&&profile&&id==='home')void weekly.refresh();};
 go=base.go;
 async function restoreRoute(hash){
  if(!profile&&!hash.startsWith('#jugador/')){pendingRoute=hash;return;}
  const [path,query='']=hash.replace(/^#/,'').split('?'),params=new URLSearchParams(query);restoringRoute=true;
  try{
-  if(path.startsWith('tema/'))await forum.openThread(path.slice(5));
+  if(path.startsWith('semanal'))await weekly.open();
+  else if(path.startsWith('tema/'))await forum.openThread(path.slice(5));
   else if(path.startsWith('publicaciones/'))await forum.open(params.get('ver')==='respuestas'?'author_replies':'author',path.slice('publicaciones/'.length),'',params.get('categoria')||'');
   else if(path.startsWith('jugador/'))await visitPlayer(path.slice(8));
   else if(path==='comunidad/jugadores')await openDirectory();
@@ -867,14 +881,14 @@ async function restoreRoute(hash){
   else if(path.startsWith('perfil/coleccion/'))selectCollection(path.slice('perfil/coleccion/'.length));
   else if(path==='perfil/estilo')await openWardrobe();
   else if(path==='perfil/cupon')await openBenefits();
-  else if(path==='perfil/cofres')await openChests();
+  else if(path==='perfil/cofres'||path==='perfil/cofre/abriendo')await openChests();
   else if(path==='perfil/partidas')await showHistory();
   else if(path==='trivia/progreso')base.go('rewards');
   else if(path==='admin'){if(state.isAdmin)await openAdmin();else base.go('home');}
-  else if(path==='trivia')await openTriviaSection();
+  else if(path.startsWith('trivia'))await openTriviaSection();
   else base.go('home');
  }finally{restoringRoute=false;syncPrimaryNav();}
 }
-async function restorePendingRoute(){const route=pendingRoute;pendingRoute='';if(route){history.replaceState(null,'',route);await restoreRoute(route);}}
+async function restorePendingRoute(){const route=pendingRoute;pendingRoute='';if(route){history.replaceState(history.state?.arcade?history.state:{arcade:true,depth:0},'',route);await restoreRoute(route);}}
 window.addEventListener('popstate',()=>{void restoreRoute(location.hash);});
 ready.then(async()=>{navigationReady=true;if(pendingRoute&&(profile||pendingRoute.startsWith('#jugador/')))await restorePendingRoute();syncPrimaryNav();});
