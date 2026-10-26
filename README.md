@@ -1,3 +1,9 @@
+# LOADING ARCADE 0.33
+
+Ranking: cabecera TOP 10 sin «parcial», puesto menor que el apodo, nombres centrados en su columna y datos a la derecha: tiempo arriba, aciertos debajo. Se conservan las diez posiciones en una imagen. No requiere SQL: subir sitio completa de loading-arcade-v33.zip.
+
+---
+
 # LOADING ARCADE 0.32
 
 Top 10 completo en una sola imagen. Se eliminan las opciones de dos mitades y la exportación abre directamente en historia completa. Conserva apodos grandes, aciertos y tiempo debajo de cada nombre, logo, fondo de aldea y espacio para enlace. Publicación completa también disponible. Subir sitio completa de loading-arcade-v32.zip. No requiere SQL.

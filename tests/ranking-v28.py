@@ -12,6 +12,6 @@ with sync_playwright() as p:
  for fmt,w,h in [('feed',1080,1350),('story',1080,1920)]:
   page.locator('[data-format="'+fmt+'"]').click();page.wait_for_function('!document.getElementById("downloadShareBtn").disabled');page.wait_for_function('document.getElementById("sharePreview").naturalHeight=='+str(h));assert page.locator('#sharePreview').evaluate('(i)=>i.naturalWidth')==w
   with page.expect_download() as d:page.locator('#downloadShareBtn').click()
-  d.value.save_as('design/ranking-v32-'+fmt+'-EJEMPLO.png')
+  d.value.save_as('design/ranking-v33-'+fmt+'-EJEMPLO.png')
  assert not errors,errors;b.close()
-print('PASS v32: ten rows, long nickname, guest export, feed/story exact dimensions and PNG downloads; synthetic data only.')
+print('PASS v33: ten rows, long nickname, guest export, feed/story exact dimensions and PNG downloads; synthetic data only.')

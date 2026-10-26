@@ -1,15 +1,15 @@
 [
   {
-    "url": "assets/media/preview-v24-4f3b71a9b270807e.png",
-    "bytes": 1909949,
-    "sha256": "4f3b71a9b270807e9f0da88baa1718281f571cacdd023121f7bbced65fc4d07c",
-    "source": "assets/social/preview-v24.png"
-  },
-  {
     "url": "assets/media/loading-arcade-70e3c56a50eacc3a.png",
     "bytes": 1278596,
     "sha256": "70e3c56a50eacc3a676783eab3fcdb1ae79cfbfbe4727d631f7dc136f62a9cda",
     "source": "assets/brand/loading-arcade.png"
+  },
+  {
+    "url": "assets/media/preview-v24-4f3b71a9b270807e.png",
+    "bytes": 1909949,
+    "sha256": "4f3b71a9b270807e9f0da88baa1718281f571cacdd023121f7bbced65fc4d07c",
+    "source": "assets/social/preview-v24.png"
   },
   {
     "url": "assets/media/ada-wong-exclusive-fff3651189305e8c.png",
@@ -18,16 +18,16 @@
     "source": "assets/cards/weekly/ada-wong-exclusive.png"
   },
   {
-    "url": "assets/media/common-a-980f2fa4ee6f0bc3.png",
-    "bytes": 2151213,
-    "sha256": "980f2fa4ee6f0bc38b658cbdffc9f0a8534bafa6c2aac6b41c3ad330bef6984f",
-    "source": "assets/cards/re4/art-v13/common-a.png"
-  },
-  {
     "url": "assets/media/coupon-level5-eb5cd82d55d774d0.png",
     "bytes": 3018681,
     "sha256": "eb5cd82d55d774d0fb7658c8f923ad5c30ca25d412d1613c07ad30c1c3b7c91e",
     "source": "assets/rewards/coupon-level5.png"
+  },
+  {
+    "url": "assets/media/common-a-980f2fa4ee6f0bc3.png",
+    "bytes": 2151213,
+    "sha256": "980f2fa4ee6f0bc38b658cbdffc9f0a8534bafa6c2aac6b41c3ad330bef6984f",
+    "source": "assets/cards/re4/art-v13/common-a.png"
   },
   {
     "url": "assets/media/weekly-village-2d650d52fea1de01.png",
