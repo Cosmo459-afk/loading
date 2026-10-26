@@ -1,0 +1,25 @@
+"""Real local server persistence, chest exhibition, replacement, public profile and mobile layout."""
+import json,urllib.request
+from playwright.sync_api import sync_playwright
+HOST='https://epnflypuxcfeexaqwlba.supabase.co';KEY='sb-epnflypuxcfeexaqwlba-auth-token'
+def api(path,body=None,token=None):
+ h={'Content-Type':'application/json'}
+ if token:h['Authorization']='Bearer '+token
+ with urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:8082'+path,data=None if body is None else json.dumps(body).encode(),headers=h)) as r:return json.load(r)
+api('/_test/reset',{});session=api('/_test/session?user=alice');token=session['access_token'];api('/rest/v1/rpc/arcade_save_profile',{'p_nickname':'RetroPlayer','p_avatar':2},token)
+for xp,q in zip([900,2700,4500,8100],['ps1-easy-01','ps1-medium-01','ps1-hard-01','ps2-easy-01']):
+ api('/_test/control',{'ageStarts':True,'grantXP':xp});g=api('/rest/v1/rpc/arcade_start_quiz',{'p_quiz_id':q},token);keys=api('/_test/answers',{'gameId':g['game_id']});api('/rest/v1/rpc/arcade_submit_game',{'p_game_id':g['game_id'],'p_answers':keys},token)
+chests=api('/rest/v1/arcade_chests',token=token);prizes=[api('/rest/v1/rpc/arcade_open_chest',{'p_chest_id':c['id']},token)['card_id'] for c in chests[:3]]
+api('/rest/v1/rpc/arcade_feature_cards',{'p_ids':prizes},token)
+with sync_playwright() as p:
+ b=p.chromium.launch(executable_path='/usr/bin/chromium',args=['--no-sandbox']);ctx=b.new_context(viewport={'width':390,'height':844},reduced_motion='reduce');ctx.route(HOST+'/**',lambda r:r.fulfill(response=r.fetch(url='http://127.0.0.1:8082'+r.request.url[len(HOST):])));ctx.add_init_script('if(!localStorage.getItem('+json.dumps(KEY)+'))localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(session))+')');page=ctx.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)));page.goto('http://127.0.0.1:8085/dist/index.html');page.wait_for_selector('#navProfile:visible');page.locator('#navProfile').click();page.wait_for_selector('#ownProfileIdentity .profile-card-slot .game-card');assert page.locator('#ownProfileIdentity .profile-card-slot .game-card').count()==3;assert page.locator('#ownProfileIdentity .profile-name-row .streak-medal').count()==1;assert page.locator('#profileInventory .streak-medal').count()==0;assert 'SALIR' not in page.locator('#player').inner_text();assert page.locator('#logoutBtn').is_hidden()
+ for width in [320,390,768,1280]:
+  page.set_viewport_size({'width':width,'height':844});assert page.evaluate('document.documentElement.scrollWidth<=innerWidth');page.screenshot(path='design/perfil-v40-'+str(width)+'.png',full_page=True)
+ # Remove from an actual miniature and persist after reload.
+ page.locator('#ownProfileIdentity .profile-card-slot').first.click();page.get_by_role('button',name='QUITAR DEL PERFIL',exact=True).click();page.wait_for_function('profile.featured.length===2');page.locator('#cardDetail button[aria-label="Cerrar detalle"]').click();page.reload();page.wait_for_selector('#ownProfileIdentity .profile-card-slot .game-card');page.locator('#navProfile').click();assert page.locator('#ownProfileIdentity .profile-card-empty').count()==1
+ page.evaluate('openChests()');page.wait_for_selector('#chests:not(.hidden)');page.locator('#chestList button').first.click();page.wait_for_selector('#chestFeature:enabled');page.locator('#chestFeature').click();page.wait_for_function('profile.featured.length===3');page.wait_for_function('document.getElementById("chestFeature").textContent.includes("EXHIBIDA")');page.locator('#chestFeature').click();page.wait_for_selector('#player:not(.hidden)');assert page.locator('#ownProfileIdentity .profile-card-slot .game-card').count()==3
+ # Replace one slot when all three are full, using the removed owned card.
+ page.evaluate('showCollectible('+json.dumps(prizes[0])+')');page.get_by_role('button',name='EXHIBIR',exact=True).click();page.get_by_role('button',name='REEMPLAZAR 2',exact=False).click();page.wait_for_function('profile.featured.includes('+json.dumps(prizes[0])+')');page.locator('#cardDetail button[aria-label="Cerrar detalle"]').click();public=page.evaluate('profile.publicId');expected=page.evaluate('profile.featured');page.reload();page.wait_for_function('profile?.featured?.length===3');assert page.evaluate('profile.featured')==expected
+ page.evaluate('visitPlayer('+json.dumps(public)+')');page.wait_for_selector('#visitedPlayer .profile-card-slot .game-card');assert page.locator('#visitedPlayer .profile-card-slot .game-card').count()==3;assert page.locator('#visitedPlayer .profile-name-row .streak-medal').count()==1
+ page.locator('#navHome').click();page.wait_for_selector('#homeAccount:visible');assert page.locator('#homeAccount').get_by_role('button',name='CERRAR SESIÓN',exact=True).is_visible();assert not errors,errors;b.close()
+print('PASS v40: persisted own/public featured cards, three slots, shield beside name, chest direct exhibit, full-slot replacement, mobile/desktop proportions and close-session on home only.')

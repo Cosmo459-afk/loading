@@ -1,3 +1,11 @@
+# LOADING ARCADE 0.40
+
+Perfil con insignia de invicto junto al nombre y tres espacios de cartas debajo del nivel/XP. Corrige la ausencia de visualización de cartas guardadas. Editar/compartir debajo, Cosméticos junto al avatar. Cerrar sesión está en Inicio. Desde un cofre se puede exhibir directamente la carta; con tres espacios ocupados se elige qué reemplazar. Conserva la validación de propiedad del servidor. No requiere SQL ni reiniciar progreso: subir sitio completa de loading-arcade-v40.zip.
+
+Validación local: tests/profile-v40.py prueba concesión real desde cofre, exhibición, reemplazo con tres espacios llenos, persistencia tras recarga, perfil público y proporciones a 320/390/768/1280 px.
+
+---
+
 # LOADING ARCADE 0.39
 
 Carta exclusiva en miniatura junto al recuadro 20/20, también en celular. Ambas columnas comparten altura y la carta se amplía al tocarla. El top 10 del Inicio muestra el avatar de cada competidor junto al nombre. Subir sitio completa de loading-arcade-v39.zip. No requiere SQL ni reiniciar resultados.
