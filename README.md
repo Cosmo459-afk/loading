@@ -1,3 +1,9 @@
+# LOADING ARCADE 0.31
+
+Ranking legible para Instagram: por defecto dos historias (puestos 1–5 y 6–10) con apodos grandes y aciertos/tiempo debajo; elimina la columna redundante de puntos. Conserva historia completa y publicación completa. Logo menor, títulos grandes y espacio para enlace. Ambas mitades usan la misma captura de resultados. No requiere SQL: subir sitio completa de loading-arcade-v31.zip.
+
+---
+
 # LOADING ARCADE 0.30
 
 Ranking exportable: títulos y pregunta final en Anton, tipografía condensada similar a la referencia promocional. Apodos y cifras conservan su fuente legible. Se carga la fuente al generar la exportación; no cambia las fuentes del resto del sitio. Actualizar subiendo sitio completa de loading-arcade-v30.zip a Cloudflare. No requiere SQL.
