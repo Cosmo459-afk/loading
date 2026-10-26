@@ -1,3 +1,9 @@
+# LOADING ARCADE 0.36
+
+Carta exclusiva completa visible en el bloque semanal del Inicio. Se puede tocar para ampliarla; es una vista previa, no entrega el premio ni permite exhibirla como propia. Conserva la condición de 20/20. Subir sitio completa de loading-arcade-v36.zip. No requiere SQL ni reiniciar resultados.
+
+---
+
 # LOADING ARCADE 0.35
 
 Ranking exportable con avatar y cosméticos públicos de cada jugador. Inicio: desafío semanal con borde esmeralda, explicación, recompensa exclusiva por 20/20 y acceso destacado. Sin SQL: estos datos públicos ya están disponibles desde v25/v27. Subir sitio completa de loading-arcade-v35.zip. No cambia resultados ni intentos.
