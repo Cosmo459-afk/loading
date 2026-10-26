@@ -178,16 +178,17 @@ function badge(n,label){return n?'<span class="pending-dot" aria-label="'+n+' '+
 function renderProfileInventory(){
  const panel=$('profileInventory');if(!panel)return;panel.hidden=!profile;panel.replaceChildren();if(!profile)return;
  const chests=state.chests.filter(c=>!c.opened_at).length,newCards=unseenCards().length,coupon=state.coupon?.id&&!state.coupon.redeemed_at?1:0;
- panel.innerHTML=streakBadge(profile.bestPerfectStreak,profile.perfectStreak)+'<p class="muted">La insignia conserva tu mejor racha de trivias perfectas. Una trivia no perfecta corta la racha actual; las prácticas no cuentan.</p><h3>Tu inventario</h3><div class="profile-inventory-actions">'+
- '<button class="secondary" onclick="openChests()">MIS COFRES'+badge(chests,'cofres por abrir')+'</button>'+
- '<button class="secondary" onclick="showCollections()">MI COLECCIÓN'+badge(newCards,'coleccionables nuevos')+'</button>'+
- '<button class="secondary" onclick="openWardrobe()">MI ESTILO</button>'+
- '<button class="secondary" onclick="openBenefits()">MI CUPÓN'+badge(coupon,'cupón disponible')+'</button>'+
- '<button class="secondary" onclick="showHistory()">MIS PARTIDAS</button></div>';
+ const actions=[['openChests()','MIS COFRES','Cofres por abrir',chests,'▣'],['showCollections()','MIS CARTAS','Tu colección',newCards,'▤'],['openBenefits()','MI CUPÓN','Beneficio en Loading',coupon,'◇'],['showHistory()','MIS PARTIDAS','Tu recorrido',0,'↗']];
+ panel.innerHTML='<div class="profile-inventory-heading"><h3>Tu arcade</h3><p class="muted">Tus cartas, recompensas y partidas.</p></div><div class="profile-inventory-actions">'+actions.map(([action,title,description,count,icon])=>'<button class="secondary profile-tile" onclick="'+action+'"><span class="profile-tile-icon" aria-hidden="true">'+icon+'</span><span class="profile-tile-title">'+title+badge(count,'pendientes')+'</span><small>'+description+'</small></button>').join('')+'</div><div class="profile-streak-summary">'+streakBadge(profile.bestPerfectStreak,profile.perfectStreak)+'<p class="muted">Tu mejor racha de trivias perfectas. Una trivia no perfecta corta la racha actual.</p></div>';
+
 }
 function renderOwnProfile(){
  const root=$('ownProfileIdentity');if(!root)return;root.replaceChildren();if(!profile)return;
- const identity=document.createElement('div');identity.className='profile-top';identity.innerHTML=avatarHTML(profile);const copy=document.createElement('div'),name=document.createElement('h2'),level=document.createElement('p');name.textContent=profile.name;level.textContent='Nivel '+(Math.floor(profile.xp/1800)+1)+' · '+profile.xp+' XP';copy.append(name,level);const exit=document.createElement('button');exit.className='secondary mini';exit.textContent='SALIR';exit.onclick=()=>logout();identity.append(copy,exit);root.appendChild(identity);const share=document.createElement('button');share.className='secondary profile-share';share.textContent='COMPARTIR MI PERFIL';share.onclick=()=>sharing.shareProfile();root.appendChild(share);
+ const identity=document.createElement('div');identity.className='profile-top own-profile-top';
+ const appearance=document.createElement('div');appearance.className='profile-appearance';appearance.innerHTML=avatarHTML(profile);const cosmetics=document.createElement('button');cosmetics.className='secondary mini profile-cosmetics';cosmetics.textContent='COSMÉTICOS';cosmetics.onclick=()=>openWardrobe();appearance.appendChild(cosmetics);
+ const copy=document.createElement('div'),name=document.createElement('h2'),level=document.createElement('p');copy.className='profile-identity-copy';name.textContent=profile.name;level.textContent='Nivel '+(Math.floor(profile.xp/1800)+1)+' · '+profile.xp+' XP';copy.append(name,level);
+ const tools=document.createElement('div');tools.className='profile-identity-tools';for(const [title,action] of [['EDITAR JUGADOR',()=>showProfile()],['COMPARTIR PERFIL',()=>sharing.shareProfile()],['SALIR',()=>logout()]]){const button=document.createElement('button');button.className='secondary mini';button.textContent=title;button.onclick=action;tools.appendChild(button);}copy.appendChild(tools);identity.append(appearance,copy);root.appendChild(identity);
+
 }
 window.openProfileHub=async function(){await ready;if(!profile){await enterPlayer(true);return;}renderOwnProfile();renderProfileInventory();base.go('player');};
 window.openTriviaSection=async function(){await ready;if(!profile){await enterPlayer(true);return;}mode='player';base.go('menu');};
@@ -811,7 +812,7 @@ function renderChests(){
  $('chestBalance').textContent=state.chests.filter(c=>!c.opened_at).length+' cofres por abrir';
  $('chestList').replaceChildren();
  const pending=state.chests.filter(c=>!c.opened_at);
- if(!pending.length){$('chestList').textContent='No tenés cofres pendientes. Los próximos llegan al subir de nivel. Tus cartas obtenidas están en Mi colección.';return;}
+ if(!pending.length){$('chestList').textContent='No tenés cofres pendientes. Los próximos llegan al subir de nivel. Tus cartas obtenidas están en Mis cartas.';return;}
  for(const chest of pending){
   const box=document.createElement('div');box.className='panel chest-row';
   const title=document.createElement('strong');title.textContent='Cofre del nivel '+chest.level;

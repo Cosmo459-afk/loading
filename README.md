@@ -1,3 +1,11 @@
+# LOADING ARCADE 0.37
+
+Base funcional y visual v35: no incluye la vista previa de la carta añadida en v36. Perfil reorganizado: Cosméticos junto al avatar, Mis cartas y accesos compactos a cofres, cupón e historial. Acciones de edición y compartir agrupadas en identidad. No modifica datos ni requiere SQL. Subir sitio completa de loading-arcade-v37.zip.
+
+Esta compilación no ha sido analizada con Windows Defender: partir de v35 no garantiza ausencia de alertas en un archivo nuevo.
+
+---
+
 # LOADING ARCADE 0.36
 
 Carta exclusiva completa visible en el bloque semanal del Inicio. Se puede tocar para ampliarla; es una vista previa, no entrega el premio ni permite exhibirla como propia. Conserva la condición de 20/20. Subir sitio completa de loading-arcade-v36.zip. No requiere SQL ni reiniciar resultados.
