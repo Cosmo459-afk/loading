@@ -1,3 +1,11 @@
+# LOADING ARCADE 0.29
+
+Diseño de ranking actualizado: logo oficial, DESAFÍO SEMANAL, Resident Evil 4 - (2005), top 10, pregunta «¿Creés que podés hacerlo mejor?» y espacio libre inferior para el sticker del enlace. Conserva los datos reales y fecha de captura, en publicación e historia.
+
+Actualizar desde v28: subir la carpeta sitio completa de loading-arcade-v29.zip a Cloudflare. No requiere SQL ni reiniciar resultados.
+
+---
+
 # LOADING ARCADE 0.28
 
 Exportación del top 10 semanal con fondo inspirado en la aldea de Resident Evil 4 original. En Inicio → COMPARTIR TOP 10 se actualizan los resultados y se genera una imagen pública con puesto, apodo, aciertos, puntos y tiempo. Incluye captura con fecha/hora de Argentina y distingue ranking parcial de resultado final. No inventa jugadores para llenar posiciones.
