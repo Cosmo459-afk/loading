@@ -1,3 +1,9 @@
+# LOADING ARCADE 0.44
+
+Cabecera con acceso permanente a Instagram @somosloading y «Ir a la tienda Loading». Ambos abren en otra pestaña para conservar la partida actual. En móvil se muestran debajo del logo y se diferencian del menú del juego. Subir sitio completa de loading-arcade-v44.zip a Cloudflare. Sin SQL adicional ni cambios de progreso.
+
+---
+
 # LOADING ARCADE 0.43
 
 Jerarquía visual de botones: Jugar/Continuar con relleno destacado; Actualizar/Volver/Compartir más discretos, con foco visible y áreas táctiles conservadas. Semanal mantiene el color esmeralda. Cofres, cartas, cupón y partidas usan SVG locales con el mismo tamaño y grosor. Sin cambios en reglas, puntajes ni datos. Subir sitio completa de loading-arcade-v43.zip a Cloudflare. No requiere SQL adicional.
