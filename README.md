@@ -1,3 +1,9 @@
+# LOADING ARCADE 0.43
+
+Jerarquía visual de botones: Jugar/Continuar con relleno destacado; Actualizar/Volver/Compartir más discretos, con foco visible y áreas táctiles conservadas. Semanal mantiene el color esmeralda. Cofres, cartas, cupón y partidas usan SVG locales con el mismo tamaño y grosor. Sin cambios en reglas, puntajes ni datos. Subir sitio completa de loading-arcade-v43.zip a Cloudflare. No requiere SQL adicional.
+
+---
+
 # LOADING ARCADE 0.42
 
 Miniatura de la exclusiva semanal con las proporciones del diseño completo: se escala uniformemente desde un ancho de referencia, sin rehacer la carta en una columna estrecha. El recuadro de información se ajusta a su altura con texto reducido. Se mantiene ampliación al tocarla. Actualizar desde v41 subiendo sitio completa de loading-arcade-v42.zip. Sin SQL adicional ni reinicio de progreso.

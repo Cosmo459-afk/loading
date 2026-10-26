@@ -1,3 +1,4 @@
+import {inventoryIcon} from './icons.js';
 import {createClient} from '@supabase/supabase-js';
 import config from './config.js';
 import cardStyles from './cards.css';
@@ -143,7 +144,7 @@ function renderVisitedPlayer(){
  const panel=$('visitedPlayer');panel.replaceChildren();
  if(state.visitBusy){panel.textContent='Cargando perfil…';return;}
  if(state.visitError||!state.visitData){const text=document.createElement('p');text.textContent='No pudimos abrir este perfil. Puede que ya no esté disponible.';const retry=document.createElement('button');retry.textContent='REINTENTAR';retry.onclick=()=>visitPlayer(state.visitTarget);panel.append(text,retry);return;}
- const p=state.visitData;const share=document.createElement('button');share.className='secondary profile-posts';share.textContent='COMPARTIR PERFIL';share.onclick=()=>sharing.shareProfile({name:p.nickname,publicId:p.public_id,avatar:p.avatar,cosmetics:p.cosmetics,level:p.level,bestPerfectStreak:p.best_perfect_streak});const top=document.createElement('div');top.className='profile-top visited-identity';top.innerHTML=avatarHTML({avatar:p.avatar,cosmetics:p.cosmetics||{}});
+ const p=state.visitData;const share=document.createElement('button');share.className='secondary profile-posts action-quiet';share.textContent='COMPARTIR PERFIL';share.onclick=()=>sharing.shareProfile({name:p.nickname,publicId:p.public_id,avatar:p.avatar,cosmetics:p.cosmetics,level:p.level,bestPerfectStreak:p.best_perfect_streak});const top=document.createElement('div');top.className='profile-top visited-identity';top.innerHTML=avatarHTML({avatar:p.avatar,cosmetics:p.cosmetics||{}});
  const copy=document.createElement('div'),name=document.createElement('h1'),level=document.createElement('p');name.textContent=p.nickname+(p.is_me?' · Vos':'');level.textContent='Nivel '+p.level;const title=document.createElement('div');title.className='profile-name-row';title.append(name,profileShield(p.best_perfect_streak,p.perfect_streak));copy.className='profile-identity-copy';copy.append(title,level,featuredSlots(p.featured_ids||[]));top.appendChild(copy);panel.appendChild(top);panel.appendChild(share);
  const social=document.createElement('div');social.className='profile-social';const count=document.createElement('p');count.textContent=(p.likes||0)+' Me gusta';social.appendChild(count);
  if(profile&&!p.is_me){const like=document.createElement('button');like.className='secondary';like.textContent=p.liked_by_me?'♥ TE GUSTA':'♡ ME GUSTA';like.setAttribute('aria-pressed',String(!!p.liked_by_me));like.disabled=state.likeBusy;like.onclick=()=>likeProfile();social.appendChild(like);}const status=document.createElement('p');status.id='likeNotice';status.setAttribute('role','status');social.appendChild(status);panel.appendChild(social);
@@ -171,8 +172,8 @@ function badge(n,label){return n?'<span class="pending-dot" aria-label="'+n+' '+
 function renderProfileInventory(){
  const panel=$('profileInventory');if(!panel)return;panel.hidden=!profile;panel.replaceChildren();if(!profile)return;
  const chests=state.chests.filter(c=>!c.opened_at).length,newCards=unseenCards().length,coupon=state.coupon?.id&&!state.coupon.redeemed_at?1:0;
- const actions=[['openChests()','MIS COFRES','Cofres por abrir',chests,'▣'],['showCollections()','MIS CARTAS','Tu colección',newCards,'▤'],['openBenefits()','MI CUPÓN','Beneficio en Loading',coupon,'◇'],['showHistory()','MIS PARTIDAS','Tu recorrido',0,'↗']];
- panel.innerHTML='<div class="profile-inventory-heading"><h3>Tu arcade</h3><p class="muted">Tus cartas, recompensas y partidas.</p></div><div class="profile-inventory-actions">'+actions.map(([action,title,description,count,icon])=>'<button class="secondary profile-tile" onclick="'+action+'"><span class="profile-tile-icon" aria-hidden="true">'+icon+'</span><span class="profile-tile-title">'+title+badge(count,'pendientes')+'</span><small>'+description+'</small></button>').join('')+'</div>';
+ const actions=[['openChests()','MIS COFRES','Cofres por abrir',chests,'chests'],['showCollections()','MIS CARTAS','Tu colección',newCards,'cards'],['openBenefits()','MI CUPÓN','Beneficio en Loading',coupon,'coupon'],['showHistory()','MIS PARTIDAS','Tu recorrido',0,'history']];
+ panel.innerHTML='<div class="profile-inventory-heading"><h3>Tu arcade</h3><p class="muted">Tus cartas, recompensas y partidas.</p></div><div class="profile-inventory-actions">'+actions.map(([action,title,description,count,icon])=>'<button class="secondary profile-tile" onclick="'+action+'"><span class="profile-tile-icon" aria-hidden="true">'+inventoryIcon(icon)+'</span><span class="profile-tile-title">'+title+badge(count,'pendientes')+'</span><small>'+description+'</small></button>').join('')+'</div>';
 
 }
 function profileShield(best,current){const shield=document.createElement('span');shield.className='profile-name-shield';shield.innerHTML=streakBadge(best,current);shield.title='Mejor racha: '+(Number(best)||0)+' trivias perfectas seguidas · Actual: '+(Number(current)||0);return shield;}
@@ -190,7 +191,7 @@ function renderOwnProfile(){
  const identity=document.createElement('div');identity.className='profile-top own-profile-top';
  const appearance=document.createElement('div');appearance.className='profile-appearance';appearance.innerHTML=avatarHTML(profile);const cosmetics=document.createElement('button');cosmetics.className='secondary mini profile-cosmetics';cosmetics.textContent='COSMÉTICOS';cosmetics.onclick=()=>openWardrobe();appearance.appendChild(cosmetics);
  const copy=document.createElement('div'),name=document.createElement('h2'),level=document.createElement('p');copy.className='profile-identity-copy';name.textContent=profile.name;const heading=document.createElement('div');heading.className='profile-name-row';heading.append(name,profileShield(profile.bestPerfectStreak,profile.perfectStreak));level.textContent='Nivel '+(Math.floor(profile.xp/1800)+1)+' · '+profile.xp+' XP';copy.append(heading,level,featuredSlots(profile.featured||[],true));
- const tools=document.createElement('div');tools.className='profile-identity-tools';for(const [title,action] of [['CAMBIAR AVATAR',()=>showProfile()],['COMPARTIR PERFIL',()=>sharing.shareProfile()]]){const button=document.createElement('button');button.className='secondary mini';button.textContent=title;button.onclick=action;tools.appendChild(button);}copy.appendChild(tools);identity.append(appearance,copy);root.appendChild(identity);
+ const tools=document.createElement('div');tools.className='profile-identity-tools';for(const [title,action] of [['CAMBIAR AVATAR',()=>showProfile()],['COMPARTIR PERFIL',()=>sharing.shareProfile()]]){const button=document.createElement('button');button.className='secondary mini'+(title==='COMPARTIR PERFIL'?' action-quiet':'');button.textContent=title;button.onclick=action;tools.appendChild(button);}copy.appendChild(tools);identity.append(appearance,copy);root.appendChild(identity);
 
 }
 window.openProfileHub=async function(){await ready;if(!profile){await enterPlayer(true);return;}renderOwnProfile();renderProfileInventory();base.go('player');};
@@ -247,11 +248,11 @@ function accountUI(){
   const unopened=state.chests.filter(c=>!c.opened_at).length,remaining=1800-xp%1800,percent=(xp%1800)/18;
   panel.innerHTML='<div class="profile-top">'+avatarHTML(profile)+'<div><div class="eyebrow">TU JUGADOR</div><h2>'+esc(profile.name)+'</h2><p>Nivel '+level+' · '+(isTemporary()?'Sin correo vinculado':'Acceso protegido')+'</p></div></div>'+
     '<div class="home-mini-stats"><span><strong>'+xp+'</strong> XP totales</span><span><strong>'+profile.unlocked.length+'</strong> coleccionables</span></div>'+
-    '<button class="home-play" onclick="openTriviaSection()">CONTINUAR TRIVIA →</button><button class="secondary home-close-session" onclick="logout()">CERRAR SESIÓN</button>'+
+    '<button class="home-play action-primary" onclick="openTriviaSection()">CONTINUAR TRIVIA →</button><button class="secondary home-close-session" onclick="logout()">CERRAR SESIÓN</button>'+
 
     (isTemporary()?'<button class="text-button home-link" onclick="openLinkAccount()">Vincular correo para proteger mi acceso</button>':'');
   $('homeProgress').hidden=false;
-  $('homeProgress').innerHTML='<div class="home-route-heading"><div><div class="eyebrow">PROGRESO</div><h2>'+(level+1===5?'Cupón del 10% · Nivel 5':'Próximo cofre · Nivel '+(level+1))+'</h2></div><span class="home-chest-icon" aria-hidden="true">▣</span></div>'+
+  $('homeProgress').innerHTML='<div class="home-route-heading"><div><div class="eyebrow">PROGRESO</div><h2>'+(level+1===5?'Cupón del 10% · Nivel 5':'Próximo cofre · Nivel '+(level+1))+'</h2></div><span class="home-chest-icon" aria-hidden="true">'+inventoryIcon('chests')+'</span></div>'+
     '<p class="home-xp-left">Te faltan <strong>'+remaining+' XP</strong></p>'+
     '<div class="bar" role="progressbar" aria-label="Experiencia hacia el próximo nivel" aria-valuemin="0" aria-valuemax="1800" aria-valuenow="'+(xp%1800)+'"><div class="fill" style="width:'+percent+'%"></div></div>'+
     '<div class="progress-text"><small>Nivel '+level+'</small><small>'+(xp%1800)+' / 1800 XP</small></div>'+
