@@ -1,3 +1,9 @@
+# LOADING ARCADE 0.32
+
+Top 10 completo en una sola imagen. Se eliminan las opciones de dos mitades y la exportación abre directamente en historia completa. Conserva apodos grandes, aciertos y tiempo debajo de cada nombre, logo, fondo de aldea y espacio para enlace. Publicación completa también disponible. Subir sitio completa de loading-arcade-v32.zip. No requiere SQL.
+
+---
+
 # LOADING ARCADE 0.31
 
 Ranking legible para Instagram: por defecto dos historias (puestos 1–5 y 6–10) con apodos grandes y aciertos/tiempo debajo; elimina la columna redundante de puntos. Conserva historia completa y publicación completa. Logo menor, títulos grandes y espacio para enlace. Ambas mitades usan la misma captura de resultados. No requiere SQL: subir sitio completa de loading-arcade-v31.zip.
