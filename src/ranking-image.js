@@ -3,7 +3,7 @@ import logo from '../assets/brand/loading-arcade.png';
 import posterFont from '../assets/fonts/LoadingPoster.ttf';
 let posterReady;
 function loadPoster(){return posterReady??=(async()=>{const font=new FontFace('LoadingPoster','url('+posterFont+')');await font.load();document.fonts.add(font);})();}
-export async function drawRanking(ctx,h,item){
+export async function drawRanking(ctx,h,item,avatar){
  await loadPoster();
  const image=new Image();image.src=village;await image.decode();
  const scale=Math.max(1080/image.width,h/image.height);ctx.drawImage(image,(1080-image.width*scale)/2,(h-image.height*scale)/2,image.width*scale,image.height*scale);
@@ -20,11 +20,13 @@ export async function drawRanking(ctx,h,item){
  const y0=titleY+151,rowH=story?91:65,count=10;
  ctx.fillStyle='rgba(6,9,12,.79)';ctx.fillRect(60,y0,960,rowH*count+20);
  const players=item.top.slice(0,10);
+ const avatars=await Promise.all(players.map(async p=>{const img=new Image();img.src=avatar(p);await img.decode();return img;}));
  players.forEach((p,i)=>{const y=y0+rowH*i,mid=y+rowH/2;
   label(String(p.place).padStart(2,'0'),117,mid+(story?12:10),story?34:28,p.place===1?'#e2c781':'#d0c5de','center',70);
-  const size=story?42:34,max=590;ctx.font='600 '+size+'px LoadingSans,sans-serif';let name=String(p.nickname);
+  const avatarSize=story?66:49;ctx.drawImage(avatars[i],165,mid-avatarSize/2,avatarSize,avatarSize);
+  const size=story?42:34,max=510;ctx.font='600 '+size+'px LoadingSans,sans-serif';let name=String(p.nickname);
   while(ctx.measureText(name).width>max&&name.length>1)name=name.slice(0,-2)+'…';
-  label(name,180,mid+(story?14:11),size,'#fff','left',max);
+  label(name,245,mid+(story?14:11),size,'#fff','left',max);
   label((p.elapsed_ms/1000).toFixed(2)+' s',907,mid-(story?7:4),story?31:25,'#dedad3','center',180);
   label(p.correct+'/20 aciertos',907,mid+(story?29:24),story?28:23,'#dedad3','center',180);
   ctx.strokeStyle='rgba(255,255,255,.14)';ctx.beginPath();ctx.moveTo(85,y+rowH);ctx.lineTo(995,y+rowH);ctx.stroke();

@@ -17,7 +17,7 @@ export function installSharing({profile,avatar,brand,siteArt,owned}){
   for(const b of $('shareFormats').querySelectorAll('button'))b.setAttribute('aria-pressed',String(b.dataset.format===format));
   try{
    await document.fonts.ready;const h=format.startsWith('story')?1920:1350,canvas=document.createElement('canvas');canvas.width=1080;canvas.height=h;const ctx=canvas.getContext('2d');frame(ctx,h);
-   if(item.kind==='ranking'){await drawRanking(ctx,h,item);}else{
+   if(item.kind==='ranking'){await drawRanking(ctx,h,item,avatar);}else{
    const logo=await load(brand);const lw=740;ctx.drawImage(logo,170,100,lw,lw*logo.naturalHeight/logo.naturalWidth);
    const mid=format==='story'?650:480;
    if(item.kind==='site'){
@@ -40,7 +40,7 @@ export function installSharing({profile,avatar,brand,siteArt,owned}){
  function shareProfile(value=profile()){if(!value)return;const p=publicPlayer(value);open({kind:'profile',player:p,link:profileLink(p),text:p.name+' · Nivel '+p.level+' en Loading Arcade. Visitá el perfil y vení a jugar.'});}
  function shareResult(result){if(!profile()||!result)return;const p=publicPlayer(profile());open({kind:'result',player:p,result:{...result},link:profileLink(p),text:'Conseguí '+result.correct+'/'+(result.total||5)+' en una trivia de '+(result.console==='ps1'?'PlayStation 1':'PlayStation 2')+' en Loading Arcade. ¿Cuánto sabés vos?'});}
  function shareCard(card){if(!profile()||!owned(card?.id))return;const p=publicPlayer(profile());open({kind:'card',player:p,card:{...card},link:profileLink(p),text:'Conseguí '+card.name+' · '+card.rarity+' de '+card.game+' en Loading Arcade. Descubrí tu próxima carta.'});}
- function shareRanking(hub){if(!hub?.challenge)return;const captured=hub.server_now||new Date().toISOString(),c=hub.challenge;open({kind:'ranking',challenge:{...c},top:(hub.top||[]).slice(0,10).map(p=>({place:p.place,nickname:p.nickname,correct:p.correct,points:p.points,elapsed_ms:p.elapsed_ms})),captured,final:c.status==='closed'||Date.parse(c.ends_at)<=Date.parse(captured),link:PUBLIC_SITE,text:'Top 10 de '+c.title+' en Loading Arcade. ¿Te sumás al desafío?'});}
+ function shareRanking(hub){if(!hub?.challenge)return;const captured=hub.server_now||new Date().toISOString(),c=hub.challenge;open({kind:'ranking',challenge:{...c},top:(hub.top||[]).slice(0,10).map(p=>({place:p.place,nickname:p.nickname,avatar:p.avatar||0,cosmetics:{...p.cosmetics},correct:p.correct,points:p.points,elapsed_ms:p.elapsed_ms})),captured,final:c.status==='closed'||Date.parse(c.ends_at)<=Date.parse(captured),link:PUBLIC_SITE,text:'Top 10 de '+c.title+' en Loading Arcade. ¿Te sumás al desafío?'});}
  function download(){if(!url||!current)return;const a=document.createElement('a');a.href=url;a.download='loading-arcade-'+current.kind+'-'+format+'.png';a.click();}
  async function copy(value,field){try{await navigator.clipboard.writeText(value);$('shareStatus').textContent='Copiado. Ya podés pegarlo donde quieras.';}catch{$(field).focus();$(field).select();$('shareStatus').textContent='Seleccionamos el texto. Copialo manualmente.';}}
  $('shareCopyLink').onclick=()=>copy($('shareLink').value,'shareLink');$('shareCopyMessage').onclick=()=>copy($('shareMessage').value,'shareMessage');$('downloadShareBtn').onclick=download;$('shareRetry').onclick=()=>render();
