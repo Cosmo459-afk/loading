@@ -24,7 +24,7 @@ export async function drawRanking(ctx,h,item){
   label(String(p.place).padStart(2,'0'),117,mid+(story?12:10),story?34:28,p.place===1?'#e2c781':'#d0c5de','center',70);
   const size=story?42:34,max=590;ctx.font='600 '+size+'px LoadingSans,sans-serif';let name=String(p.nickname);
   while(ctx.measureText(name).width>max&&name.length>1)name=name.slice(0,-2)+'…';
-  label(name,475,mid+(story?14:11),size,'#fff','center',max);
+  label(name,180,mid+(story?14:11),size,'#fff','left',max);
   label((p.elapsed_ms/1000).toFixed(2)+' s',907,mid-(story?7:4),story?31:25,'#dedad3','center',180);
   label(p.correct+'/20 aciertos',907,mid+(story?29:24),story?28:23,'#dedad3','center',180);
   ctx.strokeStyle='rgba(255,255,255,.14)';ctx.beginPath();ctx.moveTo(85,y+rowH);ctx.lineTo(995,y+rowH);ctx.stroke();

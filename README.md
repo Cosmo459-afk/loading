@@ -1,3 +1,9 @@
+# LOADING ARCADE 0.34
+
+Apodos alineados a la izquierda y centrados verticalmente en cada fila del ranking. Tiempo y aciertos permanecen a la derecha. Subir sitio completa de loading-arcade-v34.zip. No requiere SQL.
+
+---
+
 # LOADING ARCADE 0.33
 
 Ranking: cabecera TOP 10 sin «parcial», puesto menor que el apodo, nombres centrados en su columna y datos a la derecha: tiempo arriba, aciertos debajo. Se conservan las diez posiciones en una imagen. No requiere SQL: subir sitio completa de loading-arcade-v33.zip.
