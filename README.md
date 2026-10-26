@@ -1,3 +1,9 @@
+# LOADING ARCADE 0.30
+
+Ranking exportable: títulos y pregunta final en Anton, tipografía condensada similar a la referencia promocional. Apodos y cifras conservan su fuente legible. Se carga la fuente al generar la exportación; no cambia las fuentes del resto del sitio. Actualizar subiendo sitio completa de loading-arcade-v30.zip a Cloudflare. No requiere SQL.
+
+---
+
 # LOADING ARCADE 0.29
 
 Diseño de ranking actualizado: logo oficial, DESAFÍO SEMANAL, Resident Evil 4 - (2005), top 10, pregunta «¿Creés que podés hacerlo mejor?» y espacio libre inferior para el sticker del enlace. Conserva los datos reales y fecha de captura, en publicación e historia.

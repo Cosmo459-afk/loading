@@ -1,17 +1,22 @@
 import village from '../assets/social/weekly-village.png';
 import logo from '../assets/brand/loading-arcade.png';
+import posterFont from '../assets/fonts/LoadingPoster.ttf';
+let posterReady;
+function loadPoster(){return posterReady??=(async()=>{const font=new FontFace('LoadingPoster','url('+posterFont+')');await font.load();document.fonts.add(font);})();}
 export async function drawRanking(ctx,h,item){
+ await loadPoster();
  const image=new Image();image.src=village;await image.decode();
  const scale=Math.max(1080/image.width,h/image.height);ctx.drawImage(image,(1080-image.width*scale)/2,(h-image.height*scale)/2,image.width*scale,image.height*scale);
  ctx.fillStyle='rgba(5,8,10,.48)';ctx.fillRect(0,0,1080,h);
  const story=h===1920;
  function label(value,x,y,size=28,color='#fff',align='left',max=900){ctx.font='600 '+size+'px LoadingSans,sans-serif';ctx.fillStyle=color;ctx.textAlign=align;ctx.fillText(String(value),x,y,max);}
+ function headline(value,y,size,color='#fff'){ctx.font=size+'px LoadingPoster,sans-serif';ctx.fillStyle=color;ctx.textAlign='center';ctx.fillText(value,540,y,940);}
  const brand=new Image();brand.src=logo;await brand.decode();const lw=story?650:570,ly=story?150:45,lh=lw*brand.height/brand.width;ctx.drawImage(brand,(1080-lw)/2,ly,lw,lh);
  const titleY=ly+lh+42;
- label('DESAFÍO SEMANAL',540,titleY,story?39:34,'#fff','center');
+ headline('DESAFÍO SEMANAL',titleY,story?51:45);
  const game=/resident evil 4|re4/i.test(item.challenge.game+' '+item.challenge.title)?'Resident Evil 4 - (2005)':item.challenge.game||item.challenge.title;
- label(game,540,titleY+49,story?37:33,'#fff','center');
- label('TOP 10 · '+(item.final?'RESULTADO FINAL':'RANKING PARCIAL'),540,titleY+91,23,'#d8c9eb','center');
+ headline(game.toUpperCase(),titleY+55,story?43:38);
+ headline('TOP 10 · '+(item.final?'RESULTADO FINAL':'RANKING PARCIAL'),titleY+96,27,'#d8c9eb');
  const y0=titleY+150,rowH=story?77:53;
  ctx.fillStyle='rgba(6,9,12,.77)';ctx.fillRect(60,y0-35,960,rowH*10+72);
  label('#',84,y0,20,'#bfbcc4');label('JUGADOR',145,y0,20,'#bfbcc4');label('ACIERTOS',665,y0,19,'#bfbcc4','center');label('PUNTOS',805,y0,19,'#bfbcc4','center');label('TIEMPO',980,y0,19,'#bfbcc4','right');
@@ -21,7 +26,7 @@ export async function drawRanking(ctx,h,item){
  const stamp=new Intl.DateTimeFormat('es-AR',{timeZone:'America/Argentina/Buenos_Aires',dateStyle:'short',timeStyle:'short'}).format(new Date(item.captured));
  const foot=y0+rowH*10+77;
  label('Actualizado: '+stamp+' · Argentina',540,foot,19,'#e0dad3','center');
- label('¿Creés que podés hacerlo mejor?',540,foot+57,story?39:34,'#fff','center');
+ headline('¿CREÉS QUE PODÉS HACERLO MEJOR?',foot+66,story?48:41);
  // The area below the question stays empty for Instagram's link sticker.
  ctx.strokeStyle='#7754ae';ctx.lineWidth=2;ctx.strokeRect(35,35,1010,h-70);
 }

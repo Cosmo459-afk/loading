@@ -1,5 +1,11 @@
 [
   {
+    "url": "assets/media/loading-arcade-70e3c56a50eacc3a.png",
+    "bytes": 1278596,
+    "sha256": "70e3c56a50eacc3a676783eab3fcdb1ae79cfbfbe4727d631f7dc136f62a9cda",
+    "source": "assets/brand/loading-arcade.png"
+  },
+  {
     "url": "assets/media/ada-wong-exclusive-fff3651189305e8c.png",
     "bytes": 2303587,
     "sha256": "fff3651189305e8cf5f3cdb7ac47f3935bcfd33e697402a7b89b089cc7cec161",
@@ -12,10 +18,10 @@
     "source": "assets/social/preview-v24.png"
   },
   {
-    "url": "assets/media/loading-arcade-70e3c56a50eacc3a.png",
-    "bytes": 1278596,
-    "sha256": "70e3c56a50eacc3a676783eab3fcdb1ae79cfbfbe4727d631f7dc136f62a9cda",
-    "source": "assets/brand/loading-arcade.png"
+    "url": "assets/media/coupon-level5-eb5cd82d55d774d0.png",
+    "bytes": 3018681,
+    "sha256": "eb5cd82d55d774d0fb7658c8f923ad5c30ca25d412d1613c07ad30c1c3b7c91e",
+    "source": "assets/rewards/coupon-level5.png"
   },
   {
     "url": "assets/media/common-a-980f2fa4ee6f0bc3.png",
@@ -28,12 +34,6 @@
     "bytes": 2088327,
     "sha256": "2d650d52fea1de01d985408cd3b5c7a1bae23e2f81f373ca40358ccb2605dc73",
     "source": "assets/social/weekly-village.png"
-  },
-  {
-    "url": "assets/media/coupon-level5-eb5cd82d55d774d0.png",
-    "bytes": 3018681,
-    "sha256": "eb5cd82d55d774d0fb7658c8f923ad5c30ca25d412d1613c07ad30c1c3b7c91e",
-    "source": "assets/rewards/coupon-level5.png"
   },
   {
     "url": "assets/media/common-b-84dedba939a28fb8.png",
