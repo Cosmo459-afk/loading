@@ -1,0 +1,15 @@
+{
+  "source_commit": "781c472",
+  "method": "Clean source snapshot; npm ci --ignore-scripts; standard build. Not an antivirus certification.",
+  "comparison": {
+    "dist/index.html": {
+      "identical": true,
+      "sha256": "80c3cdb0e111781a7f33ed0f23c177c0429b5ac5c348fa77f9acb5276014ad89"
+    },
+    "assets/cloud.bundle.js": {
+      "identical": true,
+      "sha256": "f065108969b67c30e4575c3cd944fc5c3dc710ad833febed3a7420c4ed33efbd"
+    }
+  },
+  "same_asset_hashes": true
+}
