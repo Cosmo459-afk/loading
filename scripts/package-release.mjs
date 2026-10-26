@@ -44,10 +44,10 @@ with ZipFile(root/archive,'w',ZIP_DEFLATED) as z:
 with ZipFile(root/archive) as z:
  assert z.testzip() is None
  assert z.read('loading-arcade/sitio/index.html')==(root/'dist/index.html').read_bytes()
- assert len([n for n in z.namelist() if '/assets/media/' in n])==8
+ assert len([n for n in z.namelist() if '/assets/media/' in n])==9
  assert not any(n.endswith('.sql') or (n.endswith('.json') and '/banco-semanal/' not in n) for n in z.namelist())
  assert b'ciphertext' in z.read('loading-arcade/banco-semanal/re4-recuerdos-original-revisada.encrypted.json')
  assert b'correct_index' not in z.read('loading-arcade/banco-semanal/re4-recuerdos-original-revisada.encrypted.json')
-print('Release ZIP verified: upload entire sitio folder; lightweight HTML and eight hashed images, encrypted weekly bank outside sitio, instructions and licenses.')
+print('Release ZIP verified: upload entire sitio folder; lightweight HTML and nine hashed images, encrypted weekly bank outside sitio, instructions and licenses.')
 `],{stdio:'inherit'});
 if(result.status!==0)throw new Error('Package verification failed');

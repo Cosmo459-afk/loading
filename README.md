@@ -1,3 +1,17 @@
+# LOADING ARCADE 0.28
+
+Exportación del top 10 semanal con fondo inspirado en la aldea de Resident Evil 4 original. En Inicio → COMPARTIR TOP 10 se actualizan los resultados y se genera una imagen pública con puesto, apodo, aciertos, puntos y tiempo. Incluye captura con fecha/hora de Argentina y distingue ranking parcial de resultado final. No inventa jugadores para llenar posiciones.
+
+## Actualizar desde 0.27
+
+No requiere SQL, reiniciar progreso ni volver a activar el desafío. Descargar loading-arcade-v28.zip y subir la carpeta loading-arcade/sitio completa a Cloudflare, incluyendo _headers y assets/media. Confirmar Versión 0.28.
+
+Elegir PUBLICACIÓN (1080×1350) o HISTORIA (1080×1920), luego GUARDAR IMAGEN o COMPARTIR IMAGEN. El fondo se descarga únicamente al preparar la exportación. Para otros juegos habrá que incorporar su fondo temático; esta primera ilustración corresponde a RE4.
+
+Pruebas: tests/ranking-v28.py verifica diez posiciones sintéticas, apodos largos, exportación sin sesión y descarga PNG de ambos tamaños. Las imágenes design/ranking-v28-*-EJEMPLO.png son ejemplos con datos ficticios, no resultados reales.
+
+---
+
 # LOADING ARCADE 0.27
 
 Corrección de la entrada al Arcade: el desafío activo y el top 10 se muestran antes de crear un personaje. Ya no se interpreta «sin perfil» o un error de conexión como «desafío en preparación».

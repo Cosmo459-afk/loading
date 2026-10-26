@@ -1,3 +1,4 @@
+import {drawRanking} from './ranking-image.js';
 // All exports contain public presentation data only; never sessions, email or coupon codes.
 export const PUBLIC_SITE='https://loading-arcade.tienda-somosloading.workers.dev/';
 const load=async src=>{const i=new Image();i.src=src;await i.decode();return i;};
@@ -16,6 +17,7 @@ export function installSharing({profile,avatar,brand,siteArt,owned}){
   for(const b of $('shareFormats').querySelectorAll('button'))b.setAttribute('aria-pressed',String(b.dataset.format===format));
   try{
    await document.fonts.ready;const h=format==='story'?1920:1350,canvas=document.createElement('canvas');canvas.width=1080;canvas.height=h;const ctx=canvas.getContext('2d');frame(ctx,h);
+   if(item.kind==='ranking'){await drawRanking(ctx,h,item);}else{
    const logo=await load(brand);const lw=740;ctx.drawImage(logo,170,100,lw,lw*logo.naturalHeight/logo.naturalWidth);
    const mid=format==='story'?650:480;
    if(item.kind==='site'){
@@ -29,14 +31,16 @@ export function installSharing({profile,avatar,brand,siteArt,owned}){
     else{text(ctx,'NIVEL '+p.level,540,mid+size+180,900,67,'#e5a1d4',800);text(ctx,p.best?'Mejor racha · '+p.best+' trivias perfectas':'MI PERFIL RETRO',540,mid+size+245,900,29,'#bac8e2');text(ctx,'¿COMPARTIMOS LA PARTIDA?',540,h-215,900,32,'#83d9f5');}
    }
    text(ctx,'LOADING ARCADE · DEMOSTRÁ CUÁNTO SABÉS',540,h-100,940,24,'#e5cce5',700);text(ctx,new URL(PUBLIC_SITE).hostname,540,h-60,940,20,'#acbad5',500);
+   }
    const result=await png(canvas);if(request!==epoch||current!==item)return;fileBlob=result;url=URL.createObjectURL(result);$('sharePreview').src=url;$('shareImageBtn').disabled=false;$('downloadShareBtn').disabled=false;$('shareStatus').textContent='Imagen lista. Compartila o guardala para subirla a tus redes.';
   }catch{if(request===epoch)$('shareStatus').textContent='No pudimos generar la imagen. Podés copiar el enlace o volver a intentarlo.';}
  }
- function open(item){current=item;format='feed';$('shareHeading').textContent={site:'Compartir Loading Arcade',profile:'Compartir perfil',result:'Compartir mi resultado',card:'Compartir mi carta'}[item.kind];$('shareMessage').value=item.text+'\n'+item.link;$('shareLink').value=item.link;$('shareHelp').textContent=item.kind==='card'?'La imagen muestra la carta que elegiste. El enlace lleva a tu perfil y no cambia las cartas que exhibís.':'Elegí publicación o historia. En Instagram podés subir la imagen y pegar el enlace como sticker.';if(!$('shareDialog').open)$('shareDialog').showModal();void render();}
+ function open(item){current=item;format='feed';$('shareHeading').textContent={ranking:'Compartir top 10 semanal',site:'Compartir Loading Arcade',profile:'Compartir perfil',result:'Compartir mi resultado',card:'Compartir mi carta'}[item.kind];$('shareMessage').value=item.text+'\n'+item.link;$('shareLink').value=item.link;$('shareHelp').textContent=item.kind==='card'?'La imagen muestra la carta que elegiste. El enlace lleva a tu perfil y no cambia las cartas que exhibís.':'Elegí publicación o historia. En Instagram podés subir la imagen y pegar el enlace como sticker.';if(!$('shareDialog').open)$('shareDialog').showModal();void render();}
  function shareSite(){open({kind:'site',link:PUBLIC_SITE,text:'Demostrá cuánto sabés. Trivias retro, coleccionables y comunidad en Loading Arcade.'});}
  function shareProfile(value=profile()){if(!value)return;const p=publicPlayer(value);open({kind:'profile',player:p,link:profileLink(p),text:p.name+' · Nivel '+p.level+' en Loading Arcade. Visitá el perfil y vení a jugar.'});}
  function shareResult(result){if(!profile()||!result)return;const p=publicPlayer(profile());open({kind:'result',player:p,result:{...result},link:profileLink(p),text:'Conseguí '+result.correct+'/'+(result.total||5)+' en una trivia de '+(result.console==='ps1'?'PlayStation 1':'PlayStation 2')+' en Loading Arcade. ¿Cuánto sabés vos?'});}
  function shareCard(card){if(!profile()||!owned(card?.id))return;const p=publicPlayer(profile());open({kind:'card',player:p,card:{...card},link:profileLink(p),text:'Conseguí '+card.name+' · '+card.rarity+' de '+card.game+' en Loading Arcade. Descubrí tu próxima carta.'});}
+ function shareRanking(hub){if(!hub?.challenge)return;const captured=hub.server_now||new Date().toISOString(),c=hub.challenge;open({kind:'ranking',challenge:{...c},top:(hub.top||[]).slice(0,10).map(p=>({place:p.place,nickname:p.nickname,correct:p.correct,points:p.points,elapsed_ms:p.elapsed_ms})),captured,final:c.status==='closed'||Date.parse(c.ends_at)<=Date.parse(captured),link:PUBLIC_SITE,text:'Top 10 de '+c.title+' en Loading Arcade. ¿Te sumás al desafío?'});}
  function download(){if(!url||!current)return;const a=document.createElement('a');a.href=url;a.download='loading-arcade-'+current.kind+'-'+format+'.png';a.click();}
  async function copy(value,field){try{await navigator.clipboard.writeText(value);$('shareStatus').textContent='Copiado. Ya podés pegarlo donde quieras.';}catch{$(field).focus();$(field).select();$('shareStatus').textContent='Seleccionamos el texto. Copialo manualmente.';}}
  $('shareCopyLink').onclick=()=>copy($('shareLink').value,'shareLink');$('shareCopyMessage').onclick=()=>copy($('shareMessage').value,'shareMessage');$('downloadShareBtn').onclick=download;$('shareRetry').onclick=()=>render();
@@ -44,5 +48,5 @@ export function installSharing({profile,avatar,brand,siteArt,owned}){
  $('shareNativeLink').onclick=async()=>{if(!current)return;try{if(navigator.share)await navigator.share({title:'Loading Arcade',text:current.text,url:current.link});else await copy(current.link,'shareLink');}catch(e){if(e.name!=='AbortError')$('shareStatus').textContent='Podés usar COPIAR ENLACE para compartirlo.';}};
  for(const b of $('shareFormats').querySelectorAll('button'))b.onclick=()=>{if(format!==b.dataset.format){format=b.dataset.format;void render();}};
  $('shareDialog').addEventListener('close',()=>{epoch++;release();$('sharePreview').removeAttribute('src');current=null;});
- return {shareSite,shareProfile,shareResult,shareCard,clear};
+ return {shareSite,shareProfile,shareResult,shareCard,shareRanking,clear};
 }
