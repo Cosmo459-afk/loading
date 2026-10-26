@@ -8,10 +8,13 @@ with sync_playwright() as p:
  def route(r):
   if 'arcade_weekly_public_hub' in r.request.url:r.fulfill(status=200,content_type='application/json',body=json.dumps(hub))
   else:r.fulfill(response=r.fetch(url='http://127.0.0.1:8082'+r.request.url[len(HOST):]))
- page.route(HOST+'/**',route);page.goto('http://127.0.0.1:8085/dist/index.html');page.wait_for_selector('.weekly-home-prize');assert '20/20' in page.locator('.weekly-home-prize').inner_text();page.locator('.weekly-home-card .game-card.rarity-exclusive').wait_for();page.locator('.weekly-home-card').click();page.wait_for_selector('#cardDetail[open]');assert page.locator('#cardDetailActions button').count()==0;page.locator('#cardDetail button[aria-label="Cerrar detalle"]').click();page.screenshot(path='design/inicio-semanal-v38-mobile.png',full_page=True);page.get_by_role('button',name='COMPARTIR TOP 10',exact=True).click();page.wait_for_function('!document.getElementById("downloadShareBtn").disabled');assert page.locator('#shareHeading').inner_text()=='Compartir top 10 semanal'
+ page.route(HOST+'/**',route);page.goto('http://127.0.0.1:8085/dist/index.html');page.wait_for_selector('.weekly-home-prize');assert page.locator('#homeWeeklyRanking .weekly-rank-avatar').count()==10;assert '20/20' in page.locator('.weekly-home-prize').inner_text();page.locator('.weekly-home-card .game-card.rarity-exclusive').wait_for();
+ for width in [320,390,768,1280]:
+  page.set_viewport_size({'width':width,'height':844});a=page.locator('.weekly-home-prize').bounding_box();c=page.locator('.weekly-home-card').bounding_box();assert abs(a['height']-c['height'])<2;assert c['x']>a['x']+a['width'];assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+ page.set_viewport_size({'width':390,'height':844});page.locator('.weekly-home-card').click();page.wait_for_selector('#cardDetail[open]');assert page.locator('#cardDetailActions button').count()==0;page.locator('#cardDetail button[aria-label="Cerrar detalle"]').click();page.screenshot(path='design/inicio-semanal-v39-mobile.png',full_page=True);page.get_by_role('button',name='COMPARTIR TOP 10',exact=True).click();page.wait_for_function('!document.getElementById("downloadShareBtn").disabled');assert page.locator('#shareHeading').inner_text()=='Compartir top 10 semanal'
  for fmt,w,h in [('feed',1080,1350),('story',1080,1920)]:
   page.locator('[data-format="'+fmt+'"]').click();page.wait_for_function('!document.getElementById("downloadShareBtn").disabled');page.wait_for_function('document.getElementById("sharePreview").naturalHeight=='+str(h));assert page.locator('#sharePreview').evaluate('(i)=>i.naturalWidth')==w
   with page.expect_download() as d:page.locator('#downloadShareBtn').click()
-  d.value.save_as('design/ranking-v38-'+fmt+'-EJEMPLO.png')
+  d.value.save_as('design/ranking-v39-'+fmt+'-EJEMPLO.png')
  assert not errors,errors;b.close()
-print('PASS v38: ten rows, long nickname, guest export, feed/story exact dimensions and PNG downloads; synthetic data only.')
+print('PASS v39: ten rows, long nickname, guest export, feed/story exact dimensions and PNG downloads; synthetic data only.')

@@ -1,3 +1,9 @@
+# LOADING ARCADE 0.39
+
+Carta exclusiva en miniatura junto al recuadro 20/20, también en celular. Ambas columnas comparten altura y la carta se amplía al tocarla. El top 10 del Inicio muestra el avatar de cada competidor junto al nombre. Subir sitio completa de loading-arcade-v39.zip. No requiere SQL ni reiniciar resultados.
+
+---
+
 # LOADING ARCADE 0.38
 
 Conserva el perfil reorganizado de v37 y vuelve a mostrar la carta exclusiva completa en la vista previa del desafío del Inicio. Se puede ampliar tocándola; verla no entrega la recompensa. Se obtiene con 20/20. Subir sitio completa de loading-arcade-v38.zip. No requiere SQL ni reiniciar resultados. Esta compilación no ha sido analizada con Windows Defender.
