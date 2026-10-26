@@ -1,3 +1,9 @@
+# LOADING ARCADE 0.42
+
+Miniatura de la exclusiva semanal con las proporciones del diseño completo: se escala uniformemente desde un ancho de referencia, sin rehacer la carta en una columna estrecha. El recuadro de información se ajusta a su altura con texto reducido. Se mantiene ampliación al tocarla. Actualizar desde v41 subiendo sitio completa de loading-arcade-v42.zip. Sin SQL adicional ni reinicio de progreso.
+
+---
+
 # LOADING ARCADE 0.41
 
 Apodos únicos y permanentes: la base rechaza duplicados ignorando mayúsculas y espacios repetidos, incluso con solicitudes simultáneas. Una vez creado el jugador, su apodo no se modifica; Cambiar avatar solo permite elegir otra mascota. Los resultados tienen Siguiente trivia antes de Revisá tus respuestas y mantienen el acceso inferior.
