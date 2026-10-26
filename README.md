@@ -1,3 +1,9 @@
+# LOADING ARCADE 0.38
+
+Conserva el perfil reorganizado de v37 y vuelve a mostrar la carta exclusiva completa en la vista previa del desafío del Inicio. Se puede ampliar tocándola; verla no entrega la recompensa. Se obtiene con 20/20. Subir sitio completa de loading-arcade-v38.zip. No requiere SQL ni reiniciar resultados. Esta compilación no ha sido analizada con Windows Defender.
+
+---
+
 # LOADING ARCADE 0.37
 
 Base funcional y visual v35: no incluye la vista previa de la carta añadida en v36. Perfil reorganizado: Cosméticos junto al avatar, Mis cartas y accesos compactos a cofres, cupón e historial. Acciones de edición y compartir agrupadas en identidad. No modifica datos ni requiere SQL. Subir sitio completa de loading-arcade-v37.zip.
