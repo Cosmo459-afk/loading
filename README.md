@@ -1,3 +1,19 @@
+# LOADING ARCADE 0.41
+
+Apodos únicos y permanentes: la base rechaza duplicados ignorando mayúsculas y espacios repetidos, incluso con solicitudes simultáneas. Una vez creado el jugador, su apodo no se modifica; Cambiar avatar solo permite elegir otra mascota. Los resultados tienen Siguiente trivia antes de Revisá tus respuestas y mantienen el acceso inferior.
+
+## Instalar desde v40
+
+1. Ejecutar todo supabase/upgrade-v41.sql en una nueva consulta del SQL Editor de Supabase.
+2. Subir la carpeta sitio completa de loading-arcade-v41.zip a Cloudflare.
+3. Confirmar Versión 0.41 y probar Cambiar avatar.
+
+El SQL elimina únicamente la pareja de perfiles Pepito autorizada por el dueño (incluyendo su progreso, resultados y publicaciones). Solo lo hace si hay exactamente dos y ninguno es administrador. Los registros de acceso en Auth permanecen; los demás perfiles y el desafío activo no se reinician. Si encuentra más de dos Pepito u otros apodos duplicados, se detiene y revierte toda la operación para revisarlos. Con cero o un Pepito no elimina perfiles. Se puede volver a ejecutar sin borrar otros jugadores.
+
+Pruebas locales: supabase/tests/nicknames-v41.mjs verifica unicidad, nombre inmutable, permisos, protección de administradores y limpieza acotada. tests/nicknames-v41.py prueba registro rechazado, cambio solo de avatar y avance a la próxima trivia antes de revisar.
+
+---
+
 # LOADING ARCADE 0.40
 
 Perfil con insignia de invicto junto al nombre y tres espacios de cartas debajo del nivel/XP. Corrige la ausencia de visualización de cartas guardadas. Editar/compartir debajo, Cosméticos junto al avatar. Cerrar sesión está en Inicio. Desde un cofre se puede exhibir directamente la carta; con tres espacios ocupados se elige qué reemplazar. Conserva la validación de propiedad del servidor. No requiere SQL ni reiniciar progreso: subir sitio completa de loading-arcade-v40.zip.

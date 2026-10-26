@@ -190,14 +190,14 @@ function renderOwnProfile(){
  const identity=document.createElement('div');identity.className='profile-top own-profile-top';
  const appearance=document.createElement('div');appearance.className='profile-appearance';appearance.innerHTML=avatarHTML(profile);const cosmetics=document.createElement('button');cosmetics.className='secondary mini profile-cosmetics';cosmetics.textContent='COSMÉTICOS';cosmetics.onclick=()=>openWardrobe();appearance.appendChild(cosmetics);
  const copy=document.createElement('div'),name=document.createElement('h2'),level=document.createElement('p');copy.className='profile-identity-copy';name.textContent=profile.name;const heading=document.createElement('div');heading.className='profile-name-row';heading.append(name,profileShield(profile.bestPerfectStreak,profile.perfectStreak));level.textContent='Nivel '+(Math.floor(profile.xp/1800)+1)+' · '+profile.xp+' XP';copy.append(heading,level,featuredSlots(profile.featured||[],true));
- const tools=document.createElement('div');tools.className='profile-identity-tools';for(const [title,action] of [['EDITAR JUGADOR',()=>showProfile()],['COMPARTIR PERFIL',()=>sharing.shareProfile()]]){const button=document.createElement('button');button.className='secondary mini';button.textContent=title;button.onclick=action;tools.appendChild(button);}copy.appendChild(tools);identity.append(appearance,copy);root.appendChild(identity);
+ const tools=document.createElement('div');tools.className='profile-identity-tools';for(const [title,action] of [['CAMBIAR AVATAR',()=>showProfile()],['COMPARTIR PERFIL',()=>sharing.shareProfile()]]){const button=document.createElement('button');button.className='secondary mini';button.textContent=title;button.onclick=action;tools.appendChild(button);}copy.appendChild(tools);identity.append(appearance,copy);root.appendChild(identity);
 
 }
 window.openProfileHub=async function(){await ready;if(!profile){await enterPlayer(true);return;}renderOwnProfile();renderProfileInventory();base.go('player');};
 window.openTriviaSection=async function(){await ready;if(!profile){await enterPlayer(true);return;}mode='player';base.go('menu');};
 function updateContinueButton(){
  const next=nextRouteQuiz($('category').value),button=$('continueQuizBtn');
- button.textContent=next?(next.in_progress?'RETOMAR TRIVIA →':'SIGUIENTE TRIVIA →'):'ELEGIR OTRA CONSOLA →';
+ const text=next?(next.in_progress?'RETOMAR TRIVIA →':'SIGUIENTE TRIVIA →'):'ELEGIR OTRA CONSOLA →';button.textContent=text;$('continueQuizTopBtn').textContent=text;
 }
 window.continueRoute=async function(){
  await ready;if(!profile)return;
@@ -260,6 +260,9 @@ function accountUI(){
   renderProgressTrack($('homeRewardTrack'));
 }
 function publicError(error){
+  if(/Nickname already in use/.test(error?.message||''))return 'Ese apodo ya está en uso. Elegí otro para tu jugador.';
+  if(/Nickname cannot be changed/.test(error?.message||''))return 'El apodo es permanente. Solo podés cambiar tu avatar.';
+  if(/Nickname must have/.test(error?.message||''))return 'Elegí un apodo de entre 2 y 20 caracteres.';
   if(/Collection complete/i.test(String(error?.message||'')))return 'Ya completaste las cartas disponibles. Tu cofre sigue guardado para futuras colecciones.';
   if(/Chest not found/i.test(String(error?.message||'')))return 'Este cofre no está disponible para tu jugador.';
   if(/Game expired/i.test(String(error?.message||'')))return 'Esta partida venció. Podés volver a empezarla; tu progreso anterior sigue guardado.';
@@ -347,7 +350,7 @@ let ready=(async()=>{
     const {data,error}=await client.auth.getSession();
     if(error)throw error;
     await useSession(data.session);
-    if(returning&&state.uid){if(profile){mode='player';base.go('home');}else base.showProfile();}
+    if(returning&&state.uid){if(profile){mode='player';base.go('home');}else renderProfileEditor();}
   }catch(e){message(publicError(e));if(returning){base.go('auth');authMessage('No pudimos abrir ese enlace. Pedí uno nuevo y abrilo en este mismo navegador.');}}
   finally{$('createPlayerBtn').disabled=false;accountUI();if(!profile)void weekly.refresh();}
 })();
@@ -360,7 +363,7 @@ client.auth.onAuthStateChange((event,session)=>{
       void useSession(null);
     }else if(session?.user?.id!==state.uid){
       ready=useSession(session).then(()=>{
-        if(state.uid){if(profile){mode='player';base.go('home');if(pendingRoute)setTimeout(()=>void restorePendingRoute(),0);}else base.showProfile();}
+        if(state.uid){if(profile){mode='player';base.go('home');if(pendingRoute)setTimeout(()=>void restorePendingRoute(),0);}else renderProfileEditor();}
       }).catch(e=>message(publicError(e)));
     }else{state.session=session;accountUI();}
   },0);
@@ -374,11 +377,17 @@ async function enterPlayer(edit=false){
     await loadProfile(state.uid,version);
     if(version!==state.version)return;
     message('');
-    if(edit||!profile)base.showProfile();else{mode='player';base.go('menu');}
+    if(edit||!profile)renderProfileEditor();else{mode='player';base.go('menu');}
   }catch(e){message(publicError(e));}
 }
 window.openPlayer=()=>enterPlayer(false);
-showProfile=async()=>{await ready;if(!profile){await enterPlayer(true);return;}base.showProfile();};
+function renderProfileEditor(){
+ base.showProfile();const existing=!!profile;
+ $('profileEditorTitle').textContent=existing?'Cambiar avatar':'Creá tu jugador';$('nicknameFields').hidden=existing;$('nickname').disabled=existing;
+ $('profileFixedName').hidden=!existing;$('profileFixedName').textContent=existing?'Tu apodo: '+profile.name+' · No se puede cambiar.':'';
+ $('profileSubmit').textContent=existing?'GUARDAR AVATAR':'CONTINUAR →';$('profileNotice').textContent='';
+}
+showProfile=async()=>{await ready;if(!profile){await enterPlayer(true);return;}renderProfileEditor();};
 window.openAccountPage=async function(id){
   await ready;if(!state.uid){base.go('auth');return;}
   if(!profile){await enterPlayer(true);return;}
@@ -394,7 +403,7 @@ window.createPlayer=async function(){
     const {data,error}=await client.auth.signInAnonymously();
     if(error)throw error;
     ready=useSession(data.session);await ready;
-    message('Elegí tu apodo y avatar. No necesitás correo para empezar.');base.showProfile();
+    message('Elegí tu apodo y avatar. No necesitás correo para empezar.');renderProfileEditor();
   }catch(e){message(publicError(e));}
   finally{state.creating=false;$('createPlayerBtn').disabled=false;}
 };
@@ -449,7 +458,7 @@ saveProfile=async function(){
   if(state.profileBusy)return;
   await ready;
   if(!state.uid){base.go('auth');return;}
-  const name=$('nickname').value.trim();
+  const editing=!!profile,name=profile?.name||$('nickname').value.trim();
   if(name.length<2){alert('Elegí un apodo de al menos 2 caracteres.');return;}
   const version=state.version;
   state.profileBusy=true;
@@ -457,8 +466,8 @@ saveProfile=async function(){
     const {data,error}=await client.rpc('arcade_save_profile',{p_nickname:name,p_avatar:selectedAvatar,p_photo:null});
     if(error)throw error;
     if(version!==state.version)return;
-    adopt(data);mode='player';message('Tu jugador está listo. Tus partidas ya se guardan.');if(pendingRoute)await restorePendingRoute();else base.go('home');
-  }catch(e){message(publicError(e));}
+    adopt(data);mode='player';message(editing?'Avatar actualizado.':'Tu jugador está listo. Tus partidas ya se guardan.');if(editing)base.go('player');else if(pendingRoute)await restorePendingRoute();else base.go('home');
+  }catch(e){const text=publicError(e);message(text);$('profileNotice').textContent=text;if(/Nickname already in use/.test(e?.message||''))$('nickname').focus();}
   finally{state.profileBusy=false;}
 };
 // This function is used by v0.3 only; cloud writes always go through RPCs.
