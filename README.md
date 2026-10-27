@@ -1,3 +1,11 @@
+# LOADING ARCADE 0.51
+
+Acceso por código de correo dentro de la app instalada, para evitar que el enlace abra una sesión en Safari/Chrome. También permite confirmar el correo de un jugador invitado en la app conservando su identidad.
+
+**Requiere configurar las plantillas de correo de Supabase**: seguir docs/acceso-codigo-v51.md y pegar docs/email-access-code.html del ZIP en Magic Link, Confirm signup y Change Email Address. Después subir toda la carpeta sitio de loading-arcade-v51.zip. No hay SQL nuevo. No borrar usuarios ni reinstalar la app ni reiniciar progreso. Sin ese cambio de plantillas, el correo puede seguir mostrando solo el enlace anterior y no habrá código visible que pegar.
+
+---
+
 # LOADING ARCADE 0.50
 
 Novedades pasa a una sección propia en el menú principal, después de Perfil. Incluye anuncios anteriores, indicador de no leídas y botón Volver; admite enlace directo #novedades. Inicio ya no muestra el bloque de anuncios.

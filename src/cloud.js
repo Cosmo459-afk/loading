@@ -1,3 +1,4 @@
+import {installEmailCodes} from './email-codes.js';
 import {installNews} from './news.js';
 import {installPWA} from './pwa.js';
 import {installRegistration} from './registration.js';
@@ -48,6 +49,7 @@ const authReturnKey='loading_arcade_auth_return_v46';
 function rememberAuthReturn(){try{localStorage.setItem(authReturnKey,JSON.stringify({route:registrationTarget,owner:state.uid,until:Date.now()+30*60*1000}));}catch{}}
 function consumeAuthReturn(){try{const value=JSON.parse(localStorage.getItem(authReturnKey)||'null');localStorage.removeItem(authReturnKey);if(value&&value.until>Date.now()&&(!value.owner||value.owner===state.uid)&&['#semanal','#perfil'].includes(value.route))pendingRoute=value.route;}catch{}}
 const registration=installRegistration({client,config,identity:()=>state.uid,rememberReturn:rememberAuthReturn});
+const emailCodes=installEmailCodes({client,identity:()=>state.uid,complete:async session=>{ready=useSession(session);await ready;consumeAuthReturn();if(profile){base.go('home');if(pendingRoute)await restorePendingRoute();}else renderProfileEditor();}});
 window.shareArcade=()=>sharing.shareSite();
 window.shareMyProfile=()=>sharing.shareProfile();
 const weekly=installWeekly({exhibit:c=>showCollectible('weekly-'+c.id),register:()=>openRegistration(true),avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),shareRanking:hub=>sharing.shareRanking(hub),rpc:(name,args)=>client.rpc(name,args),identity:()=>state.uid,profile:()=>profile,go:id=>base.go(id),visit:id=>visitPlayer(id),onFinish:async()=>{const v=state.version,oldXP=profile?.xp||0,oldOwned=new Set(state.cosmetics.filter(c=>cosmeticOwned(c)).map(c=>c.id));await loadProfile(state.uid,v);if(v===state.version)celebrateProgress(oldXP,oldOwned);},share:result=>sharing.shareResult(result),enter:async()=>{pendingRoute='#semanal';await createPlayer();},card:c=>cardMarkup(makeWeeklyCard(c.id,c.title)),preview:c=>{selectedCard=null;$('cardDetailArt').innerHTML=cardMarkup(makeWeeklyCard(c.id,c.title));$('cardDetailActions').replaceChildren();$('cardDetailStatus').textContent='Premio de esta edición: conseguí 20/20 para obtener esta Exclusiva.';if(!$('cardDetail').open)$('cardDetail').showModal();}});
@@ -440,7 +442,7 @@ window.sendAccountLink=async function(event){
   try{
     const {error}=await client.auth.updateUser({email:$('linkEmail').value.trim()},{emailRedirectTo:new URL(location.pathname,location.origin).href});
     if(error)throw error;
-    $('linkMessage').textContent='Revisá tu correo y abrí el enlace en este mismo navegador. Mientras tanto podés seguir jugando. Vincular conserva tu jugador y sus puntos.';
+    emailCodes.sent('link',$('linkEmail').value.trim());$('linkMessage').textContent='Revisá tu correo y spam. Pegá el código acá para vincular tu jugador sin salir de la app.';
   }catch(e){$('linkMessage').textContent=publicError(e);}
   finally{state.linkBusy=false;$('linkAccountBtn').disabled=false;}
 };
@@ -454,7 +456,7 @@ window.sendLogin=async function(event){
     const redirect=new URL(location.pathname,location.origin).href;
     const {error}=await client.auth.signInWithOtp({email,options:{emailRedirectTo:redirect,shouldCreateUser:true}});
     if(error)throw error;
-    authMessage('Revisá tu correo y spam. Abrí el enlace en este mismo navegador para entrar o crear tu cuenta.');
+    emailCodes.sent('login',email);authMessage('Revisá tu correo y spam. Volvé a esta app y pegá el código para entrar.');
   }catch(e){authMessage(publicError(e));}
   finally{button.disabled=false;}
 };
@@ -467,7 +469,7 @@ window.logout=async function(){
     const {error}=await client.auth.signOut({scope:'local'});
     if(error)throw error;
     // Discard sensitive in-memory UI state; keep old local-only progress untouched.
-    await useSession(null);
+    emailCodes.reset();await useSession(null);
   }catch(e){message(publicError(e));}
   finally{state.signingOut=false;}
 };

@@ -38,11 +38,15 @@ with ZipFile(root/archive,'w',ZIP_DEFLATED) as z:
  for file in sorted((root/'dist').rglob('*')):
   if file.is_file() and file.name!='asset-manifest.json':
    z.write(file,'loading-arcade/sitio/'+str(file.relative_to(root/'dist')))
+ z.write(root/'assets/legal/email-access-code.html','loading-arcade/docs/email-access-code.html')
+ z.write(root/'docs/acceso-codigo-v51.md','loading-arcade/docs/acceso-codigo-v51.md')
  z.write(root/'content/weekly/re4-recuerdos-original-revisada.encrypted.json','loading-arcade/banco-semanal/re4-recuerdos-original-revisada.encrypted.json')
  for file in ['README.md','THIRD_PARTY_NOTICES.txt','docs/registro-v46.md']:
   z.write(root/file,'loading-arcade/'+file)
 with ZipFile(root/archive) as z:
  assert z.testzip() is None
+ assert b'{{ .Token }}' in z.read('loading-arcade/docs/email-access-code.html')
+ assert b'ConfirmationURL' not in z.read('loading-arcade/docs/email-access-code.html')
  assert z.read('loading-arcade/sitio/index.html')==(root/'dist/index.html').read_bytes()
  assert z.read('loading-arcade/sitio/privacidad.html')==(root/'dist/privacidad.html').read_bytes()
  assert z.read('loading-arcade/sitio/manifest.webmanifest')==(root/'dist/manifest.webmanifest').read_bytes()

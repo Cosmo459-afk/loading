@@ -1,0 +1,25 @@
+"""Same-context email OTP through SDK/local Auth; persists across browser close/reopen."""
+import json,urllib.request,tempfile,shutil
+from playwright.sync_api import sync_playwright
+HOST='https://epnflypuxcfeexaqwlba.supabase.co';KEY='sb-epnflypuxcfeexaqwlba-auth-token';BASE='http://127.0.0.1:8085/dist/index.html'
+def api(path,body=None,token=None):
+ h={'Content-Type':'application/json'}
+ if token:h['Authorization']='Bearer '+token
+ with urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:8082'+path,data=None if body is None else json.dumps(body).encode(),headers=h)) as r:return json.load(r)
+api('/_test/reset',{});alice=api('/_test/session?user=alice');api('/rest/v1/rpc/arcade_save_profile',{'p_nickname':'ExistingPlayer','p_avatar':2},alice['access_token']);api('/_test/control',{'grantXP':1800})
+temp=api('/auth/v1/signup',{});token=temp['access_token'];api('/rest/v1/rpc/arcade_save_profile',{'p_nickname':'GuestPlayer','p_avatar':3},token)
+for q in ['ps1-easy-01','ps1-medium-01']:
+ api('/_test/control',{'ageStarts':True});g=api('/rest/v1/rpc/arcade_start_quiz',{'p_quiz_id':q},token);answers=api('/_test/answers',{'gameId':g['game_id']});api('/rest/v1/rpc/arcade_submit_game',{'p_game_id':g['game_id'],'p_answers':answers},token)
+chest=api('/rest/v1/arcade_chests',token=token)[0];prize=api('/rest/v1/rpc/arcade_open_chest',{'p_chest_id':chest['id']},token)
+with sync_playwright() as p:
+ directory=tempfile.mkdtemp(prefix='arcade-session-');errors=[]
+ def launch():
+  c=p.chromium.launch_persistent_context(directory,executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox'],viewport={'width':390,'height':844},reduced_motion='reduce');c.route(HOST+'/**',lambda r:r.fulfill(response=r.fetch(url='http://127.0.0.1:8082'+r.request.url[len(HOST):])));c.add_init_script("const original=matchMedia;window.matchMedia=q=>q==='(display-mode: standalone)'?{matches:true,addEventListener(){}}:original.call(window,q)");page=c.new_page();page.on('pageerror',lambda e:errors.append(str(e)));page.goto(BASE);return c,page
+ c,page=launch();page.evaluate('openPlayer()');page.wait_for_selector('#auth:not(.hidden)');page.locator('#loginEmail').fill('alice@example.invalid');page.locator('#sendLoginBtn').click();page.wait_for_selector('#loginCodeForm:not([hidden])');assert page.url==BASE;page.locator('#loginCode').fill('00000000');page.locator('#loginCodeForm button').click();page.wait_for_function('document.getElementById("authMessage").textContent.includes("incorrecto")');assert page.evaluate('profile') is None
+ page.locator('#loginCode').fill('12345678');page.locator('#loginCodeForm button').click();page.wait_for_selector('#navProfile:visible');assert page.evaluate('profile.name')=='ExistingPlayer';assert page.evaluate('profile.xp')==1800;assert page.evaluate('JSON.parse(localStorage.getItem('+json.dumps(KEY)+')).user.id')==alice['user']['id'];c.close()
+ c,page=launch();page.wait_for_selector('#navProfile:visible');assert page.evaluate('profile.name')=='ExistingPlayer';assert page.evaluate('profile.xp')==1800
+ # Switch only the local test account to exercise linking an invited player.
+ page.evaluate('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(temp))+')');page.reload();page.wait_for_function('profile?.name==="GuestPlayer"');page.evaluate('openLinkAccount()');page.wait_for_selector('#linkAccount:not(.hidden)');page.locator('#linkEmail').fill('guest@example.invalid');page.locator('#linkAccountBtn').click();page.wait_for_selector('#linkCodeForm:not([hidden])');assert page.url.endswith('#perfil/registro');page.screenshot(path='design/codigo-correo-v51.png',full_page=True);page.locator('#linkCode').fill('00000000');page.locator('#linkCodeForm button').click();page.wait_for_function('document.getElementById("linkMessage").textContent.includes("incorrecto")');assert page.evaluate('profile.name')=='GuestPlayer';assert page.evaluate('profile.xp')==1800
+ page.locator('#linkCode').fill('12345678');page.locator('#linkCodeForm button').click();page.wait_for_selector('#player:not(.hidden)');assert page.evaluate('JSON.parse(localStorage.getItem('+json.dumps(KEY)+')).user.id')==temp['user']['id'];assert page.evaluate('profile.name')=='GuestPlayer';assert page.evaluate('profile.xp')==1800;assert prize['card_id'] in page.evaluate('profile.unlocked');c.close()
+ c,page=launch();page.wait_for_selector('#navProfile:visible');assert page.evaluate('profile.name')=='GuestPlayer';assert page.evaluate('JSON.parse(localStorage.getItem('+json.dumps(KEY)+')).user.is_anonymous') is False;assert '12345678' not in page.url;assert not page.evaluate('Object.entries(localStorage).filter(([k])=>!k.startsWith("sb-")).some(([,v])=>v.includes("12345678"))');assert not errors,errors;c.close();shutil.rmtree(directory)
+print('PASS v51: code verified in standalone context without navigation; wrong code preserves session; existing account and linked guest persist after full browser close/reopen with same UID, XP and cards. Local Auth simulator; owner must configure real mail templates.')

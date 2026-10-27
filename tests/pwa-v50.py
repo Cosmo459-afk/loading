@@ -4,7 +4,7 @@ from http.server import ThreadingHTTPServer,SimpleHTTPRequestHandler
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 HOST='https://epnflypuxcfeexaqwlba.supabase.co';KEY='sb-epnflypuxcfeexaqwlba-auth-token';BASE='http://127.0.0.1:8088/'
-phase=1;navigation=0
+phase=1;navigation=0;version=json.loads(Path('package.json').read_text())['version']
 class Handler(SimpleHTTPRequestHandler):
  def __init__(self,*args,**kwargs):super().__init__(*args,directory=str(Path('dist').resolve()),**kwargs)
  def log_message(self,*args):pass
@@ -12,7 +12,7 @@ class Handler(SimpleHTTPRequestHandler):
   global navigation
   if self.path.split('?')[0] in ['/','/index.html','/sw.js']:
    worker=self.path.startswith('/sw.js');data=Path('dist/sw.js' if worker else 'dist/index.html').read_text()
-   if worker:data=data.replace('0.50.0','0.50.0-test-'+str(phase))
+   if worker:data=data.replace(version,version+'-test-'+str(phase))
    else:navigation+=1;data+='<!-- network-navigation-'+str(navigation)+' -->'
    data=data.encode();self.send_response(200);self.send_header('Content-Type','application/javascript' if worker else 'text/html');self.send_header('Cache-Control','no-cache');self.send_header('Content-Length',str(len(data)));self.end_headers();self.wfile.write(data)
   else:super().do_GET()
