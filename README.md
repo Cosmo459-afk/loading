@@ -1,3 +1,13 @@
+# LOADING ARCADE 0.47
+
+Página pública de privacidad en /privacidad.html, sin sesión ni JavaScript, accesible desde el pie y las pantallas de registro. Describe los datos usados por el juego y sus proveedores, la información pública y el contacto tienda.somosloading@gmail.com. Revisar el texto antes de desplegar.
+
+Actualizar desde v46: subir sitio completa de loading-arcade-v47.zip a Cloudflare. No hay SQL adicional. Si todavía se usa v45 o anterior, ejecutar primero supabase/upgrade-v46.sql para el registro semanal; no volver a ejecutar reinicios ni importar el banco.
+
+Tras desplegar, comprobar https://loading-arcade.tienda-somosloading.workers.dev/privacidad.html y usar esa URL en Google Auth Platform → Información de la marca → Política de privacidad. La página principal es https://loading-arcade.tienda-somosloading.workers.dev/. Guardar y volver a Público. Google identificó expresamente la URL de privacidad como requisito para publicar; no bastaba con dejarla vacía.
+
+---
+
 # LOADING ARCADE 0.46
 
 Registro para nuevos intentos del semanal, validado en servidor con Supabase Auth. Las trivias normales siguen abiertas con personaje sin registro. Se conservan perfiles, apodos, XP, cartas y resultados previos; los intentos ya iniciados mantienen su reloj y pueden terminar.

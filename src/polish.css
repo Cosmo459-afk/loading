@@ -83,3 +83,5 @@ button.action-quiet:disabled,button.action-primary:disabled{opacity:.45;box-shad
 @media(max-width:760px){.stats-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.stats-mode-grid{grid-template-columns:1fr}.stats-metric{padding:13px}.stats-mode-metrics .stats-metric>strong{font-size:24px}.stats-mode{padding:18px}.stats-bars{gap:3px}}
 
 .social-access-options{display:grid;gap:10px;margin:18px 0}.social-access-options:empty{display:none}.social-access-button{width:100%;min-height:50px;padding:15px 18px;font-size:13px}.email-access-choice{margin:18px 0;border:1px solid #45445f;border-radius:12px;padding:0 16px;background:#ffffff02}.email-access-choice summary{padding:15px 0;cursor:pointer;font-size:13px;font-weight:700;color:#d9c6e8;min-height:44px}.email-access-choice form{padding-bottom:16px}.weekly-registration-note{padding:16px;border:1px solid #468a70;background:#123128;border-radius:12px;color:#d0edde;line-height:1.7;font-size:14px}
+
+.privacy-footer-link{font-size:10px;color:#b7c2d8}.privacy-access-note{font-size:12px;line-height:1.6;color:#aab7ce}.privacy-access-note a{color:#d0b9e3}

@@ -44,6 +44,8 @@ with ZipFile(root/archive,'w',ZIP_DEFLATED) as z:
 with ZipFile(root/archive) as z:
  assert z.testzip() is None
  assert z.read('loading-arcade/sitio/index.html')==(root/'dist/index.html').read_bytes()
+ assert z.read('loading-arcade/sitio/privacidad.html')==(root/'dist/privacidad.html').read_bytes()
+ assert b'__BRAND_LOGO__' not in z.read('loading-arcade/sitio/privacidad.html')
  assert len([n for n in z.namelist() if '/assets/media/' in n])==9
  assert not any(n.endswith('.sql') or (n.endswith('.json') and '/banco-semanal/' not in n) for n in z.namelist())
  assert b'ciphertext' in z.read('loading-arcade/banco-semanal/re4-recuerdos-original-revisada.encrypted.json')

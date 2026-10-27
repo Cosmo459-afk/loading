@@ -56,3 +56,16 @@ No pegar secretos de Google o Meta en el HTML, GitHub ni el chat. Las credencial
 - Confirmar que el semanal no crea un intento antes del botón Comenzar y rechaza llamadas directas sin verificación.
 
 Las pruebas automatizadas cubren SQL real local y el SDK con proveedores simulados. No sustituyen la prueba real después de configurar Google/Meta.
+
+## Publicar en Google: Información de la marca
+
+Google exige nombre de app, correo de asistencia, URL válida de página principal y URL válida de política de privacidad para pasar a producción externa (confirmado en la ayuda del botón Publicar app).
+
+Después de subir v47 completa a Cloudflare y comprobar que ambas páginas abren sin sesión:
+
+- Página principal: `https://loading-arcade.tienda-somosloading.workers.dev/`
+- Política de privacidad: `https://loading-arcade.tienda-somosloading.workers.dev/privacidad.html`
+- Dominios autorizados: `epnflypuxcfeexaqwlba.supabase.co` y `tienda-somosloading.workers.dev`. Los dominios base compartidos `supabase.co` y `workers.dev` figuran en la Public Suffix List; no son los dominios privados del proyecto.
+- El callback en Clientes sigue siendo `https://epnflypuxcfeexaqwlba.supabase.co/auth/v1/callback`.
+
+Revisar el contenido de privacidad y el correo de contacto antes de desplegar. No colocar enlaces a condiciones que no estén publicadas. Guardar y volver a Público; si queda otro bloqueo, revisar el mensaje concreto de Google.
