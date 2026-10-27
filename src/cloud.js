@@ -37,7 +37,7 @@ const returning=new URLSearchParams(location.search).has('code');
 const client=createClient(config.url,config.publishableKey,{
   auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
 });
-const state={isAdmin:false,session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false,owned:[],chests:[],chestBusy:false,community:null,communityOffset:0,visitData:null,visitTarget:null,visitReturn:'community',visitRequest:0,visitBusy:false,visitError:false,likeBusy:false,communityBusy:false,communityError:false,visibilityBusy:false,coupon:null,couponError:false,ownedCosmetics:[],exclusives:[],lastResult:null};
+const state={isAdmin:false,session:null,uid:null,version:0,game:null,answers:[],pending:null,busy:false,profileBusy:false,featureBusy:false,signingOut:false,profileLoading:false,profileError:false,creating:false,linkBusy:false,catalog:null,catalogLoading:false,catalogError:false,catalogPromise:null,cosmetics:[],cosmeticBusy:false,owned:[],chests:[],chestBusy:false,community:null,communityOffset:0,visitData:null,visitTarget:null,visitReturn:'community',visitRequest:0,visitBusy:false,visitError:false,likeBusy:false,communityBusy:false,communityError:false,visibilityBusy:false,coupon:null,couponError:false,ownedCosmetics:[],exclusives:[],lastResult:null,exclusiveDismissed:[]};
 profile=null; // Never turn a local profile into a verified cloud account.
 const rewardUI=installRewardUI({profile:()=>profile,coupon:()=>state.coupon,couponError:()=>state.couponError,uid:()=>state.uid,requestRedemption:async id=>{const {data,error}=await client.rpc('arcade_request_coupon_redemption',{p_coupon_id:id});if(!error&&data?.player_id===state.uid)state.coupon=data;},avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),brand:brandLogo,art:couponArt});
 const sharing=installSharing({profile:()=>profile,avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),brand:brandLogo,siteArt,owned:id=>!!profile?.unlocked?.includes(id)||state.exclusives.some(e=>'weekly-'+e.challenge_id===id)});
@@ -48,7 +48,7 @@ function consumeAuthReturn(){try{const value=JSON.parse(localStorage.getItem(aut
 const registration=installRegistration({client,config,identity:()=>state.uid,rememberReturn:rememberAuthReturn});
 window.shareArcade=()=>sharing.shareSite();
 window.shareMyProfile=()=>sharing.shareProfile();
-const weekly=installWeekly({register:()=>openRegistration(true),avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),shareRanking:hub=>sharing.shareRanking(hub),rpc:(name,args)=>client.rpc(name,args),identity:()=>state.uid,profile:()=>profile,go:id=>base.go(id),visit:id=>visitPlayer(id),onFinish:async()=>{const v=state.version,oldXP=profile?.xp||0,oldOwned=new Set(state.cosmetics.filter(c=>cosmeticOwned(c)).map(c=>c.id));await loadProfile(state.uid,v);if(v===state.version)celebrateProgress(oldXP,oldOwned);},share:result=>sharing.shareResult(result),enter:async()=>{pendingRoute='#semanal';await createPlayer();},card:c=>cardMarkup(makeWeeklyCard(c.id,c.title)),preview:c=>{selectedCard=null;$('cardDetailArt').innerHTML=cardMarkup(makeWeeklyCard(c.id,c.title));$('cardDetailActions').replaceChildren();$('cardDetailStatus').textContent='Premio de esta edición: conseguí 20/20 para obtener esta Exclusiva.';if(!$('cardDetail').open)$('cardDetail').showModal();}});
+const weekly=installWeekly({exhibit:c=>showCollectible('weekly-'+c.id),register:()=>openRegistration(true),avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),shareRanking:hub=>sharing.shareRanking(hub),rpc:(name,args)=>client.rpc(name,args),identity:()=>state.uid,profile:()=>profile,go:id=>base.go(id),visit:id=>visitPlayer(id),onFinish:async()=>{const v=state.version,oldXP=profile?.xp||0,oldOwned=new Set(state.cosmetics.filter(c=>cosmeticOwned(c)).map(c=>c.id));await loadProfile(state.uid,v);if(v===state.version)celebrateProgress(oldXP,oldOwned);},share:result=>sharing.shareResult(result),enter:async()=>{pendingRoute='#semanal';await createPlayer();},card:c=>cardMarkup(makeWeeklyCard(c.id,c.title)),preview:c=>{selectedCard=null;$('cardDetailArt').innerHTML=cardMarkup(makeWeeklyCard(c.id,c.title));$('cardDetailActions').replaceChildren();$('cardDetailStatus').textContent='Premio de esta edición: conseguí 20/20 para obtener esta Exclusiva.';if(!$('cardDetail').open)$('cardDetail').showModal();}});
 window.openWeekly=()=>weekly.open();
 const admin=installAdmin({rpc:(name,args)=>client.rpc(name,args),allowed:()=>state.isAdmin,go:id=>base.go(id),onDenied:()=>{state.isAdmin=false;$('adminEntry').hidden=true;}});
 window.openAdmin=async()=>{await ready;await admin.open();};
@@ -166,7 +166,7 @@ async function likeProfile(){
 }
 window.showExhibitedCard=function(id){
  if($('playerVisit').classList.contains('hidden')||!state.visitData?.featured_ids?.includes(id))return;
- const card=cards.find(c=>c.id===id);if(!card)return;selectedCard=null;$('cardDetailArt').innerHTML=cardMarkup(card);renderCardActions();$('cardDetailStatus').textContent='Exhibida por '+state.visitData.nickname;if(!$('cardDetail').open)$('cardDetail').showModal();
+ const card=resolveFeaturedCard(id,false);if(!card)return;selectedCard=null;$('cardDetailArt').innerHTML=cardMarkup(card);renderCardActions();$('cardDetailStatus').textContent='Exhibida por '+state.visitData.nickname;if(!$('cardDetail').open)$('cardDetail').showModal();
 };
 function unseenCards(){
  if(!state.uid)return [];
@@ -174,23 +174,33 @@ function unseenCards(){
  if(!Array.isArray(seen))seen=[];
  return state.owned.filter(id=>!seen.includes(id));
 }
+function pendingExclusiveNotices(){
+ if(!state.uid||!profile)return [];let seen=[];try{seen=JSON.parse(localStorage.getItem('loading_arcade_exclusives_prompt_'+state.uid)||'[]');}catch{}if(!Array.isArray(seen))seen=[];
+ return state.exclusives.filter(e=>!profile.featured.includes('weekly-'+e.challenge_id)&&!seen.includes(e.challenge_id)&&!state.exclusiveDismissed.includes(e.challenge_id)).sort((a,b)=>Date.parse(b.earned_at)-Date.parse(a.earned_at));
+}
+function renderExclusiveNotices(){
+ const pending=pendingExclusiveNotices();for(const id of ['homeExclusiveNotice','profileExclusiveNotice']){const root=$(id);if(!root)continue;root.replaceChildren();root.hidden=!pending.length;if(!pending.length)continue;
+  const heading=document.createElement('strong');heading.textContent='Exhibí tu carta exclusiva';const text=document.createElement('p');text.textContent=pending.length===1?'Conseguiste '+pending[0].name+' con un Perfect Score. Mostrala en uno de los 4 espacios de tu perfil.':'Tenés '+pending.length+' cartas exclusivas para elegir. Podés exhibirlas en los 4 espacios de tu perfil.';
+  const actions=document.createElement('div');actions.className='actions';const open=document.createElement('button');open.textContent='ELEGIR DÓNDE EXHIBIRLA';open.onclick=()=>showCollectible('weekly-'+pending[0].challenge_id);const later=document.createElement('button');later.className='secondary action-quiet';later.textContent='AHORA NO';later.onclick=()=>{let seen=[];try{seen=JSON.parse(localStorage.getItem('loading_arcade_exclusives_prompt_'+state.uid)||'[]');}catch{}if(!Array.isArray(seen))seen=[];const all=[...new Set([...seen,...pending.map(e=>e.challenge_id)])];state.exclusiveDismissed=all;try{localStorage.setItem('loading_arcade_exclusives_prompt_'+state.uid,JSON.stringify(all));}catch{}accountUI();};actions.append(open,later);root.append(heading,text,actions);
+ }
+}
 function badge(n,label){return n?'<span class="pending-dot" aria-label="'+n+' '+label+'">'+n+'</span>':'';}
 function renderProfileInventory(){
  const panel=$('profileInventory');if(!panel)return;panel.hidden=!profile;panel.replaceChildren();if(!profile)return;
- const chests=state.chests.filter(c=>!c.opened_at).length,newCards=unseenCards().length,coupon=state.coupon?.id&&!state.coupon.redeemed_at?1:0;
+ const chests=state.chests.filter(c=>!c.opened_at).length,newCards=unseenCards().length+pendingExclusiveNotices().length,coupon=state.coupon?.id&&!state.coupon.redeemed_at?1:0;
  const actions=[['openChests()','MIS COFRES','Cofres por abrir',chests,'chests'],['showCollections()','MIS CARTAS','Tu colección',newCards,'cards'],['openBenefits()','MI CUPÓN','Beneficio en Loading',coupon,'coupon'],['showHistory()','MIS PARTIDAS','Tu recorrido',0,'history']];
  panel.innerHTML='<div class="profile-inventory-heading"><h3>Tu arcade</h3><p class="muted">Tus cartas, recompensas y partidas.</p></div><div class="profile-inventory-actions">'+actions.map(([action,title,description,count,icon])=>'<button class="secondary profile-tile" onclick="'+action+'"><span class="profile-tile-icon" aria-hidden="true">'+inventoryIcon(icon)+'</span><span class="profile-tile-title">'+title+badge(count,'pendientes')+'</span><small>'+description+'</small></button>').join('')+'</div>';
 
 }
 function profileShield(best,current){const shield=document.createElement('span');shield.className='profile-name-shield';shield.innerHTML=streakBadge(best,current);shield.title='Mejor racha: '+(Number(best)||0)+' trivias perfectas seguidas · Actual: '+(Number(current)||0);return shield;}
 function featuredSlots(ids,own=false){
- const block=document.createElement('div');block.className='profile-featured';const label=document.createElement('p');label.className='profile-slots-label';label.textContent=own?'Tus cartas · '+ids.length+'/3 espacios':'Cartas exhibidas';block.appendChild(label);
+ const block=document.createElement('div');block.className='profile-featured';const label=document.createElement('p');label.className='profile-slots-label';label.textContent=own?'Tus cartas · '+ids.length+'/4 espacios':'Cartas exhibidas';block.appendChild(label);
  const slots=document.createElement('div');slots.className='profile-card-slots';
- for(let i=0;i<3;i++){const c=cards.find(c=>c.id===ids[i]),slot=document.createElement('button');slot.className='profile-card-slot'+(c?' featured-card':' profile-card-empty');slot.type='button';
+ for(let i=0;i<4;i++){const c=resolveFeaturedCard(ids[i],own),slot=document.createElement('button');slot.className='profile-card-slot'+(c?' featured-card':' profile-card-empty');slot.type='button';
   if(c){slot.innerHTML=cardMarkup(c);slot.setAttribute('aria-label','Ver carta exhibida: '+c.name);slot.onclick=()=>own?showCollectible(c.id):showExhibitedCard(c.id);}
   else{slot.innerHTML='<span aria-hidden="true">+</span><small>'+ (own?'ELEGIR CARTA':'VACÍO')+'</small>';slot.setAttribute('aria-label',own?'Elegir carta para el espacio '+(i+1):'Espacio sin carta');if(own)slot.onclick=()=>showCollections();else slot.disabled=true;}slots.appendChild(slot);
  }
- block.appendChild(slots);if(own){const note=document.createElement('small');note.className='profile-slots-help';note.textContent='Elegí hasta 3 cartas desde Mis cartas o al abrir un cofre.';block.appendChild(note);}return block;
+ block.appendChild(slots);if(own){const note=document.createElement('small');note.className='profile-slots-help';note.textContent='Elegí hasta 4 cartas, incluidas tus exclusivas, desde Mis cartas.';block.appendChild(note);}return block;
 }
 function renderOwnProfile(){
  const root=$('ownProfileIdentity');if(!root)return;root.replaceChildren();if(!profile)return;
@@ -220,7 +230,7 @@ const homeObserver=new MutationObserver(()=>{
 });
 homeObserver.observe($('home'),{attributes:true,attributeFilter:['class']});
 function accountUI(){
-  syncPrimaryNav();renderOwnProfile();
+  syncPrimaryNav();renderOwnProfile();renderExclusiveNotices();
   renderProfileInventory();
   applyPersonalStyle();renderCommunity();
   protectionUI();
@@ -314,7 +324,7 @@ async function loadProfile(uid,version){
     if(player.error)throw player.error;
     if(catalog.error)throw catalog.error;
     if(cosmetics.error)throw cosmetics.error;
-    if(owned.error)throw owned.error;if(chests.error)throw chests.error;
+    if(owned.error)throw owned.error;if(chests.error)throw chests.error;if(exclusives.error)throw exclusives.error;
     state.ownedCosmetics=(ownedCosmetics.data||[]).map(o=>o.item_id);state.coupon=coupon.data?.id?coupon.data:null;state.couponError=!!coupon.error;
     state.exclusives=exclusives.data||[];state.isAdmin=adminRole.data===true;$('adminEntry').hidden=!state.isAdmin;
     state.cosmetics=cosmetics.data;state.owned=owned.data.map(x=>x.card_id);state.chests=chests.data;
@@ -340,7 +350,7 @@ async function useSession(session){
   state.cosmetics=[];state.owned=[];state.chests=[];state.chestBusy=false;state.catalog=null;state.catalogLoading=false;state.catalogError=false;state.catalogPromise=null;
   state.community=null;state.communityOffset=0;state.visitData=null;state.visitTarget=null;state.visitReturn='community';state.visitRequest++;state.visitBusy=false;state.visitError=false;state.likeBusy=false;$('visitedPlayer').replaceChildren();state.communityBusy=false;state.communityError=false;wardrobeSlot='all';
   state.uid=uid;state.profileLoading=!!uid;state.profileError=false;state.game=null;state.answers=[];state.pending=null;profile=null;mode='player';
-  audio.cancelEffects();state.isAdmin=false;$('adminEntry').hidden=true;admin.reset();forum.reset();weekly.reset();sharing.clear();rewardUI.clear();state.coupon=null;state.couponError=false;state.ownedCosmetics=[];state.exclusives=[];state.lastResult=null;
+  audio.cancelEffects();state.isAdmin=false;$('adminEntry').hidden=true;admin.reset();forum.reset();weekly.reset();sharing.clear();rewardUI.clear();state.coupon=null;state.couponError=false;state.ownedCosmetics=[];state.exclusives=[];state.lastResult=null;state.exclusiveDismissed=[];
   $('recoverGame').hidden=true;
   selectedCollection=null;selectedCard=null;lastChestCard=null;$('cardDetailActions').replaceChildren();$('cardDetailStatus').textContent='';
   if($('cardDetail').open)$('cardDetail').close();$('cardDetailArt').replaceChildren();
@@ -493,11 +503,11 @@ async function saveFeatured(ids){
  finally{if(version===state.version){state.featureBusy=false;renderCardActions();renderChestFeature();}}return saved;
 }
 toggleFeatured=async function(id){
- if(state.featureBusy||!state.uid||!profile?.unlocked?.includes(id))return;
+ if(state.featureBusy||!state.uid||!(profile?.unlocked?.includes(id)||exclusiveCard(id)))return;
  const ids=profile.featured||[];
  if(ids.includes(id))return saveFeatured(ids.filter(x=>x!==id));
- if(ids.length>=3){showCollectible(id);const actions=$('cardDetailActions');actions.replaceChildren();$('cardDetailStatus').textContent='Tenés los 3 espacios ocupados. Elegí qué carta reemplazar.';
-  ids.forEach((old,i)=>{const b=document.createElement('button');b.className='secondary';b.textContent='REEMPLAZAR '+(i+1)+' · '+(cards.find(c=>c.id===old)?.name||'Carta');b.onclick=()=>saveFeatured(ids.map((value,n)=>n===i?id:value));actions.appendChild(b);});return;}
+ if(ids.length>=4){showCollectible(id);const actions=$('cardDetailActions');actions.replaceChildren();$('cardDetailStatus').textContent='Tenés los 4 espacios ocupados. Elegí qué carta reemplazar.';
+  ids.forEach((old,i)=>{const b=document.createElement('button');b.className='secondary';b.textContent='REEMPLAZAR '+(i+1)+' · '+(resolveFeaturedCard(old,true)?.name||'Carta');b.onclick=()=>saveFeatured(ids.map((value,n)=>n===i?id:value));actions.appendChild(b);});return;}
  return saveFeatured([...ids,id]);
 };
 
@@ -672,7 +682,7 @@ function rewardSteps(){
 syncUnlocks=function(){
  if(!profile)return;
  profile.unlocked=[...state.owned];
- profile.featured=(profile.featured||[]).filter((id,i,a)=>state.owned.includes(id)&&a.indexOf(id)===i).slice(0,3);
+ profile.featured=(profile.featured||[]).filter((id,i,a)=>(state.owned.includes(id)||!!exclusiveCard(id))&&a.indexOf(id)===i).slice(0,4);
 };
 const originalAvatarSVG=avatarSVG;
 avatarSVG=n=>decorateAvatar(originalAvatarSVG(n),n,profile?.cosmetics||{});
@@ -790,7 +800,7 @@ renderAlbum=function(){
  const items=cards.filter(c=>c.collection===selectedCollection),discovered=items.filter(c=>profile.unlocked.includes(c.id)),missing=items.length-discovered.length;
  try{let seen=JSON.parse(localStorage.getItem('loading_arcade_cards_seen_'+state.uid)||'[]');if(!Array.isArray(seen))seen=[];localStorage.setItem('loading_arcade_cards_seen_'+state.uid,JSON.stringify([...new Set([...seen,...discovered.map(c=>c.id)])]));}catch{}
  accountUI();renderProfileInventory();
- $('albumStatus').textContent=discovered.length+' de '+items.length+' descubiertos · '+profile.featured.length+' de 3 destacados';
+ $('albumStatus').textContent=discovered.length+' de '+items.length+' descubiertos · '+profile.featured.length+' de 4 destacados';
  $('collectionMystery').textContent=missing?'Abrí una carta conseguida para verla y elegir si exhibirla. Las pendientes mantienen su identidad oculta.':'¡Colección completa! Abrí una carta para verla y elegir si exhibirla.';
  for(const [key,label] of [['common','Comunes'],['epic','Épicas'],['legendary','Legendarias']]){
   const total=items.filter(c=>c.rarityKey===key),owned=total.filter(c=>profile.unlocked.includes(c.id));
@@ -810,12 +820,13 @@ renderAlbum=function(){
 function makeWeeklyCard(challengeId,edition){return {id:'weekly-'+challengeId,name:'Ada Wong',rarity:'Exclusiva',rarityKey:'exclusive',collection:'weekly-exclusives',game:'Resident Evil 4 · Original',description:'Una espía enigmática que se cruza en el camino de Leon. Edición: '+(edition||'Desafío semanal')+'.',image:adaArt,referenceSize:[1254,1254],ordinal:0,exclusive:true,edition};}
 function exclusiveCard(id){const e=state.exclusives.find(x=>'weekly-'+x.challenge_id===id);return e?makeWeeklyCard(e.challenge_id,e.edition):null;}
 
+function resolveFeaturedCard(id,own=false){const normal=cards.find(c=>c.id===id);if(normal)return normal;if(own)return exclusiveCard(id);const e=state.visitData?.featured_exclusives?.find(e=>'weekly-'+e.challenge_id===id);return e?makeWeeklyCard(e.challenge_id,e.edition):null;}
 function renderCardActions(){
  const actions=$('cardDetailActions');actions.replaceChildren();$('cardDetailStatus').textContent='';
- const exclusive=exclusiveCard(selectedCard);if(exclusive){const share=document.createElement('button');share.textContent='COMPARTIR EXCLUSIVA';share.onclick=()=>{$('cardDetail').close();sharing.shareCard(exclusive);};actions.appendChild(share);$('cardDetailStatus').textContent='Exclusiva de Perfect Score · '+exclusive.edition;return;}
- if(!selectedCard||!profile?.unlocked.includes(selectedCard))return;
- const featured=profile.featured.includes(selectedCard),button=document.createElement('button');button.textContent=featured?'QUITAR DEL PERFIL':'EXHIBIR';button.disabled=state.featureBusy;button.setAttribute('aria-pressed',String(featured));const id=selectedCard;button.onclick=()=>toggleFeatured(id);actions.appendChild(button);const share=document.createElement('button');share.className='secondary';share.textContent='COMPARTIR CARTA';share.onclick=()=>{const card=cards.find(c=>c.id===id);if(!profile?.unlocked.includes(id))return;$('cardDetail').close();sharing.shareCard(card);};actions.appendChild(share);
- $('cardDetailStatus').textContent=featured?'Esta carta está exhibida en tu perfil.':profile.featured.length+' de 3 espacios de exhibición ocupados.';
+ const exclusive=exclusiveCard(selectedCard);if(!selectedCard||!(profile?.unlocked.includes(selectedCard)||exclusive))return;
+ const featured=profile.featured.includes(selectedCard),button=document.createElement('button');button.textContent=featured?'QUITAR DEL PERFIL':'EXHIBIR';button.disabled=state.featureBusy;button.setAttribute('aria-pressed',String(featured));const id=selectedCard;button.onclick=()=>toggleFeatured(id);actions.appendChild(button);const share=document.createElement('button');share.className='secondary action-quiet';share.textContent=exclusive?'COMPARTIR EXCLUSIVA':'COMPARTIR CARTA';share.onclick=()=>{const card=resolveFeaturedCard(id,true);if(!card||!(profile?.unlocked.includes(id)||exclusiveCard(id)))return;$('cardDetail').close();sharing.shareCard(card);};actions.appendChild(share);
+ $('cardDetailStatus').textContent=(featured?'Esta carta está exhibida en tu perfil.':profile.featured.length+' de 4 espacios de exhibición ocupados.')+(exclusive?' Exclusiva de Perfect Score · '+exclusive.edition:'');
+
 }
 window.showCollectible=function(id){
  const c=cards.find(c=>c.id===id)||exclusiveCard(id);if(!c||(!profile?.unlocked?.includes(id)&&!c.exclusive))return;
@@ -880,7 +891,7 @@ function sectionGroup(id){if(id==='home')return 'home';if(['community','players'
 function syncPrimaryNav(){
  if(!$('appNav'))return;$('appNav').hidden=!profile;
  const group=sectionGroup(currentSection());for(const [id,key] of [['navHome','home'],['navTrivia','trivia'],['navProfile','profile'],['navCommunity','community']]){if(group===key)$(id).setAttribute('aria-current','page');else $(id).removeAttribute('aria-current');}
- const count=profile?state.chests.filter(c=>!c.opened_at).length+unseenCards().length+(state.coupon?.id&&!state.coupon.redeemed_at?1:0):0;
+ const count=profile?state.chests.filter(c=>!c.opened_at).length+unseenCards().length+pendingExclusiveNotices().length+(state.coupon?.id&&!state.coupon.redeemed_at?1:0):0;
  $('navProfileBadge').hidden=!count;$('navProfileBadge').textContent=count||'';$('navProfileBadge').setAttribute('aria-label',count+' pendientes en tu perfil');
 }
 function sectionRoute(id){

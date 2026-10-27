@@ -1,3 +1,18 @@
+# LOADING ARCADE 0.48
+
+Cuatro espacios para exhibir cartas normales o exclusivas obtenidas. Las exclusivas se pueden exhibir, reemplazar y quitar desde Mis cartas; también se ven en los perfiles visitables y compartidos.
+
+Los ganadores actuales y futuros reciben un aviso dentro del juego: «Exhibí tu carta exclusiva», en Inicio y Perfil. Se oculta al exhibirla o al elegir «Ahora no» (se recuerda en ese navegador y para ese jugador). No envía correos ni mensajes externos. El resultado perfecto del semanal también ofrece acceso directo a la carta.
+
+Actualizar desde v47:
+1. Ejecutar supabase/upgrade-v48.sql en Supabase SQL Editor.
+2. Subir toda la carpeta sitio del ZIP loading-arcade-v48.zip a Cloudflare.
+3. Recargar el sitio y revisar Perfil → Mis cartas → Exclusivas semanales.
+
+No reinicia jugadores, XP, cartas ni resultados. No volver a importar el banco semanal ni ejecutar archivos de reinicio. El servidor comprueba la propiedad de cada carta y solo expone las exclusivas seleccionadas para exhibir.
+
+---
+
 # LOADING ARCADE 0.47
 
 Página pública de privacidad en /privacidad.html, sin sesión ni JavaScript, accesible desde el pie y las pantallas de registro. Describe los datos usados por el juego y sus proveedores, la información pública y el contacto tienda.somosloading@gmail.com. Revisar el texto antes de desplegar.
