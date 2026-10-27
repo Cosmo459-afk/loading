@@ -39,7 +39,7 @@ with ZipFile(root/archive,'w',ZIP_DEFLATED) as z:
   if file.is_file() and file.name!='asset-manifest.json':
    z.write(file,'loading-arcade/sitio/'+str(file.relative_to(root/'dist')))
  z.write(root/'content/weekly/re4-recuerdos-original-revisada.encrypted.json','loading-arcade/banco-semanal/re4-recuerdos-original-revisada.encrypted.json')
- for file in ['README.md','THIRD_PARTY_NOTICES.txt']:
+ for file in ['README.md','THIRD_PARTY_NOTICES.txt','docs/registro-v46.md']:
   z.write(root/file,'loading-arcade/'+file)
 with ZipFile(root/archive) as z:
  assert z.testzip() is None

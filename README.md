@@ -1,3 +1,21 @@
+# LOADING ARCADE 0.46
+
+Registro para nuevos intentos del semanal, validado en servidor con Supabase Auth. Las trivias normales siguen abiertas con personaje sin registro. Se conservan perfiles, apodos, XP, cartas y resultados previos; los intentos ya iniciados mantienen su reloj y pueden terminar.
+
+## Instalar desde v45
+
+1. Ejecutar todo supabase/upgrade-v46.sql en Supabase SQL Editor. No reinicia datos.
+2. Subir sitio completa de loading-arcade-v46.zip a Cloudflare.
+3. Leer docs/registro-v46.md para activar Google/Facebook y la vinculación manual en Supabase. Las credenciales se guardan únicamente en Supabase, nunca en el HTML ni en GitHub.
+
+Correo ya está habilitado y exige confirmación. Google/Facebook están implementados pero, al comprobar la configuración real del 27/10/2026, ambos estaban deshabilitados. Sus botones se muestran automáticamente al activar cada proveedor; no se anuncian como disponibles antes de eso. No incluye SMS/WhatsApp ni cargos de mensajes.
+
+Al registrar un personaje existente se usa vinculación de identidad, conservando el UID. Si el acceso ya pertenece a otro jugador, se informa el conflicto sin cambiar de cuenta ni fusionar puntos. Se vuelve al semanal tras confirmar el acceso, sin iniciar un intento hasta Comenzar. Una cuenta verificada no equivale a una persona única.
+
+Validación: supabase/tests/registration-v46.mjs cubre bloqueo sin verificación, fuente oficial de la prueba, datos de usuario falsificados, trivia normal abierta, transición sin borrar intentos y premios idempotentes. tests/registration-v46.py usa el SDK real contra Auth local simulado: Google/correo preservan el jugador y devuelven al semanal, Facebook inicia OAuth con PKCE, identidades duplicadas y configuración incompleta no cambian el jugador. Las redes requieren prueba real después de configurarlas; no están activadas en producción por esta entrega.
+
+---
+
 # LOADING ARCADE 0.45
 
 Administración → Estadísticas, con períodos de 7 y 30 días (incluye el día actual) y calendario de Argentina:

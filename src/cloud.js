@@ -1,3 +1,4 @@
+import {installRegistration} from './registration.js';
 import {inventoryIcon} from './icons.js';
 import {createClient} from '@supabase/supabase-js';
 import config from './config.js';
@@ -40,9 +41,14 @@ const state={isAdmin:false,session:null,uid:null,version:0,game:null,answers:[],
 profile=null; // Never turn a local profile into a verified cloud account.
 const rewardUI=installRewardUI({profile:()=>profile,coupon:()=>state.coupon,couponError:()=>state.couponError,uid:()=>state.uid,requestRedemption:async id=>{const {data,error}=await client.rpc('arcade_request_coupon_redemption',{p_coupon_id:id});if(!error&&data?.player_id===state.uid)state.coupon=data;},avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),brand:brandLogo,art:couponArt});
 const sharing=installSharing({profile:()=>profile,avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),brand:brandLogo,siteArt,owned:id=>!!profile?.unlocked?.includes(id)||state.exclusives.some(e=>'weekly-'+e.challenge_id===id)});
+let registrationTarget='#perfil';
+const authReturnKey='loading_arcade_auth_return_v46';
+function rememberAuthReturn(){try{localStorage.setItem(authReturnKey,JSON.stringify({route:registrationTarget,owner:state.uid,until:Date.now()+30*60*1000}));}catch{}}
+function consumeAuthReturn(){try{const value=JSON.parse(localStorage.getItem(authReturnKey)||'null');localStorage.removeItem(authReturnKey);if(value&&value.until>Date.now()&&(!value.owner||value.owner===state.uid)&&['#semanal','#perfil'].includes(value.route))pendingRoute=value.route;}catch{}}
+const registration=installRegistration({client,config,identity:()=>state.uid,rememberReturn:rememberAuthReturn});
 window.shareArcade=()=>sharing.shareSite();
 window.shareMyProfile=()=>sharing.shareProfile();
-const weekly=installWeekly({avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),shareRanking:hub=>sharing.shareRanking(hub),rpc:(name,args)=>client.rpc(name,args),identity:()=>state.uid,profile:()=>profile,go:id=>base.go(id),visit:id=>visitPlayer(id),onFinish:async()=>{const v=state.version,oldXP=profile?.xp||0,oldOwned=new Set(state.cosmetics.filter(c=>cosmeticOwned(c)).map(c=>c.id));await loadProfile(state.uid,v);if(v===state.version)celebrateProgress(oldXP,oldOwned);},share:result=>sharing.shareResult(result),enter:async()=>{pendingRoute='#semanal';await createPlayer();},card:c=>cardMarkup(makeWeeklyCard(c.id,c.title)),preview:c=>{selectedCard=null;$('cardDetailArt').innerHTML=cardMarkup(makeWeeklyCard(c.id,c.title));$('cardDetailActions').replaceChildren();$('cardDetailStatus').textContent='Premio de esta edición: conseguí 20/20 para obtener esta Exclusiva.';if(!$('cardDetail').open)$('cardDetail').showModal();}});
+const weekly=installWeekly({register:()=>openRegistration(true),avatar:p=>decorateAvatar(originalAvatarSVG(p.avatar||0),p.avatar||0,p.cosmetics||{}),shareRanking:hub=>sharing.shareRanking(hub),rpc:(name,args)=>client.rpc(name,args),identity:()=>state.uid,profile:()=>profile,go:id=>base.go(id),visit:id=>visitPlayer(id),onFinish:async()=>{const v=state.version,oldXP=profile?.xp||0,oldOwned=new Set(state.cosmetics.filter(c=>cosmeticOwned(c)).map(c=>c.id));await loadProfile(state.uid,v);if(v===state.version)celebrateProgress(oldXP,oldOwned);},share:result=>sharing.shareResult(result),enter:async()=>{pendingRoute='#semanal';await createPlayer();},card:c=>cardMarkup(makeWeeklyCard(c.id,c.title)),preview:c=>{selectedCard=null;$('cardDetailArt').innerHTML=cardMarkup(makeWeeklyCard(c.id,c.title));$('cardDetailActions').replaceChildren();$('cardDetailStatus').textContent='Premio de esta edición: conseguí 20/20 para obtener esta Exclusiva.';if(!$('cardDetail').open)$('cardDetail').showModal();}});
 window.openWeekly=()=>weekly.open();
 const admin=installAdmin({rpc:(name,args)=>client.rpc(name,args),allowed:()=>state.isAdmin,go:id=>base.go(id),onDenied:()=>{state.isAdmin=false;$('adminEntry').hidden=true;}});
 window.openAdmin=async()=>{await ready;await admin.open();};
@@ -63,7 +69,7 @@ function protectionUI(){
   const due=profile&&(profile.games>=3||(Number.isFinite(created)&&Date.now()-created>=86400000));
   panel.hidden=!(state.uid&&isTemporary()&&due&&Date.now()>=snoozedUntil);
   if(panel.hidden)panel.replaceChildren();
-  else panel.innerHTML='<strong>Protegé tu progreso</strong><p>Ya tenés un recorrido en el arcade. Vinculá un correo para recuperar tu jugador si cambiás de dispositivo, cerrás sesión o borrás los datos del navegador. Podés seguir jugando sin hacerlo.</p><div class="actions"><button onclick="openLinkAccount()">GUARDAR MI ACCESO</button><button class="secondary" onclick="snoozeAccountReminder()">MÁS TARDE</button></div>';
+  else panel.innerHTML='<strong>Protegé tu progreso</strong><p>Ya tenés un recorrido en el arcade. Vinculá un acceso para recuperar tu jugador si cambiás de dispositivo, cerrás sesión o borrás los datos del navegador. Podés seguir con las trivias normales sin registrarte.</p><div class="actions"><button onclick="openLinkAccount()">GUARDAR MI ACCESO</button><button class="secondary" onclick="snoozeAccountReminder()">MÁS TARDE</button></div>';
 }
 window.snoozeAccountReminder=function(){
   try{localStorage.setItem('loading_arcade_reminder_'+state.uid,String(Date.now()+86400000));}catch{}
@@ -224,7 +230,7 @@ function accountUI(){
   $('logoutBtn').hidden=true;
   $('sessionStatus').parentElement.hidden=!loggedIn;
   $('homeDashboard').classList.toggle('has-player',loggedIn);
-  $('homeModeNote').textContent='Tus partidas se guardan desde el inicio. Más adelante podés vincular un correo para recuperar tu jugador en otro dispositivo.';
+  $('homeModeNote').textContent='Tus partidas se guardan desde el inicio. Podés vincular un acceso para recuperar tu jugador y competir en el semanal.';
   $('homeModeNote').hidden=loggedIn;
   $('homeHero').hidden=loggedIn;
   $('homeProgress').hidden=true;
@@ -250,7 +256,7 @@ function accountUI(){
     '<div class="home-mini-stats"><span><strong>'+xp+'</strong> XP totales</span><span><strong>'+profile.unlocked.length+'</strong> coleccionables</span></div>'+
     '<button class="home-play action-primary" onclick="openTriviaSection()">CONTINUAR TRIVIA →</button><button class="secondary home-close-session" onclick="logout()">CERRAR SESIÓN</button>'+
 
-    (isTemporary()?'<button class="text-button home-link" onclick="openLinkAccount()">Vincular correo para proteger mi acceso</button>':'');
+    (isTemporary()?'<button class="text-button home-link" onclick="openLinkAccount()">Registrar mi acceso para proteger mi progreso</button>':'');
   $('homeProgress').hidden=false;
   $('homeProgress').innerHTML='<div class="home-route-heading"><div><div class="eyebrow">PROGRESO</div><h2>'+(level+1===5?'Cupón del 10% · Nivel 5':'Próximo cofre · Nivel '+(level+1))+'</h2></div><span class="home-chest-icon" aria-hidden="true">'+inventoryIcon('chests')+'</span></div>'+
     '<p class="home-xp-left">Te faltan <strong>'+remaining+' XP</strong></p>'+
@@ -351,7 +357,7 @@ let ready=(async()=>{
     const {data,error}=await client.auth.getSession();
     if(error)throw error;
     await useSession(data.session);
-    if(returning&&state.uid){if(profile){mode='player';base.go('home');}else renderProfileEditor();}
+    if(returning&&state.uid){consumeAuthReturn();if(profile){mode='player';base.go('home');}else renderProfileEditor();}
   }catch(e){message(publicError(e));if(returning){base.go('auth');authMessage('No pudimos abrir ese enlace. Pedí uno nuevo y abrilo en este mismo navegador.');}}
   finally{$('createPlayerBtn').disabled=false;accountUI();if(!profile)void weekly.refresh();}
 })();
@@ -366,7 +372,7 @@ client.auth.onAuthStateChange((event,session)=>{
       ready=useSession(session).then(()=>{
         if(state.uid){if(profile){mode='player';base.go('home');if(pendingRoute)setTimeout(()=>void restorePendingRoute(),0);}else renderProfileEditor();}
       }).catch(e=>message(publicError(e)));
-    }else{state.session=session;accountUI();}
+    }else{state.session=session;accountUI();if(['USER_UPDATED','TOKEN_REFRESHED','SIGNED_IN'].includes(event))void weekly.refresh();}
   },0);
 });
 
@@ -408,17 +414,16 @@ window.createPlayer=async function(){
   }catch(e){message(publicError(e));}
   finally{state.creating=false;$('createPlayerBtn').disabled=false;}
 };
-window.openLinkAccount=async function(){
-  await ready;
-  if(!state.uid){base.go('auth');return;}
-  if(!isTemporary()){message('Tu cuenta ya tiene un acceso vinculado.');return;}
-  $('linkMessage').textContent='';base.go('linkAccount');
-};
+async function openRegistration(forWeekly=false){
+ await ready;if(!state.uid){registrationTarget=forWeekly?'#semanal':'#perfil';base.go('auth');return;}
+ registrationTarget=forWeekly?'#semanal':'#perfil';$('linkMessage').textContent='';base.go('linkAccount');await registration.refresh();
+}
+window.openLinkAccount=()=>openRegistration(false);
 window.sendAccountLink=async function(event){
   event.preventDefault();await ready;
-  if(!state.uid||!isTemporary()||state.linkBusy)return;
+  if(!state.uid||state.linkBusy)return;
   if(!$('linkEmail').reportValidity())return;
-  state.linkBusy=true;$('linkAccountBtn').disabled=true;
+  state.linkBusy=true;$('linkAccountBtn').disabled=true;rememberAuthReturn();
   $('linkMessage').textContent='Enviando enlace…';
   try{
     const {error}=await client.auth.updateUser({email:$('linkEmail').value.trim()},{emailRedirectTo:new URL(location.pathname,location.origin).href});
@@ -431,7 +436,7 @@ window.sendLogin=async function(event){
   event.preventDefault();
   const email=$('loginEmail').value.trim();
   if(!$('loginEmail').reportValidity())return;
-  const button=$('sendLoginBtn');button.disabled=true;
+  const button=$('sendLoginBtn');button.disabled=true;rememberAuthReturn();
   authMessage('Enviando enlace…');
   try{
     const redirect=new URL(location.pathname,location.origin).href;
@@ -443,7 +448,7 @@ window.sendLogin=async function(event){
 };
 window.logout=async function(){
   if(state.busy){message('Esperá a que termine el guardado antes de salir.');return;}
-  if(isTemporary()){if(!confirm('Tu jugador todavía no tiene un correo vinculado. Si cerrás sesión no podrás recuperar este progreso. ¿Querés salir igualmente?'))return;}
+  if(isTemporary()){if(!confirm('Tu jugador todavía no tiene un acceso verificado vinculado. Si cerrás sesión no podrás recuperar este progreso. ¿Querés salir igualmente?'))return;}
   else if(state.game||state.pending){if(!confirm('Hay una partida en curso o pendiente. ¿Querés cerrar sesión igualmente?'))return;}
   state.signingOut=true;
   try{
@@ -881,9 +886,9 @@ function syncPrimaryNav(){
 function sectionRoute(id){
  if(id==='community')return forum.route();if(id==='forumThread'&&forum.threadId())return '#tema/'+forum.threadId();if(id==='playerVisit'&&state.visitTarget)return '#jugador/'+state.visitTarget;
  if(id==='collectionAlbum'&&selectedCollection)return '#perfil/coleccion/'+selectedCollection;
- return ({weekly:'#semanal',weeklyPlay:'#semanal/jugando',quiz:'#trivia/jugando',result:'#trivia/resultado',home:'#inicio',menu:'#trivia',player:'#perfil',profile:'#perfil/editar',players:'#comunidad/jugadores',forumCompose:'#comunidad/nuevo',collection:'#perfil/colecciones',wardrobe:'#perfil/estilo',benefits:'#perfil/cupon',history:'#perfil/partidas',chests:'#perfil/cofres',chestOpening:'#perfil/cofre/abriendo',rewards:'#trivia/progreso',admin:'#admin'})[id]||null;
+ return ({weekly:'#semanal',weeklyPlay:'#semanal/jugando',quiz:'#trivia/jugando',result:'#trivia/resultado',home:'#inicio',menu:'#trivia',player:'#perfil',profile:'#perfil/editar',players:'#comunidad/jugadores',forumCompose:'#comunidad/nuevo',collection:'#perfil/colecciones',wardrobe:'#perfil/estilo',linkAccount:'#perfil/registro',benefits:'#perfil/cupon',history:'#perfil/partidas',chests:'#perfil/cofres',chestOpening:'#perfil/cofre/abriendo',rewards:'#trivia/progreso',admin:'#admin'})[id]||null;
 }
-base.go=function(id){const suppressHistory=restoringRoute;restoringRoute=false;rawGo(id);syncPrimaryNav();const route=sectionRoute(currentSection()||id);if(navigationReady&&profile&&!suppressHistory&&route&&location.hash!==route)history.pushState({arcade:true,depth:(history.state?.arcade?history.state.depth||0:0)+1},'',route);if(navigationReady&&id==='home')void weekly.refresh();};
+base.go=function(id){const suppressHistory=restoringRoute;restoringRoute=false;rawGo(id);if(id==='auth'||id==='linkAccount')void registration.refresh();syncPrimaryNav();const route=sectionRoute(currentSection()||id);if(navigationReady&&profile&&!suppressHistory&&route&&location.hash!==route)history.pushState({arcade:true,depth:(history.state?.arcade?history.state.depth||0:0)+1},'',route);if(navigationReady&&id==='home')void weekly.refresh();};
 go=base.go;
 async function restoreRoute(hash){
  if(!profile&&!hash.startsWith('#jugador/')&&!hash.startsWith('#semanal')){pendingRoute=hash;return;}
@@ -897,6 +902,7 @@ async function restoreRoute(hash){
   else if(path==='comunidad/nuevo')await forum.compose();
   else if(path==='comunidad')await forum.open(params.get('ver')==='mis-temas'?'mine':params.get('ver')==='mis-respuestas'?'replies':'all',null,'',params.get('categoria')||'');
   else if(path==='perfil')await openProfileHub();
+  else if(path==='perfil/registro')await openRegistration(false);
   else if(path==='perfil/editar')await showProfile();
   else if(path==='perfil/colecciones')await showCollections();
   else if(path.startsWith('perfil/coleccion/'))selectCollection(path.slice('perfil/coleccion/'.length));
