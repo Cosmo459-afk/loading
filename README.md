@@ -1,3 +1,26 @@
+# LOADING ARCADE 0.45
+
+Administración → Estadísticas, con períodos de 7 y 30 días (incluye el día actual) y calendario de Argentina:
+
+- Jugadores activos, nuevos y total registrado.
+- Jugadores que iniciaron trivias en dos o más días distintos del período, como señal de regreso.
+- Ruta normal y desafío semanal: partidas iniciadas/terminadas, tasa de finalización y pendientes. La ruta separa partidas todavía en curso de las vencidas sin terminar; la semanal muestra resultados perfectos.
+- Gráfico de actividad diaria, tabla con detalle, desglose por consola/dificultad y distribución actual de niveles.
+
+## Instalar desde v44
+
+1. Ejecutar todo supabase/upgrade-v45.sql en una nueva consulta del SQL Editor de Supabase. Solo crea índices y una consulta de agregados protegida por require_admin. No cambia partidas, XP, usuarios ni edición semanal.
+2. Subir sitio completa de loading-arcade-v45.zip a Cloudflare.
+3. Perfil → Administración → Estadísticas. La cuenta administradora existente conserva su acceso.
+
+Se usan datos de partidas ya guardados: no se instala un rastreador externo, no se cuentan visitas sin jugar y no se reconstruye historial borrado. Activo significa que inició o terminó una trivia en el período. La señal de regreso exige inicios en al menos dos días distintos; no equivale a medir sesiones del navegador. Las prácticas sin recompensa están excluidas.
+
+Terminadas cuenta finales en el período, incluso si empezaron antes. La tasa de finalización usa solo las partidas iniciadas en esas fechas y completadas hasta la consulta; las que siguen en curso no se declaran abandonadas. Los resultados semanales se cuentan desde sus intentos, sin sumar otra vez el asiento de XP. La distribución de niveles usa todos los jugadores actuales, no solo los activos del filtro.
+
+La consulta devuelve únicamente agregados, sin correos, Auth IDs, preguntas ni soluciones. Se verificaron permisos, límites del período, cero actividad, fechas de Argentina, cohortes de finalización, ausencia de doble conteo y conservación de datos en supabase/tests/stats-v45.mjs. tests/admin-stats-v45.py verifica la pantalla con el RPC local real, filtros, detalle, actualización, falta de SQL y tamaños 320–1280 px.
+
+---
+
 # LOADING ARCADE 0.44
 
 Cabecera con acceso permanente a Instagram @somosloading y «Ir a la tienda Loading». Ambos abren en otra pestaña para conservar la partida actual. En móvil se muestran debajo del logo y se diferencian del menú del juego. Subir sitio completa de loading-arcade-v44.zip a Cloudflare. Sin SQL adicional ni cambios de progreso.

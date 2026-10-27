@@ -1,12 +1,12 @@
 {
   "name": "loading-arcade",
-  "version": "0.44.0",
+  "version": "0.45.0",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
     "test:database": "npm test --prefix supabase",
-    "test:browser": "python tests/weekly-v25.py && python tests/public-weekly-v27.py && python tests/profile-v40.py && python tests/nicknames-v41.py",
+    "test:browser": "python tests/weekly-v25.py && python tests/public-weekly-v27.py && python tests/profile-v40.py && python tests/nicknames-v41.py && python tests/admin-stats-v45.py",
     "test:fixture": "node supabase/tests/api-fixture.mjs",
     "content:compile": "node scripts/import-trivias.mjs",
     "build:preview": "ARCADE_PREVIEW=1 node scripts/build.mjs"

@@ -24,16 +24,16 @@
     "source": "assets/rewards/coupon-level5.png"
   },
   {
-    "url": "assets/media/common-a-980f2fa4ee6f0bc3.png",
-    "bytes": 2151213,
-    "sha256": "980f2fa4ee6f0bc38b658cbdffc9f0a8534bafa6c2aac6b41c3ad330bef6984f",
-    "source": "assets/cards/re4/art-v13/common-a.png"
-  },
-  {
     "url": "assets/media/weekly-village-2d650d52fea1de01.png",
     "bytes": 2088327,
     "sha256": "2d650d52fea1de01d985408cd3b5c7a1bae23e2f81f373ca40358ccb2605dc73",
     "source": "assets/social/weekly-village.png"
+  },
+  {
+    "url": "assets/media/common-a-980f2fa4ee6f0bc3.png",
+    "bytes": 2151213,
+    "sha256": "980f2fa4ee6f0bc38b658cbdffc9f0a8534bafa6c2aac6b41c3ad330bef6984f",
+    "source": "assets/cards/re4/art-v13/common-a.png"
   },
   {
     "url": "assets/media/common-b-84dedba939a28fb8.png",
