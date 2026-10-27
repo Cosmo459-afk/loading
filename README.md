@@ -1,3 +1,13 @@
+# LOADING ARCADE 0.50
+
+Novedades pasa a una sección propia en el menú principal, después de Perfil. Incluye anuncios anteriores, indicador de no leídas y botón Volver; admite enlace directo #novedades. Inicio ya no muestra el bloque de anuncios.
+
+Instalación: guía recomendada según dispositivo/navegador, con otras guías desplegables para iPhone/Safari, iPhone/Chrome u otros, Android/Chrome, Samsung Internet, Instagram/Facebook y computadora. En iPhone con Chrome se indica copiar el enlace, abrir Safari y usar Compartir → Agregar a inicio. Incluye botón para copiar el enlace limpio, sin parámetros de autenticación.
+
+Actualizar desde v49: subir toda la carpeta sitio de loading-arcade-v50.zip a Cloudflare. No hay SQL nuevo. Se conserva la instalación de la app y el progreso. La actualización puede ofrecerse al pie del sitio; no se fuerza durante partidas. Si se usa v47 o anterior, instalar antes upgrade-v48.sql; no ejecutar reinicios.
+
+---
+
 # LOADING ARCADE 0.49
 
 Sección Novedades en Inicio, con historial de anuncios y señal de novedades sin leer (guardada en ese navegador). El contenido público se mantiene en src/news.js y se publica junto con cada versión; todavía no hay editor de anuncios en administración. No son notificaciones push.

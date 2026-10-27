@@ -1,11 +1,5 @@
 [
   {
-    "url": "assets/media/ada-wong-exclusive-fff3651189305e8c.png",
-    "bytes": 2303587,
-    "sha256": "fff3651189305e8cf5f3cdb7ac47f3935bcfd33e697402a7b89b089cc7cec161",
-    "source": "assets/cards/weekly/ada-wong-exclusive.png"
-  },
-  {
     "url": "assets/media/loading-arcade-70e3c56a50eacc3a.png",
     "bytes": 1278596,
     "sha256": "70e3c56a50eacc3a676783eab3fcdb1ae79cfbfbe4727d631f7dc136f62a9cda",
@@ -16,6 +10,12 @@
     "bytes": 1909949,
     "sha256": "4f3b71a9b270807e9f0da88baa1718281f571cacdd023121f7bbced65fc4d07c",
     "source": "assets/social/preview-v24.png"
+  },
+  {
+    "url": "assets/media/ada-wong-exclusive-fff3651189305e8c.png",
+    "bytes": 2303587,
+    "sha256": "fff3651189305e8cf5f3cdb7ac47f3935bcfd33e697402a7b89b089cc7cec161",
+    "source": "assets/cards/weekly/ada-wong-exclusive.png"
   },
   {
     "url": "assets/media/common-a-980f2fa4ee6f0bc3.png",

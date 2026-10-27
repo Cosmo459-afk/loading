@@ -1,5 +1,5 @@
 /* Only the offline notice and its icon are cached. Never cache HTML, Auth or game responses. */
-const CACHE='loading-arcade-offline-0.49.0';
+const CACHE='loading-arcade-offline-0.50.0';
 const OFFLINE=new URL('offline.html',self.registration.scope).href;
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll([OFFLINE,new URL('assets/pwa/icon-192.png',self.registration.scope).href]))));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{

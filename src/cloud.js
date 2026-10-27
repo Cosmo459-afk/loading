@@ -884,27 +884,27 @@ window.openChest=async function(id){
 
 // Four explicit app sections, with stable links for conversations and browser back.
 let navigationReady=false,restoringRoute=false;
-let pendingRoute=/^#(?:tema\/|publicaciones\/|comunidad|perfil|trivia|semanal|admin|jugador\/)/.test(location.hash)?location.hash:'';
+let pendingRoute=/^#(?:tema\/|publicaciones\/|comunidad|perfil|trivia|semanal|novedades|admin|jugador\/)/.test(location.hash)?location.hash:'';
 const rawGo=base.go;
 if(!history.state?.arcade)history.replaceState({arcade:true,depth:0},'',location.href);
 window.goBack=()=>{if(history.state?.arcade&&history.state.depth>0)history.back();else base.go('home');};
 function currentSection(){return [...document.querySelectorAll('main>section')].find(s=>!s.classList.contains('hidden'))?.id;}
-function sectionGroup(id){if(id==='home')return 'home';if(['community','players','forumCompose','forumThread','playerVisit'].includes(id))return 'community';if(['player','profile','collection','collectionAlbum','wardrobe','benefits','history','chests','chestOpening','linkAccount','admin'].includes(id))return 'profile';return 'trivia';}
+function sectionGroup(id){if(id==='home')return 'home';if(id==='arcadeNews')return 'news';if(['community','players','forumCompose','forumThread','playerVisit'].includes(id))return 'community';if(['player','profile','collection','collectionAlbum','wardrobe','benefits','history','chests','chestOpening','linkAccount','admin'].includes(id))return 'profile';return 'trivia';}
 function syncPrimaryNav(){
  if(!$('appNav'))return;$('appNav').hidden=!profile;
- const group=sectionGroup(currentSection());for(const [id,key] of [['navHome','home'],['navTrivia','trivia'],['navProfile','profile'],['navCommunity','community']]){if(group===key)$(id).setAttribute('aria-current','page');else $(id).removeAttribute('aria-current');}
+ const group=sectionGroup(currentSection());for(const [id,key] of [['navHome','home'],['navTrivia','trivia'],['navProfile','profile'],['navCommunity','community'],['navNews','news']]){if(group===key)$(id).setAttribute('aria-current','page');else $(id).removeAttribute('aria-current');}
  const count=profile?state.chests.filter(c=>!c.opened_at).length+unseenCards().length+pendingExclusiveNotices().length+(state.coupon?.id&&!state.coupon.redeemed_at?1:0):0;
  $('navProfileBadge').hidden=!count;$('navProfileBadge').textContent=count||'';$('navProfileBadge').setAttribute('aria-label',count+' pendientes en tu perfil');
 }
 function sectionRoute(id){
  if(id==='community')return forum.route();if(id==='forumThread'&&forum.threadId())return '#tema/'+forum.threadId();if(id==='playerVisit'&&state.visitTarget)return '#jugador/'+state.visitTarget;
  if(id==='collectionAlbum'&&selectedCollection)return '#perfil/coleccion/'+selectedCollection;
- return ({weekly:'#semanal',weeklyPlay:'#semanal/jugando',quiz:'#trivia/jugando',result:'#trivia/resultado',home:'#inicio',menu:'#trivia',player:'#perfil',profile:'#perfil/editar',players:'#comunidad/jugadores',forumCompose:'#comunidad/nuevo',collection:'#perfil/colecciones',wardrobe:'#perfil/estilo',linkAccount:'#perfil/registro',benefits:'#perfil/cupon',history:'#perfil/partidas',chests:'#perfil/cofres',chestOpening:'#perfil/cofre/abriendo',rewards:'#trivia/progreso',admin:'#admin'})[id]||null;
+ return ({arcadeNews:'#novedades',weekly:'#semanal',weeklyPlay:'#semanal/jugando',quiz:'#trivia/jugando',result:'#trivia/resultado',home:'#inicio',menu:'#trivia',player:'#perfil',profile:'#perfil/editar',players:'#comunidad/jugadores',forumCompose:'#comunidad/nuevo',collection:'#perfil/colecciones',wardrobe:'#perfil/estilo',linkAccount:'#perfil/registro',benefits:'#perfil/cupon',history:'#perfil/partidas',chests:'#perfil/cofres',chestOpening:'#perfil/cofre/abriendo',rewards:'#trivia/progreso',admin:'#admin'})[id]||null;
 }
 base.go=function(id){const suppressHistory=restoringRoute;restoringRoute=false;rawGo(id);if(id==='auth'||id==='linkAccount')void registration.refresh();syncPrimaryNav();const route=sectionRoute(currentSection()||id);if(navigationReady&&profile&&!suppressHistory&&route&&location.hash!==route)history.pushState({arcade:true,depth:(history.state?.arcade?history.state.depth||0:0)+1},'',route);if(navigationReady&&id==='home')void weekly.refresh();};
 go=base.go;
 async function restoreRoute(hash){
- if(!profile&&!hash.startsWith('#jugador/')&&!hash.startsWith('#semanal')){pendingRoute=hash;return;}
+ if(!profile&&!hash.startsWith('#jugador/')&&!hash.startsWith('#semanal')&&hash!=='#novedades'){pendingRoute=hash;return;}
  const [path,query='']=hash.replace(/^#/,'').split('?'),params=new URLSearchParams(query);restoringRoute=true;
  try{
   if(path.startsWith('semanal'))await weekly.open();
@@ -914,6 +914,7 @@ async function restoreRoute(hash){
   else if(path==='comunidad/jugadores')await openDirectory();
   else if(path==='comunidad/nuevo')await forum.compose();
   else if(path==='comunidad')await forum.open(params.get('ver')==='mis-temas'?'mine':params.get('ver')==='mis-respuestas'?'replies':'all',null,'',params.get('categoria')||'');
+  else if(path==='novedades')window.openNews();
   else if(path==='perfil')await openProfileHub();
   else if(path==='perfil/registro')await openRegistration(false);
   else if(path==='perfil/editar')await showProfile();
@@ -931,7 +932,7 @@ async function restoreRoute(hash){
 }
 async function restorePendingRoute(){const route=pendingRoute;pendingRoute='';if(route){history.replaceState(history.state?.arcade?history.state:{arcade:true,depth:0},'',route);await restoreRoute(route);}}
 window.addEventListener('popstate',()=>{void restoreRoute(location.hash);});
-ready.then(async()=>{navigationReady=true;if(pendingRoute&&(profile||pendingRoute.startsWith('#jugador/')||pendingRoute.startsWith('#semanal')))await restorePendingRoute();syncPrimaryNav();});
+ready.then(async()=>{navigationReady=true;if(pendingRoute&&(profile||pendingRoute.startsWith('#jugador/')||pendingRoute.startsWith('#semanal')||pendingRoute==='#novedades'))await restorePendingRoute();syncPrimaryNav();});
 
 installPWA();
-installNews();
+installNews({go:id=>base.go(id)});
