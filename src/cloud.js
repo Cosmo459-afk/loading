@@ -1,3 +1,5 @@
+import {installNews} from './news.js';
+import {installPWA} from './pwa.js';
 import {installRegistration} from './registration.js';
 import {inventoryIcon} from './icons.js';
 import {createClient} from '@supabase/supabase-js';
@@ -930,3 +932,6 @@ async function restoreRoute(hash){
 async function restorePendingRoute(){const route=pendingRoute;pendingRoute='';if(route){history.replaceState(history.state?.arcade?history.state:{arcade:true,depth:0},'',route);await restoreRoute(route);}}
 window.addEventListener('popstate',()=>{void restoreRoute(location.hash);});
 ready.then(async()=>{navigationReady=true;if(pendingRoute&&(profile||pendingRoute.startsWith('#jugador/')||pendingRoute.startsWith('#semanal')))await restorePendingRoute();syncPrimaryNav();});
+
+installPWA();
+installNews();

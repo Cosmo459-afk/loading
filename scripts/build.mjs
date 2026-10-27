@@ -41,3 +41,10 @@ const privacy=(await readFile(path.join(root,'assets/legal/privacidad.html'),'ut
 await writeFile(path.join(root,'dist/privacidad.html'),privacy);
 await writeFile(path.join(root,'dist/asset-manifest.json'),JSON.stringify(manifest,null,2)+'\n');
 console.log('Built lightweight HTML with '+manifest.length+' separately cached images. Upload the ENTIRE site folder.');
+
+const version=JSON.parse(await readFile(path.join(root,'package.json'),'utf8')).version;
+await mkdir(path.join(root,'dist/assets/pwa'),{recursive:true});
+for(const file of ['icon-192.png','icon-512.png','icon-maskable-512.png','apple-touch-icon.png'])await writeFile(path.join(root,'dist/assets/pwa',file),await readFile(path.join(root,'assets/pwa',file)));
+for(const [source,dest] of [['manifest.webmanifest','manifest.webmanifest'],['offline.html','offline.html'],['sw.js','sw.js']])await writeFile(path.join(root,'dist',dest),(await readFile(path.join(root,'assets/pwa',source),'utf8')).replaceAll('__VERSION__',version));
+const headers=await readFile(path.join(root,'dist/_headers'),'utf8');
+await writeFile(path.join(root,'dist/_headers'),headers+'/sw.js\n  Cache-Control: no-cache\n  Content-Type: application/javascript\n  X-Content-Type-Options: nosniff\n/manifest.webmanifest\n  Cache-Control: no-cache\n  Content-Type: application/manifest+json\n/offline.html\n  Cache-Control: no-cache\n/assets/pwa/*\n  Cache-Control: no-cache\n');

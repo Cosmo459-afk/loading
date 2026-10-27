@@ -1,3 +1,21 @@
+# LOADING ARCADE 0.49
+
+Sección Novedades en Inicio, con historial de anuncios y señal de novedades sin leer (guardada en ese navegador). El contenido público se mantiene en src/news.js y se publica junto con cada versión; todavía no hay editor de anuncios en administración. No son notificaciones push.
+
+Aplicación web instalable (PWA), con ícono propio, modo independiente y ayuda de instalación en Inicio y al pie.
+
+Actualizar desde v48: subir **toda la carpeta sitio** de loading-arcade-v49.zip a Cloudflare, incluyendo manifest.webmanifest, sw.js, offline.html, _headers y assets/pwa. No hay SQL nuevo. Mantener el mismo dominio para conservar la instalación y el acceso del navegador. Si todavía no instalaste v48, ejecutar antes upgrade-v48.sql; no ejecutar ningún reinicio.
+
+Android (Chrome): Inicio → Instalar app → Instalar. Si el navegador no ofrece instalación automática, usar ⋮ → Instalar aplicación / Agregar a pantalla principal. iPhone (Safari): Compartir → Agregar a inicio. Desde el navegador interno de Instagram/Facebook, abrir primero en Safari o Chrome. En escritorio también se puede instalar con Chrome/Edge cuando lo ofrezcan.
+
+La instalación no habilita juego sin conexión ni notificaciones push. El servidor sigue validando cuentas, puntos y tiempos. Si se abre sin red, aparece un aviso y un botón para reintentar; el reloj semanal no se pausa. No se almacenan respuestas de Auth/Supabase ni HTML del juego en el caché del service worker. Solo se guarda el aviso sin conexión y su ícono.
+
+Actualizaciones: las navegaciones buscan la versión en línea; las imágenes pesadas conservan sus URLs con hash. Un service worker nuevo espera y ofrece «Actualizar Loading Arcade» al pie; ese botón se deshabilita durante partidas y apertura de cofres. No recarga automáticamente durante una partida ni modifica sesiones o progreso. Al reabrir todas las ventanas cerradas, el navegador puede activar la actualización normalmente. En iPhone, la sesión de la app instalada puede ser distinta a la de Safari: entrar con el mismo acceso vinculado; no crear otro jugador.
+
+Comprobar en el dominio público HTTPS: manifest e íconos sin 404, instalar en Android/iPhone, iniciar sesión, completar una trivia y reabrir. La instalación exacta depende del navegador y no equivale a una publicación en App Store/Google Play.
+
+---
+
 # LOADING ARCADE 0.48
 
 Cuatro espacios para exhibir cartas normales o exclusivas obtenidas. Las exclusivas se pueden exhibir, reemplazar y quitar desde Mis cartas; también se ven en los perfiles visitables y compartidos.

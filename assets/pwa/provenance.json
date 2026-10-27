@@ -1,0 +1,12 @@
+{
+  "created": "2026-10-27",
+  "reference": "assets/brand/loading-arcade.png",
+  "method": "Brand emblem adapted with image generation; exported at platform icon sizes with Lanczos resampling.",
+  "generated_source": "exec-bc74261f-0d1e-4351-be74-8b08eae51b6a.png",
+  "files": {
+    "icon-512.png": "d4bdb403fb2ae54ad3b2eca1cda1351c56c0364f785ce0e467d29d4d55fba122",
+    "icon-maskable-512.png": "d4bdb403fb2ae54ad3b2eca1cda1351c56c0364f785ce0e467d29d4d55fba122",
+    "apple-touch-icon.png": "747c15177162cebe7e9c613d5dd3c414770ed308a3446c1cd6b3ee108c339f20",
+    "icon-192.png": "065b573f67ccb89bf2f3229c875338401bf8086934ffa30db6b80e5d414327f3"
+  }
+}
